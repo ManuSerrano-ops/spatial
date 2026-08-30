@@ -417,20 +417,18 @@ main.app-shell > .workspace-region { overflow: hidden; }
 .area-detail-member strong, .area-detail-member small { display: block; overflow-wrap: anywhere; }
 .area-detail-member small { margin-top: 3px; color: var(--muted); }
 .area-detail-member.missing { color: var(--danger); }
-.managed-area-card.cluster { cursor: pointer; overflow: hidden; white-space: normal; }
+.managed-area-card.cluster { --cluster-card-header-chrome: 92px; min-width: calc(var(--cluster-card-name-min-width) + var(--cluster-card-header-chrome)); cursor: pointer; overflow: hidden; white-space: normal; }
 .managed-area-card.cluster small { overflow-wrap: anywhere; white-space: normal; }
-.cluster-card-actions { display: flex; gap: 4px; margin-top: 5px; padding-top: 5px; border-top: 1px solid color-mix(in srgb, var(--cluster-border) 35%, transparent); }
-.cluster-card-action { flex: 1 1 0; min-height: 24px; padding: 3px 5px; border-color: color-mix(in srgb, var(--cluster-ink) 42%, transparent); background: color-mix(in srgb, var(--cluster-surface) 82%, var(--cluster-ink)); color: var(--cluster-ink); font-size: 10px; font-weight: 800; }
-.cluster-card-action:hover:not(:disabled), .cluster-card-action:focus-visible { background: color-mix(in srgb, var(--accent) 30%, var(--cluster-surface)); }
 .managed-area-card.cluster.card-editing { overflow: visible; outline: 2px dashed var(--accent); cursor: grab; user-select: none !important; -webkit-user-select: none !important; touch-action: none; }
 .managed-area-card.cluster.card-editing *, .managed-area-card.cluster.card-editing::before, .managed-area-card.cluster.card-editing::after { user-select: none !important; -webkit-user-select: none !important; }
 .managed-area-card.cluster.card-editing.card-moving { cursor: grabbing; }
 .managed-area-card.cluster.card-editing.card-moving * { cursor: grabbing; }
-.managed-area-card.cluster.card-manual { min-width: 0; max-width: none; min-height: 0; grid-template-rows: auto auto minmax(0, 1fr); }
+.managed-area-card.cluster.card-manual { max-width: none; min-height: 0; grid-template-rows: auto auto minmax(0, 1fr); }
 .managed-area-card.cluster.card-manual strong, .managed-area-card.cluster.card-manual small { overflow: hidden; text-overflow: ellipsis; white-space: normal; }
 .cluster-card-header { position: relative; min-width: 0; }
 .cluster-move-handle { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; min-width: 0; gap: 5px; }
-.cluster-move-handle > strong { min-width: 0; padding-right: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cluster-move-handle > strong { min-width: 0; padding-right: 54px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cluster-context-affordance { position: absolute; top: 4px; right: 31px; color: var(--cluster-muted, var(--muted)); font-size: 17px; font-weight: 900; line-height: 1; pointer-events: none; }
 .cluster-card-drag-mark { display: none; color: var(--cluster-muted, var(--muted)); font-size: 16px; font-weight: 900; }
 .cluster-move-handle.active { grid-template-columns: auto minmax(0, 1fr) auto; min-height: 28px; margin: -4px -4px 0; padding: 4px; border-radius: 5px; cursor: grab; pointer-events: auto; touch-action: none; user-select: none !important; -webkit-user-select: none !important; }
 .cluster-move-handle.active:active { cursor: grabbing; }
@@ -458,7 +456,7 @@ main.app-shell > .workspace-region { overflow: hidden; }
 .cluster-card-edit-status { padding: 0 4px; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .cluster-card-members-toggle { display: inline-flex; align-items: center; gap: 4px; padding: 0 4px; color: var(--ink); font-size: 10px; white-space: nowrap; }
 .cluster-card-members-toggle input { width: auto; margin: 0; }
-.managed-area-card.cluster-compact:not(.card-manual) { min-width: 104px; max-width: 154px; }
+.managed-area-card.cluster-compact:not(.card-manual) { max-width: none; }
 .managed-area-card.cluster-square:not(.card-manual) { width: 112px; min-height: 86px; align-content: center; }
 .managed-area-card.cluster-vertical:not(.card-manual) { width: 96px; min-height: 104px; align-content: center; }
 .managed-area-card.cluster small { display: block; }

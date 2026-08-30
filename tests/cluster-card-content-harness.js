@@ -72,6 +72,17 @@ test('content rendering is presentation-only and retains count/problem summary',
   assert(!render.includes('sendManagedArea(') && !render.includes('moveWorkspace('), 'content rendering mutates membership or coordinates');
 });
 
+test('cluster title reserves the agreed visible-name minimum without direct action buttons', () => {
+  const render = app.match(/function renderManagedAreaCard[\s\S]*?\n  function renderManagedAreaCards/)[0];
+  assert(app.includes('const MIN_CARACTERES_NOMBRE_CLUSTER = 15;'), 'named visible-name minimum missing');
+  assert(app.includes('Math.min(Array.from(name).length, MIN_CARACTERES_NOMBRE_CLUSTER)'), 'dimension calculation ignores named minimum');
+  assert(render.includes("card.style.setProperty('--cluster-card-name-min-width', dimensions.minimumNameWidth)"), 'card does not receive minimum name width');
+  assert(render.includes('cluster-card-title') && render.includes('cluster-context-affordance'), 'title or contextual affordance missing');
+  assert(!render.includes('cluster-card-actions') && !render.includes('cluster-card-action'), 'direct card actions remain');
+  assert(!css.includes('.cluster-card-actions') && !css.includes('.cluster-card-action'), 'direct-action CSS remains');
+  assert(css.includes('min-width: calc(var(--cluster-card-name-min-width) + var(--cluster-card-header-chrome))'), 'CSS does not enforce title minimum');
+});
+
 let passed = 0;
 for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } }
 console.log(`Cluster card content harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);

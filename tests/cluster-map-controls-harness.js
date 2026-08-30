@@ -10,12 +10,13 @@ const tests = [];
 const test = (name, fn) => tests.push({ name, fn });
 const assert = (value, message) => { if (!value) throw new Error(message); };
 
-test('cluster cards expose direct rename and adjustment actions', () => {
-  assert(app.includes('data-cluster-card-action="rename"'), 'rename action is not rendered on the card');
-  assert(app.includes('data-cluster-card-action="adjust"'), 'adjust action is not rendered on the card');
-  assert(app.includes("openAreaRename(area.id)"), 'rename action does not reuse the rename flow');
-  assert(app.includes("beginClusterCardEdit(area.id)"), 'adjust action does not reuse free card editing');
-  assert(css.includes('.cluster-card-actions {'), 'cluster action styling is missing');
+test('cluster cards move rename and adjustment actions to the contextual menu', () => {
+  assert(!app.includes('data-cluster-card-action="rename"'), 'rename action remains rendered on the card');
+  assert(!app.includes('data-cluster-card-action="adjust"'), 'adjust action remains rendered on the card');
+  assert(html.includes('id="context-rename-cluster"') && html.includes('id="context-edit-cluster"'), 'contextual actions are missing');
+  assert(app.includes("$('context-rename-cluster').onclick") && app.includes('openAreaRename(areaId)'), 'rename does not reuse the rename flow');
+  assert(app.includes("$('context-edit-cluster').onclick") && app.includes('beginClusterCardEdit(areaId)'), 'adjust does not reuse free card editing');
+  assert(!css.includes('.cluster-card-actions {'), 'obsolete direct-action styling remains');
 });
 
 test('layers are a contextual map control instead of a toolbar filter', () => {

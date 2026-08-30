@@ -86,7 +86,8 @@ test('rendering exposes the handle and controls only for the active card without
   assert(app.includes("ui.cardEdit?.active && ui.cardEdit.areaId === area.id"), 'active-area render guard missing');
   assert(app.includes("handle.className = 'cluster-resize-handle'"), 'resize handle is not created');
   assert(app.includes("controls.className = 'cluster-card-edit-controls'"), 'in-place edit controls are not created');
-  assert(css.includes('.managed-area-card.cluster.card-manual { min-width: 0; max-width: none; min-height: 0;'), 'manual sizing can still be overridden by preset CSS');
+  assert(css.includes('.managed-area-card.cluster.card-manual { max-width: none; min-height: 0;'), 'manual sizing can still bypass the title minimum');
+  assert(css.includes('min-width: calc(var(--cluster-card-name-min-width) + var(--cluster-card-header-chrome))'), 'manual cards do not inherit the title minimum');
   assert(css.includes('.cluster-resize-handle {'), 'resize handle has no visual CSS');
 });
 
