@@ -1262,6 +1262,7 @@ internal sealed class DataStore
             ["locations"] = locations,
             ["managedAreas"] = ManagedAreas.Normalize(ReadOptional(ManagedAreas.FileName), maps),
             ["version"] = state["version"]?.DeepClone(),
+            ["readOnly"] = _config.ReadOnly,
             ["scenarios"] = new JsonArray(scenarios["scenarios"]?.AsArray().OfType<JsonObject>().Select(s => new JsonObject { ["id"] = s["id"]?.DeepClone(), ["name"] = s["name"]?.DeepClone(), ["createdAt"] = s["createdAt"]?.DeepClone(), ["createdBy"] = s["createdBy"]?.DeepClone() }).ToArray() ?? []),
             ["activeScenario"] = active is null ? null : new JsonObject { ["id"] = active["id"]?.DeepClone(), ["name"] = active["name"]?.DeepClone(), ["undoCount"] = active["undo"]?.AsArray().Count ?? 0, ["isPrimary"] = active["isPrimary"]?.DeepClone() ?? false }
         };

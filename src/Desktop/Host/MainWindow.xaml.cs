@@ -150,11 +150,22 @@ public partial class MainWindow : Window
         _ => "Se produjo un error inesperado. Revisa el log de auditoría."
     };
 
+    private void UpdateWindowTitle(JsonNode? data)
+    {
+        var scenario = data?["activeScenario"]?.AsObject();
+        var title = scenario is null
+            ? "Plano Open Space IT — REALIDAD"
+            : $"Plano Open Space IT — Escenario: {scenario["name"]?.GetValue<string>() ?? scenario["id"]?.GetValue<string>()}";
+        if (data?["readOnly"]?.GetValue<bool>() == true) title += " (solo lectura)";
+        Title = title;
+    }
+
     private WebViewBridge Bridge => _bridge ?? throw new InvalidOperationException("El almacén de datos no se ha inicializado.");
 
     private void Reply(string action, bool success, JsonNode? data, string? error)
     {
         if (_isClosing || Browser.CoreWebView2 is null) return;
+        if (success && (action == "loadInitialDataResult" || action == "reloadDataResult")) UpdateWindowTitle(data);
         var reply = new JsonObject { ["action"] = action, ["success"] = success, ["data"] = data, ["error"] = error };
         var json = JsonSerializer.Serialize(reply, _jsonOptions);
         Browser.CoreWebView2.PostWebMessageAsJson(json);
