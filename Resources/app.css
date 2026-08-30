@@ -80,6 +80,9 @@ button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-
 .topbar select { max-width: 210px; }
 .appearance-control { display: inline-flex; min-width: 0; align-items: center; gap: 6px; color: var(--chrome-text); font-size: 12px; font-weight: 700; white-space: nowrap; }
 .appearance-control select { min-width: 0; max-width: 160px; }
+.single-key-shortcuts-control { display: inline-flex; align-items: center; gap: 6px; color: var(--chrome-text); font-size: 12px; font-weight: 700; white-space: nowrap; }
+.single-key-shortcuts-control input { width: 16px; height: 16px; margin: 0; }
+.app-topbar .more-panel .single-key-shortcuts-control { width: 100%; justify-content: flex-start; color: var(--ink); }
 .topbar .add-seat-action { background: color-mix(in srgb, var(--accent) 22%, var(--chrome)); border-color: color-mix(in srgb, var(--accent) 70%, var(--chrome)); color: #fff; }
 .topbar .add-seat-action:hover:not(:disabled), .topbar .add-seat-action.is-active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .topbar .add-seat-action.is-active { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 42%, transparent); }

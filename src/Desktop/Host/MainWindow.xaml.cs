@@ -108,13 +108,15 @@ public partial class MainWindow : Window
             var payload = message["payload"]?.AsObject() ?? new JsonObject();
             if (action == "getUserPreferences")
             {
-                Reply($"{action}Result", true, new JsonObject { ["theme"] = _userPreferences.LoadTheme() }, null);
+                Reply($"{action}Result", true, UserPreferencesJson(), null);
                 return;
             }
             if (action == "saveUserPreferences")
             {
-                _userPreferences.SaveTheme(payload["theme"]?.GetValue<string>());
-                Reply($"{action}Result", true, new JsonObject { ["theme"] = _userPreferences.LoadTheme() }, null);
+                _userPreferences.SaveUserPreferences(
+                    payload["theme"]?.GetValue<string>(),
+                    payload["singleKeyShortcutsEnabled"]?.GetValue<bool>());
+                Reply($"{action}Result", true, UserPreferencesJson(), null);
                 return;
             }
             if (action == "exportExcel")
@@ -138,6 +140,12 @@ public partial class MainWindow : Window
             if (!_isClosing) Reply($"{action}Result", false, null, UserFacingError(ex));
         }
     }
+
+    private JsonObject UserPreferencesJson() => new()
+    {
+        ["theme"] = _userPreferences.LoadTheme(),
+        ["singleKeyShortcutsEnabled"] = _userPreferences.LoadSingleKeyShortcutsEnabled()
+    };
 
     private JsonNode Dispatch(string action, JsonObject payload) => Bridge.Dispatch(action, payload);
 

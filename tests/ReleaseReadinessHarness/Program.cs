@@ -19,6 +19,7 @@ if (args is ["--hold-lock", var lockPath])
 var tests = new (string Name, Action Test)[]
 {
     ("trusted WebView origin", TrustedWebViewOrigin),
+    ("user preferences preserve keyboard shortcut choice", UserPreferencesPreserveKeyboardShortcutChoice),
     ("reality load and display locations", RealityLoadAndDisplayLocations),
     ("scenario diff and validation", ScenarioDiffAndValidation),
     ("planner scenario keeps reality unchanged", PlannerScenarioKeepsRealityUnchanged),
@@ -54,6 +55,32 @@ static void TrustedWebViewOrigin()
     Assert(MainWindow.IsTrustedWebMessageSource("https://plano.local/index.html"), "The local virtual host is trusted.");
     Assert(!MainWindow.IsTrustedWebMessageSource("https://example.invalid/index.html"), "External origins are rejected.");
     Assert(!MainWindow.IsTrustedWebMessageSource("file:///tmp/index.html"), "File origins are rejected.");
+}
+
+static void UserPreferencesPreserveKeyboardShortcutChoice()
+{
+    var folder = Path.Combine(Path.GetTempPath(), "PlanoOpenSpaceITPreferences", Guid.NewGuid().ToString("N"));
+    var preferencesPath = Path.Combine(folder, "user-preferences.json");
+    try
+    {
+        Directory.CreateDirectory(folder);
+        File.WriteAllText(preferencesPath, "{\"exportFolder\":\"C:\\\\exports\",\"skipExportFolderPrompt\":true,\"theme\":\"penpot-dark\"}");
+
+        var store = new UserPreferencesStore(preferencesPath);
+        Assert(store.LoadSingleKeyShortcutsEnabled(), "Profiles without the shortcut preference enable it by default.");
+        store.SaveUserPreferences(null, false);
+
+        var reloaded = new UserPreferencesStore(preferencesPath);
+        var saved = reloaded.Load();
+        Equal("C:\\exports", saved.ExportFolder, "Saving shortcuts preserves the export folder.");
+        Assert(saved.SkipExportFolderPrompt, "Saving shortcuts preserves export folder behavior.");
+        Equal("penpot-dark", reloaded.LoadTheme(), "Saving shortcuts preserves the theme.");
+        Assert(!reloaded.LoadSingleKeyShortcutsEnabled(), "The shortcut choice survives a reload.");
+    }
+    finally
+    {
+        if (Directory.Exists(folder)) Directory.Delete(folder, true);
+    }
 }
 
 static void RealityLoadAndDisplayLocations()

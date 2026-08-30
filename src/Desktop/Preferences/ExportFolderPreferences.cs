@@ -3,7 +3,11 @@ using System.Text.Json;
 
 namespace PlanoOpenSpaceIT.Windows;
 
-internal sealed record ExportFolderPreferences(string? ExportFolder, bool SkipExportFolderPrompt, string? Theme = null);
+internal sealed record ExportFolderPreferences(
+    string? ExportFolder,
+    bool SkipExportFolderPrompt,
+    string? Theme = null,
+    bool SingleKeyShortcutsEnabled = true);
 internal sealed record ExportFolderChoice(string Folder, bool UseAlways);
 internal sealed record ExportFolderResolution(bool Cancelled, string? Folder)
 {
@@ -43,10 +47,16 @@ internal sealed class UserPreferencesStore : IUserPreferencesStore
 
     internal string LoadTheme() => UiThemes.Normalize(Load().Theme);
 
-    internal void SaveTheme(string? theme)
+    internal bool LoadSingleKeyShortcutsEnabled() => Load().SingleKeyShortcutsEnabled;
+
+    internal void SaveUserPreferences(string? theme, bool? singleKeyShortcutsEnabled)
     {
         var preferences = Load();
-        Save(preferences with { Theme = UiThemes.Normalize(theme) });
+        Save(preferences with
+        {
+            Theme = theme is null ? preferences.Theme : UiThemes.Normalize(theme),
+            SingleKeyShortcutsEnabled = singleKeyShortcutsEnabled ?? preferences.SingleKeyShortcutsEnabled
+        });
     }
 
     public void Save(ExportFolderPreferences preferences)
