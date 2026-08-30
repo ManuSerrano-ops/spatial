@@ -224,3 +224,11 @@ Patrones de error observados en este proyecto y la regla que los evita. Se relee
 
 **Regla:** para cada recurso embebido con ruta relativa, comprobar el contrato completo: nombre lógico, ruta extraída y referencia HTML. La compilación y la existencia del `index.html` no demuestran que el navegador pueda cargar sus scripts.
 
+---
+
+## L28 · `title` no sustituye una alternativa accesible
+
+**Observado:** el selector de contexto conserva el nombre completo de un escenario truncado en `title`, útil al usar puntero, pero el tooltip nativo no aparece con teclado ni en táctil.
+
+**Regla:** no tratar `title` como la única fuente de información necesaria. La tarea 3.4 debe clasificar y sustituir los `title` que no tengan una alternativa visible o accesible equivalente.
+
