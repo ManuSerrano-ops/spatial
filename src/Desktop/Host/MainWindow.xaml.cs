@@ -135,11 +135,20 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             if (!dispatched) _store?.LogBridgeAction("unknown", success: false, stopwatch.ElapsedMilliseconds);
-            if (!_isClosing) Reply($"{action}Result", false, null, ex.Message);
+            if (!_isClosing) Reply($"{action}Result", false, null, UserFacingError(ex));
         }
     }
 
     private JsonNode Dispatch(string action, JsonObject payload) => Bridge.Dispatch(action, payload);
+
+    private static string UserFacingError(Exception ex) => ex switch
+    {
+        InvalidDataException or InvalidOperationException => ex.Message,
+        UnauthorizedAccessException => "No hay permisos suficientes sobre la carpeta de datos.",
+        IOException => "No se pudo acceder a la carpeta de datos. Comprueba la conexión de red.",
+        TimeoutException => "Otra ventana está usando los datos. Inténtalo de nuevo en unos segundos.",
+        _ => "Se produjo un error inesperado. Revisa el log de auditoría."
+    };
 
     private WebViewBridge Bridge => _bridge ?? throw new InvalidOperationException("El almacén de datos no se ha inicializado.");
 

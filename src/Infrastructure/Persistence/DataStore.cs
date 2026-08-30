@@ -932,22 +932,21 @@ internal sealed class DataStore
         catch (JsonException) { }
         var backupId = pending is null ? "desconocido" : Text(pending["backupId"]);
         var transactionId = pending is null ? null : Text(pending["transactionId"]);
-        var backupPath = backupId.Length > 0 && IsBackupId(backupId) ? BackupPath(backupId) : BackupsRoot;
         if (_config.ReadOnly)
         {
             _logger.Info("recovery.pending", backupId: backupId, transactionId: transactionId, backupOutcome: "read-only-blocked");
-            throw new InvalidOperationException($"Hay una recuperación pendiente del backup {backupId} en {backupPath}. Un usuario con permisos de escritura debe abrir la aplicación para completarla o restaurarla antes de continuar.");
+            throw new InvalidOperationException($"Hay una recuperación pendiente del backup {backupId}. Un usuario con permisos de escritura debe abrir la aplicación para completarla o restaurarla antes de continuar.");
         }
         if (pending is null || !TryPending(pending, out var files, out var source, out var destination, out backupId))
         {
             _logger.Info("recovery.invalid", backupId: backupId, transactionId: transactionId, backupOutcome: "manual-intervention-required");
-            throw new InvalidOperationException($"No se pudo recuperar la transacción pendiente. Backup requerido: {backupId}. Ruta: {backupPath}. Un operador debe comprobar la carpeta de backup y restaurar una copia válida antes de abrir los datos.");
+            throw new InvalidOperationException($"No se pudo recuperar la transacción pendiente. Backup requerido: {backupId}. Un operador debe comprobar la copia de seguridad y restaurar una copia válida antes de abrir los datos.");
         }
         var folder = BackupPath(backupId);
         if (!BackupExists(folder) || !BackupContainsFiles(folder, files))
         {
             _logger.Info("recovery.backup-missing", sourceRevision: source, destinationRevision: destination, backupId: backupId, transactionId: transactionId, files: files, backupOutcome: "manual-intervention-required");
-            throw new InvalidOperationException($"No se pudo recuperar la transacción pendiente. Backup requerido: {backupId}. Ruta: {backupPath}. Un operador debe comprobar la carpeta de backup y restaurar una copia válida antes de abrir los datos.");
+            throw new InvalidOperationException($"No se pudo recuperar la transacción pendiente. Backup requerido: {backupId}. Un operador debe comprobar la copia de seguridad y restaurar una copia válida antes de abrir los datos.");
         }
 
         var revisions = files.Select(file => ReadRevision(DataPath(file))).ToArray();
