@@ -25,6 +25,10 @@ uifigmastyle_UX_REDESIGN_MODULAR/
 # Historical release packages and generated state
 runtime-data/logs/
 qa-runtime-data/logs/
+*.zip
+
+# Local audit material
+Tareas/
 
 # Python and browser caches
 **/__pycache__/
