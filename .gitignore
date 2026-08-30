@@ -11,6 +11,10 @@ TestResults/
 .vs/
 *.user
 
+# Merge-resolution leftovers
+*.orig
+*.rej
+
 # Local runtime configuration and generated state
 config.json
 runtime-data/
