@@ -317,6 +317,7 @@
     const real = new Option('Realidad confirmada', 'real'); select.add(real);
     list(ui.state?.scenarios, 'scenarios').forEach(item => select.add(new Option(`Escenario · ${item.name || item.id}`, item.id)));
     select.value = selected;
+    select.title = select.selectedOptions[0]?.text || '';
     $('diff').disabled = !scenarioId(); $('apply').disabled = !scenarioId() || ui.selectedCompareUnitIds.size === 0; $('delete-scenario').disabled = !scenarioId() || scenario()?.isPrimary === true;
     $('undo').disabled = scenarioId() ? !(scenario()?.undoCount > 0) : false;
     $('scenario-note').textContent = scenarioId()
@@ -793,7 +794,7 @@
   $('create-cluster-form').onsubmit = event => { event.preventDefault(); submitCreateCluster('available'); };
   $('create-cluster-available').onclick = () => submitCreateCluster('available');
   $('create-cluster-move').onclick = () => submitCreateCluster('move');
-  $('scenario-mode').onchange = event => { const id = event.target.value; ui.changes = []; ui.compareUnits = []; ui.selectedCompareUnitIds.clear(); ui.touchedSeats.clear(); requestLoad('reloadData', id === 'real' ? null : id); };
+  $('scenario-mode').onchange = event => { event.target.title = event.target.selectedOptions[0]?.text || ''; const id = event.target.value; ui.changes = []; ui.compareUnits = []; ui.selectedCompareUnitIds.clear(); ui.touchedSeats.clear(); requestLoad('reloadData', id === 'real' ? null : id); };
   $('map-select').onchange = event => focusSeat(event.target.value, null);
   if ($('scenario-guide')) $('scenario-guide').onclick = () => $('scenario-guide-dialog').showModal();
   $('new-scenario').onclick = () => { $('scenario-name').value = ''; $('scenario-dialog').showModal(); $('scenario-name').focus(); };

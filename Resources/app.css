@@ -214,11 +214,16 @@ kbd { padding: 1px 5px; border: 1px solid color-mix(in srgb, var(--chrome-text) 
   :root[data-theme="projector"] .app-topbar #new-scenario { display: none; }
   :root[data-theme="high-contrast"] .app-topbar .responsive-more-action,
   :root[data-theme="projector"] .app-topbar .responsive-more-action { display: inline-flex; }
+  .app-topbar #scenario-mode {
+    flex: 0 1 auto;
+    min-width: 27ch;
+    max-width: 30ch;
+    text-overflow: ellipsis;
+  }
   :root[data-theme="high-contrast"] .app-topbar #scenario-mode,
   :root[data-theme="projector"] .app-topbar #scenario-mode {
-    flex: 0 0 196px;
-    width: 196px;
-    max-width: 196px;
+    min-width: 28ch;
+    max-width: 32ch;
   }
   :root[data-theme="high-contrast"] .app-topbar .add-seat-action,
   :root[data-theme="projector"] .app-topbar .add-seat-action,
