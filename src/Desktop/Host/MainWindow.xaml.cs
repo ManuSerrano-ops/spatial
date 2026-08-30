@@ -106,12 +106,12 @@ public partial class MainWindow : Window
             var message = JsonNode.Parse(e.WebMessageAsJson)?.AsObject() ?? throw new InvalidDataException("Mensaje inválido.");
             action = message["action"]?.GetValue<string>() ?? throw new InvalidDataException("Falta la acción.");
             var payload = message["payload"]?.AsObject() ?? new JsonObject();
-            if (action == "getThemePreference")
+            if (action == "getUserPreferences")
             {
                 Reply($"{action}Result", true, new JsonObject { ["theme"] = _userPreferences.LoadTheme() }, null);
                 return;
             }
-            if (action == "saveThemePreference")
+            if (action == "saveUserPreferences")
             {
                 _userPreferences.SaveTheme(payload["theme"]?.GetValue<string>());
                 Reply($"{action}Result", true, new JsonObject { ["theme"] = _userPreferences.LoadTheme() }, null);
