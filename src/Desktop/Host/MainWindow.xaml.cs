@@ -108,13 +108,13 @@ public partial class MainWindow : Window
             var payload = message["payload"]?.AsObject() ?? new JsonObject();
             if (action == "getThemePreference")
             {
-                await ReplyAsync($"{action}Result", true, new JsonObject { ["theme"] = _userPreferences.LoadTheme() }, null);
+                Reply($"{action}Result", true, new JsonObject { ["theme"] = _userPreferences.LoadTheme() }, null);
                 return;
             }
             if (action == "saveThemePreference")
             {
                 _userPreferences.SaveTheme(payload["theme"]?.GetValue<string>());
-                await ReplyAsync($"{action}Result", true, new JsonObject { ["theme"] = _userPreferences.LoadTheme() }, null);
+                Reply($"{action}Result", true, new JsonObject { ["theme"] = _userPreferences.LoadTheme() }, null);
                 return;
             }
             if (action == "exportExcel")
@@ -122,7 +122,7 @@ public partial class MainWindow : Window
                 var resolution = _exportFolderResolver.Resolve();
                 if (resolution.Cancelled)
                 {
-                    await ReplyAsync($"{action}Result", true, new JsonObject { ["cancelled"] = true }, null);
+                    Reply($"{action}Result", true, new JsonObject { ["cancelled"] = true }, null);
                     return;
                 }
                 payload["exportFolder"] = resolution.Folder;
@@ -130,12 +130,12 @@ public partial class MainWindow : Window
             dispatched = true;
             var data = await Task.Run(() => Dispatch(action, payload));
             if (_isClosing) return;
-            await ReplyAsync($"{action}Result", true, data, null);
+            Reply($"{action}Result", true, data, null);
         }
         catch (Exception ex)
         {
             if (!dispatched) _store?.LogBridgeAction("unknown", success: false, stopwatch.ElapsedMilliseconds);
-            if (!_isClosing) await ReplyAsync($"{action}Result", false, null, ex.Message);
+            if (!_isClosing) Reply($"{action}Result", false, null, ex.Message);
         }
     }
 
@@ -143,11 +143,11 @@ public partial class MainWindow : Window
 
     private WebViewBridge Bridge => _bridge ?? throw new InvalidOperationException("El almacén de datos no se ha inicializado.");
 
-    private Task ReplyAsync(string action, bool success, JsonNode? data, string? error)
+    private void Reply(string action, bool success, JsonNode? data, string? error)
     {
-        if (_isClosing || Browser.CoreWebView2 is null) return Task.CompletedTask;
+        if (_isClosing || Browser.CoreWebView2 is null) return;
         var reply = new JsonObject { ["action"] = action, ["success"] = success, ["data"] = data, ["error"] = error };
         var json = JsonSerializer.Serialize(reply, _jsonOptions);
-        return Browser.CoreWebView2.ExecuteScriptAsync($"window.receiveFromNative({json});");
+        Browser.CoreWebView2.PostWebMessageAsJson(json);
     }
 }

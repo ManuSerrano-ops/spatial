@@ -948,6 +948,9 @@
     else if (/deleteAssignmentResult|saveSeatPositionResult|restoreBackupResult/.test(action)) { clearBulkSelection(); requestLoad('reloadData', scenarioId(), true); }
     else finishRequest(true);
   };
+  window.chrome?.webview?.addEventListener?.('message', event => {
+    window.receiveFromNative(event.data);
+  });
   try { appState.gridCellMetadata = gridCellMetadataHelpers.normalizeMetadata(JSON.parse(localStorage.getItem('plano.gridCellMetadata') || '[]')); } catch { appState.gridCellMetadata = {}; }
   cellAppearanceFeature.load();
   try { appState.clusterCardShapes = JSON.parse(localStorage.getItem('plano.clusterCardShapes') || '{}') || {}; } catch { appState.clusterCardShapes = {}; }
