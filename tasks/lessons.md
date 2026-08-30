@@ -232,3 +232,11 @@ Patrones de error observados en este proyecto y la regla que los evita. Se relee
 
 **Regla:** no tratar `title` como la única fuente de información necesaria. La tarea 3.4 debe clasificar y sustituir los `title` que no tengan una alternativa visible o accesible equivalente.
 
+---
+
+## L29 · El foco de un menú contextual tiene el mismo ciclo que el de un diálogo
+
+**Observado:** el menú contextual de clusters debe conservar la tarjeta que lo abrió y restaurar el foco al cerrarse con Escape. Es el mismo patrón de abridor y devolución de foco que necesitarán los diálogos en la tarea 3.1.
+
+**Regla:** al abordar la tarea 3.1, evaluar una utilidad común para conservar y restaurar el foco entre diálogos y menús. No extraerla de forma anticipada desde una tarea acotada.
+
