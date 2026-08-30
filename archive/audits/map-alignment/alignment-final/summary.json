@@ -1,0 +1,77 @@
+{
+  "norte": {
+    "renderPixels": [
+      2400,
+      1696
+    ],
+    "darkInkBBox": [
+      538,
+      207,
+      1766,
+      1556
+    ],
+    "lightInkBBox": [
+      537,
+      65,
+      1767,
+      1557
+    ],
+    "darkEdgePixels": 26313,
+    "lightEdgePixels": 133649,
+    "darkToLightEdgeMatchWithin3px": 0.99954,
+    "lightToDarkEdgeMatchWithin3px": 0.37277,
+    "rawEdgeIoU": 0.02896,
+    "workspaceSample": 20,
+    "workspaceCoordinatesIdenticalByLogicalContract": true
+  },
+  "nivel3": {
+    "renderPixels": [
+      2400,
+      1696
+    ],
+    "darkInkBBox": [
+      134,
+      202,
+      1912,
+      1515
+    ],
+    "lightInkBBox": [
+      30,
+      169,
+      2371,
+      1667
+    ],
+    "darkEdgePixels": 32605,
+    "lightEdgePixels": 166111,
+    "darkToLightEdgeMatchWithin3px": 0.99945,
+    "lightToDarkEdgeMatchWithin3px": 0.38134,
+    "rawEdgeIoU": 0.01992,
+    "workspaceSample": 20,
+    "workspaceCoordinatesIdenticalByLogicalContract": true
+  },
+  "sur": {
+    "renderPixels": [
+      2400,
+      1696
+    ],
+    "darkInkBBox": [
+      143,
+      298,
+      2254,
+      1406
+    ],
+    "lightInkBBox": [
+      143,
+      288,
+      2252,
+      1402
+    ],
+    "darkEdgePixels": 132049,
+    "lightEdgePixels": 242097,
+    "darkToLightEdgeMatchWithin3px": 0.98768,
+    "lightToDarkEdgeMatchWithin3px": 0.69345,
+    "rawEdgeIoU": 0.34742,
+    "workspaceSample": 20,
+    "workspaceCoordinatesIdenticalByLogicalContract": true
+  }
+}

@@ -1,0 +1,8 @@
+'use strict';
+const fs=require('fs');const path=require('path');const app=fs.readFileSync(path.join(__dirname,'..','Resources','js','core','app.js'),'utf8');const tests=[];const test=(name,fn)=>tests.push({name,fn});const assert=(v,m)=>{if(!v)throw new Error(m);};
+test('ordinary pin selection has no navigation call',()=>{const match=app.match(/function selectSeat\([\s\S]*?\n  function renderList/);assert(match&&!match[0].includes('centerSelectedSeat()')&&!match[0].includes('resetViewport()'),'selection changes viewport');});
+test('background and bulk clear have no viewport restoration',()=>{const match=app.match(/function clearWorkspaceSelection[\s\S]*?\n  function clearBulkSelection/);assert(match&&!/resetViewport|centerSelectedSeat|fitInitialMap/.test(match[0]),'clear changes viewport');});
+test('explicit navigation remains allowed',()=>{const match=app.match(/function focusSeat[\s\S]*?\n  function centerSelectedSeat/);assert(match&&match[0].includes('resetViewport()')&&match[0].includes('centerSelectedSeat()'),'explicit navigation missing');});
+test('cluster member inspector does not center',()=>{const match=app.match(/function openAreaMemberInspector[\s\S]*?\n  function updateCellMetadata/);assert(match&&!match[0].includes('centerSelectedSeat()'),'cluster inspector recentered');});
+test('background clearing retains pan distinction',()=>assert(app.includes('pan && !pan.moved'),'pan threshold missing'));
+let passed=0;for(const t of tests){try{t.fn();passed++;}catch(e){console.error(`FAIL: ${t.name}: ${e.message}`)}}console.log(`Selection viewport invariance harness: ${passed}/${tests.length} passed, ${tests.length-passed} failed`);process.exitCode=passed===tests.length?0:1;

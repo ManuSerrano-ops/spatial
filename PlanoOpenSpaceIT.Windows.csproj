@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <ApplicationIcon>Resources\pharmamar-40.ico</ApplicationIcon>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/._*</DefaultItemExcludes>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>embedded</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <CopyDocumentationFilesFromPackages>false</CopyDocumentationFilesFromPackages>
+    <PublishDocumentationFiles>false</PublishDocumentationFiles>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="tests\**\*.cs;archive\**\*.cs" />
+    <ApplicationDefinition Include="src\Desktop\Host\App.xaml" />
+    <Page Include="src\Desktop\Host\MainWindow.xaml" />
+    <None Update="config.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Update="config.example.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Update="THIRD_PARTY_NOTICES.md">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Update="LICENSES\**\*">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Remove="Resources\**\*" />
+    <None Remove="ParcheoCampoTemplate.xlsx" />
+    <EmbeddedResource Include="Resources\**\*" />
+    <EmbeddedResource Update="Resources\map-themes\light\**\*">
+      <LogicalName>$(RootNamespace).Resources.map-themes/light/%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\js\**\*">
+      <LogicalName>$(RootNamespace).Resources.%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Remove="Resources\**\*.orig" />
+    <EmbeddedResource Include="ParcheoCampoTemplate.xlsx" />
+  </ItemGroup>
+  <Target Name="LimpiarPublish" BeforeTargets="PrepareForPublish">
+    <RemoveDir Directories="$(PublishDir)" />
+  </Target>
+</Project>

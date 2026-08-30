@@ -1,0 +1,2359 @@
+{
+  "schemaVersion": "1.0",
+  "maps": [
+    {
+      "id": "norte",
+      "image": "plano_norte_limpio.svg",
+      "name": "Open Space Norte",
+      "seats": [
+        {
+          "y": 0.15174128115177155,
+          "id": "N-D1",
+          "name": "Javier Jiménez",
+          "type": "occupied",
+          "x": 0.2754967510700226
+        },
+        {
+          "y": 0.2553308606147766,
+          "id": "N-D2",
+          "name": "López Vilariño",
+          "type": "occupied",
+          "x": 0.2650504410266876
+        },
+        {
+          "y": 0.35398149490356445,
+          "id": "N-D3",
+          "name": "Salvador Fudio",
+          "type": "occupied",
+          "x": 0.2728607654571533
+        },
+        {
+          "x": 0.26680609583854675,
+          "roseta": "3-252",
+          "location": "Open Space Norte (Despacho)",
+          "id": "N-D4",
+          "y": 0.4465431571006775,
+          "deviceName": "pcs-lpt-931",
+          "type": "occupied",
+          "name": "Hervé Dhellot",
+          "personId": "hdhellot"
+        },
+        {
+          "x": 0.2640392482280731,
+          "roseta": "3-253",
+          "location": "Open Space Norte (Despacho)",
+          "id": "N-D5",
+          "y": 0.5436436533927917,
+          "deviceName": "pcs-lpt-941",
+          "type": "occupied",
+          "name": "Javier Gómez",
+          "personId": "jgomez"
+        },
+        {
+          "x": 0.2646690011024475,
+          "roseta": "3-254",
+          "location": "Open Space Norte (Despacho)",
+          "id": "N-D6",
+          "y": 0.6375528573989868,
+          "deviceName": "pcs-lpt-956",
+          "type": "occupied",
+          "name": "Elena Delgado",
+          "personId": "edelgado"
+        },
+        {
+          "y": 0.7334859371185303,
+          "id": "N-D7",
+          "name": "Cristian Fdez.",
+          "type": "occupied",
+          "x": 0.26449835300445557
+        },
+        {
+          "x": 0.27312061190605164,
+          "roseta": "3-169",
+          "location": "Open Space Norte (Despacho)",
+          "id": "N-D8",
+          "y": 0.8343669772148132,
+          "deviceName": "pcs-lpt-962",
+          "type": "occupied",
+          "name": "Carmen Kahatt",
+          "personId": "ckahatt"
+        },
+        {
+          "y": 0.27635303139686584,
+          "id": "N-01",
+          "name": "Ana Gcia Salas",
+          "type": "occupied",
+          "x": 0.40585610270500183
+        },
+        {
+          "y": 0.3249196410179138,
+          "id": "N-02",
+          "name": "Eva González",
+          "type": "occupied",
+          "x": 0.3649050295352936
+        },
+        {
+          "x": 0.3635994493961334,
+          "roseta": "3-179",
+          "location": "Open Space Norte",
+          "id": "N-03",
+          "y": 0.34521713852882385,
+          "deviceName": "pcs-lpt-251",
+          "type": "occupied",
+          "name": "Laura Ibarra",
+          "personId": "libarra"
+        },
+        {
+          "y": 0.3471166491508484,
+          "id": "N-04",
+          "name": "Carlos Sánchez",
+          "type": "occupied",
+          "x": 0.4056408405303955
+        },
+        {
+          "y": 0.45263442397117615,
+          "id": "N-05",
+          "name": "LIBRE",
+          "type": "free",
+          "x": 0.37015190720558167
+        },
+        {
+          "y": 0.4209873378276825,
+          "id": "N-06",
+          "name": "Mª Jesús Criado",
+          "type": "occupied",
+          "x": 0.40132880210876465
+        },
+        {
+          "y": 0.44834446907043457,
+          "id": "N-07",
+          "name": "Amelia Romero",
+          "type": "occupied",
+          "x": 0.3676561713218689
+        },
+        {
+          "y": 0.4459660053253174,
+          "id": "N-08",
+          "name": "Eva Mª Lara",
+          "type": "occupied",
+          "x": 0.40392056107521057
+        },
+        {
+          "x": 0.36361339688301086,
+          "roseta": "3-185",
+          "location": "Open Space Norte",
+          "id": "N-09",
+          "y": 0.5748571753501892,
+          "deviceName": "pcs-lpt-929",
+          "type": "occupied",
+          "name": "Silvia Gutierr",
+          "personId": "sgutierrez"
+        },
+        {
+          "x": 0.40159210562705994,
+          "roseta": "3-200",
+          "location": "Open Space Norte",
+          "id": "N-10",
+          "y": 0.5758535861968994,
+          "deviceName": "pcs-lpt-250",
+          "type": "occupied",
+          "name": "Laura Sánchez",
+          "personId": "lsanchez"
+        },
+        {
+          "y": 0.6978542804718018,
+          "id": "N-11",
+          "name": "LIBRE",
+          "type": "free",
+          "x": 0.3650670349597931
+        },
+        {
+          "x": 0.4035738706588745,
+          "roseta": "3-186",
+          "location": "Open Space Norte",
+          "id": "N-12",
+          "y": 0.6524697542190552,
+          "deviceName": "pcs-lpt-282",
+          "type": "occupied",
+          "name": "Cristina Povedano",
+          "personId": "cpovedano"
+        },
+        {
+          "y": 0.7229817509651184,
+          "id": "N-13",
+          "name": "LIBRE",
+          "type": "free",
+          "x": 0.37005719542503357
+        },
+        {
+          "y": 0.2024887502193451,
+          "id": "N-14",
+          "name": "Jorge Iglesias",
+          "type": "occupied",
+          "x": 0.47416821122169495
+        },
+        {
+          "x": 0.5377951860427856,
+          "roseta": "3-225",
+          "location": "Open Space Norte",
+          "id": "N-15",
+          "y": 0.1829679310321808,
+          "deviceName": "pcs-lpt-055",
+          "type": "occupied",
+          "name": "Pablo Zubiaur",
+          "personId": "pzubiaur"
+        },
+        {
+          "x": 0.5747667551040649,
+          "roseta": "3-210",
+          "location": "Open Space Norte",
+          "id": "N-16",
+          "y": 0.18465487658977509,
+          "deviceName": "pcs-lpt-949",
+          "type": "occupied",
+          "name": "Antonio Nieto",
+          "personId": "anieto"
+        },
+        {
+          "y": 0.20852774381637573,
+          "id": "N-17",
+          "name": "Irit Carmy Levy",
+          "type": "special",
+          "x": 0.6816554665565491
+        },
+        {
+          "y": 0.2555706202983856,
+          "id": "N-18",
+          "name": "Erik Luepke",
+          "type": "occupied",
+          "x": 0.6900959014892578
+        },
+        {
+          "y": 0.3516637682914734,
+          "id": "N-19",
+          "name": "Gaston Boggio",
+          "type": "occupied",
+          "x": 0.6985818147659302
+        },
+        {
+          "y": 0.4467855393886566,
+          "id": "N-20",
+          "name": "Sara Martínez",
+          "type": "special",
+          "x": 0.6919555068016052
+        },
+        {
+          "y": 0.5652436017990112,
+          "id": "N-21",
+          "name": "LIBRE",
+          "type": "free",
+          "x": 0.7012684941291809
+        },
+        {
+          "y": 0.3078729510307312,
+          "id": "N-TT1",
+          "name": "Zona Teletrabajo",
+          "type": "special",
+          "x": 0.6020132899284363
+        },
+        {
+          "y": 0.4198401868343353,
+          "id": "N-TT2",
+          "name": "Zona Teletrabajo",
+          "type": "special",
+          "x": 0.5400579571723938
+        },
+        {
+          "y": 0.5319031476974487,
+          "id": "N-TT3",
+          "name": "Zona Teletrabajo",
+          "type": "special",
+          "x": 0.5120806694030762
+        },
+        {
+          "y": 0.63015216588974,
+          "id": "N-SR",
+          "name": "Sala Reunión",
+          "type": "special",
+          "x": 0.5481215715408325
+        }
+      ]
+    },
+    {
+      "name": "Open Space Nivel 3",
+      "seats": [
+        {
+          "x": 0.2599506974220276,
+          "roseta": "3-442",
+          "location": "Antigua biblioteca",
+          "id": "M-5",
+          "y": 0.1379784643650055,
+          "deviceName": "pcs-lpt-020",
+          "type": "occupied",
+          "name": "Wendy Estupiñán ETT",
+          "personId": "westupinan"
+        },
+        {
+          "x": 0.2879599332809448,
+          "roseta": "3-438",
+          "location": "Antigua biblioteca",
+          "id": "N-5",
+          "y": 0.13298483192920685,
+          "deviceName": "pcs-lpt-258",
+          "type": "occupied",
+          "name": "Manoli Tena",
+          "personId": "mtena"
+        },
+        {
+          "y": 0.1320124864578247,
+          "id": "O-5",
+          "name": "Cruz de Navas",
+          "type": "occupied",
+          "x": 0.36398550868034363
+        },
+        {
+          "y": 0.14203333854675293,
+          "id": "P-5",
+          "name": "Peggy C. Claude ETT",
+          "type": "occupied",
+          "x": 0.3969956040382385
+        },
+        {
+          "x": 0.47942808270454407,
+          "roseta": "3-306",
+          "location": "Sala columnas",
+          "id": "Q-5",
+          "y": 0.129653662443161,
+          "deviceName": "pcs-lpt-052",
+          "type": "occupied",
+          "name": "María Pascual",
+          "personId": "mpascual"
+        },
+        {
+          "x": 0.6377913951873779,
+          "roseta": "3-355",
+          "location": "Sala columnas",
+          "id": "S-5",
+          "y": 0.13371650874614716,
+          "deviceName": "pcs-lpt-966",
+          "type": "occupied",
+          "name": "Inmaculada de Juan",
+          "personId": "idejuan"
+        },
+        {
+          "y": 0.1421334445476532,
+          "id": "T-5",
+          "name": "TT-RG",
+          "type": "special",
+          "x": 0.6630997061729431
+        },
+        {
+          "x": 0.7345358729362488,
+          "roseta": "3-358",
+          "location": "Sala columnas",
+          "id": "U-5",
+          "y": 0.1296490728855133,
+          "deviceName": "pcs-lpt-977",
+          "type": "occupied",
+          "name": "Sara Romera",
+          "personId": "sromera"
+        },
+        {
+          "y": 0.1441725194454193,
+          "id": "V-5",
+          "name": "TT-RG",
+          "type": "special",
+          "x": 0.7621433138847351
+        },
+        {
+          "y": 0.2800864577293396,
+          "id": "M-4",
+          "name": "Cristina de Luna",
+          "type": "occupied",
+          "x": 0.2679426968097687
+        },
+        {
+          "y": 0.3051023483276367,
+          "id": "M-3",
+          "name": "Samantha Ferrigno",
+          "type": "occupied",
+          "x": 0.26794084906578064
+        },
+        {
+          "y": 0.2820984721183777,
+          "id": "N-4",
+          "name": "LIBRE",
+          "type": "free",
+          "x": 0.2949487268924713
+        },
+        {
+          "x": 0.29494667053222656,
+          "roseta": "3-443",
+          "location": "Antigua biblioteca",
+          "id": "N-3",
+          "y": 0.30511319637298584,
+          "deviceName": "pcs-lpt-939",
+          "type": "occupied",
+          "name": "Deborah Sanchez",
+          "personId": "dsanchez"
+        },
+        {
+          "y": 0.266116738319397,
+          "id": "O-4",
+          "name": "TT-OPS",
+          "type": "special",
+          "x": 0.36796876788139343
+        },
+        {
+          "y": 0.26612505316734314,
+          "id": "P-4",
+          "name": "TT-OPS",
+          "type": "special",
+          "x": 0.3889743983745575
+        },
+        {
+          "x": 0.45169663429260254,
+          "roseta": "3-325/3-342",
+          "location": "Sala columnas",
+          "id": "Q-4",
+          "y": 0.24183253943920135,
+          "deviceName": "pcs-lpt-130",
+          "type": "occupied",
+          "name": "Chelo Tudela",
+          "personId": "ctudela"
+        },
+        {
+          "x": 0.4988032281398773,
+          "roseta": "3-292",
+          "location": "Sala columnas",
+          "id": "Q-4b",
+          "y": 0.2795777916908264,
+          "deviceName": "pcs-lpt-967",
+          "type": "occupied",
+          "name": "Ana Ruiz Madera",
+          "personId": "aruiz"
+        },
+        {
+          "y": 0.2906184196472168,
+          "id": "R-4",
+          "name": "Esperanza López",
+          "type": "occupied",
+          "x": 0.5818260312080383
+        },
+        {
+          "y": 0.2602293789386749,
+          "id": "S-4",
+          "name": "TT-RG",
+          "type": "special",
+          "x": 0.6640627384185791
+        },
+        {
+          "x": 0.6394479870796204,
+          "roseta": "3-310",
+          "location": "Sala columnas",
+          "id": "T-4",
+          "y": 0.28023409843444824,
+          "deviceName": "pcs-lpt-959",
+          "type": "occupied",
+          "name": "Silvia Atienza",
+          "personId": "satienza"
+        },
+        {
+          "y": 0.25525596737861633,
+          "id": "U-4",
+          "name": "TT-RG",
+          "type": "special",
+          "x": 0.7410931587219238
+        },
+        {
+          "y": 0.25526347756385803,
+          "id": "V-4",
+          "name": "TT-RG",
+          "type": "special",
+          "x": 0.7601006031036377
+        },
+        {
+          "y": 0.37518489360809326,
+          "id": "O-3",
+          "name": "TT-OPS",
+          "type": "special",
+          "x": 0.3699544072151184
+        },
+        {
+          "y": 0.37519311904907227,
+          "id": "P-3",
+          "name": "TT-OPS",
+          "type": "special",
+          "x": 0.3899585008621216
+        },
+        {
+          "y": 0.36721864342689514,
+          "id": "Q-3",
+          "name": "TT-RG",
+          "type": "special",
+          "x": 0.4629758298397064
+        },
+        {
+          "y": 0.3652298152446747,
+          "id": "Q-3b",
+          "name": "TT-RG",
+          "type": "special",
+          "x": 0.4929833710193634
+        },
+        {
+          "x": 0.5780014991760254,
+          "roseta": "3-344",
+          "location": "Sala columnas",
+          "id": "R-3",
+          "y": 0.37907281517982483,
+          "deviceName": "pcs-dsk-549",
+          "type": "occupied",
+          "name": "Sonia Cruz",
+          "personId": "scruz"
+        },
+        {
+          "y": 0.40068715810775757,
+          "id": "R-2",
+          "name": "Luisa Mª Ramos",
+          "type": "occupied",
+          "x": 0.5831971168518066
+        },
+        {
+          "x": 0.6412182450294495,
+          "roseta": "3-555",
+          "location": "S-212",
+          "id": "S-3",
+          "y": 0.3802995979785919,
+          "deviceName": "pcs-lpt-013",
+          "type": "occupied",
+          "name": "Roberto Rodríguez",
+          "personId": "rrodriguez"
+        },
+        {
+          "y": 0.39630749821662903,
+          "id": "S-2",
+          "name": "Alejandro Gómez",
+          "type": "occupied",
+          "x": 0.6380125284194946
+        },
+        {
+          "x": 0.6680277585983276,
+          "roseta": "3-323",
+          "location": "Sala columnas",
+          "id": "T-3",
+          "y": 0.3743070960044861,
+          "deviceName": "pcs-lpt-256",
+          "type": "occupied",
+          "name": "Sabah Bougrin",
+          "personId": "sbougrin"
+        },
+        {
+          "y": 0.40032222867012024,
+          "id": "T-2",
+          "name": "Lucía González Becaria",
+          "type": "occupied",
+          "x": 0.6680194735527039
+        },
+        {
+          "y": 0.37533530592918396,
+          "id": "U-3",
+          "name": "LIBRE",
+          "type": "free",
+          "x": 0.7350476384162903
+        },
+        {
+          "y": 0.40035009384155273,
+          "id": "U-2",
+          "name": "Irene Morales Nieto",
+          "type": "occupied",
+          "x": 0.7350386381149292
+        },
+        {
+          "x": 0.7673579454421997,
+          "roseta": "1-07V",
+          "location": "S-801",
+          "id": "V-3",
+          "y": 0.3751484751701355,
+          "deviceName": "pcs-lpt-981",
+          "type": "occupied",
+          "name": "Mª Jesús González",
+          "personId": "mgonzalez"
+        },
+        {
+          "x": 0.7700491547584534,
+          "roseta": "3-335",
+          "location": "Sala columnas",
+          "id": "V-2",
+          "y": 0.4003646671772003,
+          "deviceName": "pcs-lpt-790",
+          "type": "occupied",
+          "name": "Irene Cristobal Becaria",
+          "personId": "icristobal"
+        },
+        {
+          "y": 0.4332156181335449,
+          "id": "O-1",
+          "name": "TT-OPS",
+          "type": "special",
+          "x": 0.37194687128067017
+        },
+        {
+          "y": 0.43722596764564514,
+          "id": "P-1",
+          "name": "TT-OPS",
+          "type": "special",
+          "x": 0.3919495940208435
+        },
+        {
+          "x": 0.46005767583847046,
+          "roseta": "3-288",
+          "location": "Sala columnas",
+          "id": "Q-1",
+          "y": 0.45836472511291504,
+          "deviceName": "pcs-lpt-257",
+          "type": "occupied",
+          "name": "Isabel Pardos",
+          "personId": "ipardos"
+        },
+        {
+          "y": 0.4966030716896057,
+          "id": "M-1",
+          "name": "Aurelie Pérez",
+          "type": "occupied",
+          "x": 0.2778276801109314
+        },
+        {
+          "y": 0.5501540303230286,
+          "id": "R-1",
+          "name": "Ana García",
+          "type": "occupied",
+          "x": 0.5787565112113953
+        },
+        {
+          "x": 0.6354746222496033,
+          "roseta": "3-338",
+          "location": "Sala columnas",
+          "id": "S-1",
+          "y": 0.520767331123352,
+          "deviceName": "pcs-lpt-160",
+          "type": "occupied",
+          "name": "María Martiañez",
+          "personId": "mmartianez"
+        },
+        {
+          "y": 0.5182905197143555,
+          "id": "T-1",
+          "name": "Mª Inmac. Spiteri",
+          "type": "occupied",
+          "x": 0.6911866068840027
+        },
+        {
+          "x": 0.7670024633407593,
+          "roseta": "3-308",
+          "location": "Sala columnas",
+          "id": "V-1",
+          "y": 0.5208244323730469,
+          "deviceName": "pcs-lpt-264",
+          "type": "occupied",
+          "name": "Iratxe Pérez",
+          "personId": "iperez"
+        },
+        {
+          "y": 0.6807777285575867,
+          "id": "BIB",
+          "name": "Elisa Hermoso (Biblioteca)",
+          "type": "special",
+          "x": 0.7662415504455566
+        }
+      ],
+      "image": "plano_nivel3_limpio.svg",
+      "id": "nivel3"
+    },
+    {
+      "image": "plano_sur_limpio.svg",
+      "seats": [
+        {
+          "deviceName": "pcs-lpt-227",
+          "id": "S-T01",
+          "y": 0.19674476981163025,
+          "roseta": "5-020",
+          "location": "Ampliación oficinas sur (despacho)",
+          "personId": "dperezorive",
+          "name": "Daniel Perez Orive",
+          "type": "occupied",
+          "x": 0.12909547984600067
+        },
+        {
+          "y": 0.20355470478534698,
+          "x": 0.146015003323555,
+          "location": "Ampliación oficinas sur (despacho)",
+          "roseta": "5-018",
+          "name": "María Sémelas",
+          "personId": "msemelas",
+          "type": "occupied",
+          "deviceName": "pcs-lpt-092",
+          "id": "S-T02"
+        },
+        {
+          "roseta": "5-021",
+          "location": "Ampliación oficinas sur (despacho)",
+          "deviceName": "pcs-lpt-244",
+          "personId": "jmurillo",
+          "name": "Jorge Murillo",
+          "y": 0.23499125242233276,
+          "x": 0.12543568015098572,
+          "type": "occupied",
+          "id": "S-T03"
+        },
+        {
+          "x": 0.1490512639284134,
+          "type": "occupied",
+          "id": "S-T04",
+          "name": "Carolina Sainz",
+          "y": 0.2351934015750885
+        },
+        {
+          "id": "S-T05",
+          "type": "occupied",
+          "name": "C. Sanz",
+          "deviceName": "pcs-lpt-925",
+          "y": 0.19234316051006317,
+          "location": "Ampliación oficinas sur (despacho)",
+          "personId": "csanz",
+          "roseta": "5-017",
+          "x": 0.1881340742111206
+        },
+        {
+          "name": "S. Cuenca",
+          "location": "Ampliación oficinas sur (despacho)",
+          "personId": "scuenca",
+          "x": 0.22306062281131744,
+          "type": "occupied",
+          "id": "S-T06",
+          "y": 0.19234557449817657,
+          "deviceName": "pcs-lpt-928",
+          "roseta": "5-012"
+        },
+        {
+          "deviceName": "pcs-lpt-218",
+          "location": "Ampliación oficinas sur (despacho)",
+          "personId": "lruperez",
+          "name": "L. Ruperez",
+          "x": 0.2556859850883484,
+          "id": "S-T07",
+          "y": 0.19234785437583923,
+          "type": "occupied",
+          "roseta": "5-011"
+        },
+        {
+          "roseta": "5-008",
+          "y": 0.1954544484615326,
+          "id": "S-T08",
+          "deviceName": "",
+          "name": "Ines Pérez Calleja",
+          "type": "occupied",
+          "location": "Ampliación oficinas sur (despacho)",
+          "personId": "iperezcalleja",
+          "x": 0.29071640968322754
+        },
+        {
+          "x": 0.32864826917648315,
+          "id": "S-T09",
+          "name": "Andreas Segerros",
+          "y": 0.1970592737197876,
+          "type": "occupied"
+        },
+        {
+          "location": "Ampliación oficinas sur (despacho)",
+          "personId": "pbesman",
+          "id": "S-T10",
+          "roseta": "5-003",
+          "name": "Pascal Besman",
+          "y": 0.19706137478351593,
+          "x": 0.3584727942943573,
+          "type": "occupied",
+          "deviceName": ""
+        },
+        {
+          "name": "O. Pelaez",
+          "roseta": "5-022",
+          "type": "occupied",
+          "y": 0.28384560346603394,
+          "x": 0.14800311625003815,
+          "id": "S-W01",
+          "personId": "opelaez",
+          "location": "Ampliación oficinas sur (despacho)",
+          "deviceName": "pcs-lpt-904"
+        },
+        {
+          "location": "Ampliación oficinas sur (despacho)",
+          "id": "S-W02",
+          "y": 0.33218979835510254,
+          "personId": "snaranjo",
+          "deviceName": "pcs-lpt-220",
+          "type": "occupied",
+          "roseta": "5-023",
+          "name": "Santiago Naranjo",
+          "x": 0.1530577689409256
+        },
+        {
+          "id": "S-W03",
+          "name": "Ana Ramirez",
+          "y": 0.38272640109062195,
+          "type": "occupied",
+          "location": "Ampliación oficinas sur (despacho)",
+          "personId": "aramirez",
+          "roseta": "5-024",
+          "deviceName": "pcs-lpt-923",
+          "x": 0.15071098506450653
+        },
+        {
+          "type": "occupied",
+          "id": "S-W04",
+          "personId": "lruiz",
+          "deviceName": "pcs-lpt-914",
+          "y": 0.4237496852874756,
+          "location": "Ampliación oficinas sur (despacho)",
+          "name": "Luis Ruiz",
+          "roseta": "5-067",
+          "x": 0.15035498142242432
+        },
+        {
+          "type": "occupied",
+          "x": 0.148299902677536,
+          "name": "Ana Gonzalez",
+          "y": 0.46596720814704895,
+          "id": "S-W05"
+        },
+        {
+          "personId": "mmartin",
+          "location": "Ampliación oficinas sur (despacho)",
+          "name": "Marta Martin",
+          "roseta": "5-117",
+          "deviceName": "pcs-lpt-098",
+          "x": 0.14934967458248138,
+          "y": 0.511879563331604,
+          "type": "occupied",
+          "id": "S-W06"
+        },
+        {
+          "y": 0.27884575724601746,
+          "id": "S-C01",
+          "x": 0.2046312838792801,
+          "name": "G. Blasco Becario",
+          "type": "occupied"
+        },
+        {
+          "id": "S-C02",
+          "x": 0.23695731163024902,
+          "y": 0.2854554355144501,
+          "type": "occupied",
+          "name": "Paula Vara"
+        },
+        {
+          "name": "Lucía Bermudez EXT",
+          "location": "Ampliación oficinas sur",
+          "type": "occupied",
+          "id": "S-C03",
+          "x": 0.26017114520072937,
+          "roseta": "5-013",
+          "y": 0.28485700488090515,
+          "deviceName": "pcs-lpt-041",
+          "personId": "lbermudez"
+        },
+        {
+          "x": 0.2872787415981293,
+          "type": "occupied",
+          "name": "Demelsa Colmenarejo",
+          "deviceName": "pcs-lpt-276",
+          "id": "S-C04",
+          "y": 0.2734476625919342,
+          "roseta": "1-175",
+          "location": "S-410",
+          "personId": "dcolmenarejo"
+        },
+        {
+          "name": "M.Sol Herbella",
+          "location": "Ampliación oficinas sur",
+          "id": "S-C05",
+          "deviceName": "pcs-lpt-104",
+          "y": 0.29386910796165466,
+          "type": "occupied",
+          "x": 0.2927992343902588,
+          "personId": "mherbella",
+          "roseta": "5-009"
+        },
+        {
+          "id": "S-C06",
+          "name": "Marian Ferreiro",
+          "y": 0.28546518087387085,
+          "type": "occupied",
+          "x": 0.34152406454086304
+        },
+        {
+          "y": 0.2868683636188507,
+          "id": "S-C07",
+          "type": "occupied",
+          "x": 0.3599374294281006,
+          "name": "Noemi Lopez"
+        },
+        {
+          "deviceName": "pcs-lpt-900",
+          "y": 0.3245890736579895,
+          "personId": "jaramos",
+          "roseta": "5-037",
+          "name": "Juan A Ramos",
+          "type": "occupied",
+          "id": "S-C08",
+          "location": "Ampliación oficinas sur",
+          "x": 0.20767775177955627
+        },
+        {
+          "x": 0.2280108481645584,
+          "y": 0.3483107089996338,
+          "id": "S-C09",
+          "type": "occupied",
+          "name": "Mª José Fdez."
+        },
+        {
+          "type": "occupied",
+          "location": "Ampliación oficinas sur",
+          "id": "S-C10",
+          "personId": "msanchez",
+          "deviceName": "pcs-lpt-110",
+          "x": 0.25770941376686096,
+          "roseta": "5-033",
+          "y": 0.32979872822761536,
+          "name": "Monica Sanchez"
+        },
+        {
+          "type": "occupied",
+          "x": 0.28692537546157837,
+          "name": "M Jesus Garvia",
+          "y": 0.32960161566734314,
+          "id": "S-C11"
+        },
+        {
+          "name": "LIBRE",
+          "x": 0.2978440225124359,
+          "y": 0.34491556882858276,
+          "type": "free",
+          "id": "S-C12"
+        },
+        {
+          "y": 0.34491902589797974,
+          "name": "LIBRE",
+          "x": 0.32986152172088623,
+          "id": "S-C13",
+          "type": "free"
+        },
+        {
+          "deviceName": "pcs-lpt-157",
+          "personId": "svela",
+          "location": "Ampliación oficinas sur",
+          "y": 0.33341261744499207,
+          "name": "Sonia Vela",
+          "id": "S-C14",
+          "roseta": "5-025",
+          "x": 0.36067068576812744,
+          "type": "occupied"
+        },
+        {
+          "name": "Jesús Valle",
+          "id": "S-C15",
+          "deviceName": "pcs-lpt-908",
+          "x": 0.20860590040683746,
+          "type": "occupied",
+          "roseta": "5-038",
+          "location": "Ampliación oficinas sur",
+          "personId": "jvalle",
+          "y": 0.35301217436790466
+        },
+        {
+          "id": "S-C16",
+          "name": "Jose M. Kerstjens",
+          "personId": "jkerstjens",
+          "roseta": "5-036",
+          "y": 0.35781851410865784,
+          "x": 0.23302219808101654,
+          "type": "occupied",
+          "location": "Ampliación oficinas sur",
+          "deviceName": "pcs-dsk-722"
+        },
+        {
+          "id": "S-C17",
+          "name": "David Fdez. Matarin",
+          "location": "Ampliación oficinas sur",
+          "type": "occupied",
+          "personId": "dfernandez",
+          "deviceName": "pcs-lpt-236",
+          "roseta": "5-035",
+          "y": 0.35782113671302795,
+          "x": 0.2564336359500885
+        },
+        {
+          "personId": "pbernabe",
+          "x": 0.2884497344493866,
+          "y": 0.3578246831893921,
+          "name": "Pablo Bernabé",
+          "id": "S-C18",
+          "location": "Ampliación oficinas sur",
+          "roseta": "5-032",
+          "deviceName": "pcs-lpt-102",
+          "type": "occupied"
+        },
+        {
+          "y": 0.35802698135375977,
+          "name": "Alison Baró",
+          "id": "S-C19",
+          "x": 0.30735963582992554,
+          "type": "occupied"
+        },
+        {
+          "y": 0.3530261218547821,
+          "name": "Carlos Carpio",
+          "personId": "ccarpio",
+          "type": "occupied",
+          "deviceName": "pcs-lpt-095",
+          "location": "Ampliación oficinas sur",
+          "id": "S-C20",
+          "roseta": "5-028",
+          "x": 0.3346702456474304
+        },
+        {
+          "id": "S-C21",
+          "x": 0.35190990567207336,
+          "y": 0.3949582576751709,
+          "name": "LIBRE",
+          "type": "free"
+        },
+        {
+          "location": "Ampliación oficinas sur",
+          "id": "S-D01",
+          "personId": "vnegro",
+          "deviceName": "pcs-lpt-905",
+          "type": "occupied",
+          "y": 0.4204546809196472,
+          "name": "Virginia Negro",
+          "roseta": "5-061",
+          "x": 0.2025693655014038
+        },
+        {
+          "type": "occupied",
+          "id": "S-D02",
+          "location": "Ampliación oficinas sur",
+          "y": 0.4226601719856262,
+          "x": 0.23668387532234192,
+          "name": "Elena M Cuerda",
+          "deviceName": "pcs-lpt-241",
+          "personId": "ecuerda",
+          "roseta": "5-056"
+        },
+        {
+          "name": "Esther Muñoz",
+          "location": "Ampliación oficinas sur",
+          "y": 0.42356353998184204,
+          "roseta": "5-055",
+          "deviceName": "pcs-lpt-101",
+          "x": 0.25939318537712097,
+          "id": "S-D03",
+          "personId": "emunoz",
+          "type": "occupied"
+        },
+        {
+          "name": "Valeska Estevez",
+          "y": 0.4243675470352173,
+          "x": 0.28730466961860657,
+          "id": "S-D04",
+          "type": "occupied"
+        },
+        {
+          "name": "Mario García",
+          "type": "occupied",
+          "id": "S-D05",
+          "y": 0.42396971583366394,
+          "x": 0.30561161041259766
+        },
+        {
+          "id": "S-D06",
+          "type": "occupied",
+          "location": "Ampliación oficinas sur",
+          "deviceName": "pcs-lpt-185",
+          "roseta": "5-063",
+          "name": "Héctor Navalon",
+          "y": 0.4523696005344391,
+          "personId": "hnavalon",
+          "x": 0.20330099761486053
+        },
+        {
+          "location": "Ampliación oficinas sur",
+          "deviceName": "pcs-lpt-124",
+          "personId": "sriahi",
+          "id": "S-D07",
+          "name": "Sonia Riahi",
+          "y": 0.4545753300189972,
+          "type": "occupied",
+          "x": 0.23881401121616364,
+          "roseta": "5-058"
+        },
+        {
+          "y": 0.4533778727054596,
+          "location": "Ampliación oficinas sur",
+          "personId": "lcamacho",
+          "type": "occupied",
+          "roseta": "5-057",
+          "name": "Luis Camacho",
+          "deviceName": "pcs-lpt-117",
+          "x": 0.26132017374038696,
+          "id": "S-D08"
+        },
+        {
+          "y": 0.44937941431999207,
+          "id": "S-D09",
+          "type": "occupied",
+          "name": "Irene Hilara",
+          "x": 0.2854248881340027
+        },
+        {
+          "type": "occupied",
+          "y": 0.44878190755844116,
+          "id": "S-D10",
+          "x": 0.3061317205429077,
+          "name": "Raquel Rubio"
+        },
+        {
+          "id": "S-D11",
+          "name": "Beatriz Gordon",
+          "type": "occupied",
+          "x": 0.20312494039535522,
+          "y": 0.47677847743034363
+        },
+        {
+          "x": 0.234931081533432,
+          "deviceName": "pcs-lpt-284, pcs-lpt-461",
+          "location": "Ampliación oficinas sur",
+          "y": 0.4742821455001831,
+          "name": "Javier Grima",
+          "personId": "jgrima",
+          "id": "S-D12",
+          "roseta": "5-060",
+          "type": "occupied"
+        },
+        {
+          "roseta": "5-059",
+          "id": "S-D13",
+          "y": 0.4776870012283325,
+          "personId": "csomoza",
+          "name": "Clara Somoza",
+          "deviceName": "pcs-lpt-213",
+          "type": "occupied",
+          "location": "Ampliación oficinas sur",
+          "x": 0.2612415850162506
+        },
+        {
+          "x": 0.28455010056495667,
+          "type": "occupied",
+          "y": 0.4797910153865814,
+          "id": "S-D14",
+          "name": "Fermín Martínez"
+        },
+        {
+          "deviceName": "pcs-lpt-919",
+          "x": 0.3062794804573059,
+          "roseta": "5-053",
+          "type": "occupied",
+          "name": "Elena Garcia",
+          "y": 0.5083022713661194,
+          "location": "Ampliación oficinas sur",
+          "id": "S-D15",
+          "personId": "egarcia"
+        },
+        {
+          "y": 0.504585862159729,
+          "name": "Maribel ISS",
+          "type": "occupied",
+          "id": "S-D16",
+          "x": 0.20155197381973267
+        },
+        {
+          "name": "Oscar Pérez",
+          "type": "occupied",
+          "personId": "operez",
+          "location": "Ampliación oficinas sur",
+          "roseta": "5-078",
+          "y": 0.50799161195755,
+          "id": "S-D17",
+          "deviceName": "pcs-lpt-238",
+          "x": 0.23536242544651031
+        },
+        {
+          "id": "S-D18",
+          "y": 0.5052945017814636,
+          "name": "Cristina Martin",
+          "x": 0.2585652470588684,
+          "type": "occupied"
+        },
+        {
+          "id": "S-D19",
+          "type": "occupied",
+          "y": 0.5084986686706543,
+          "name": "Carolina Diaz",
+          "x": 0.28177356719970703
+        },
+        {
+          "y": 0.5035012364387512,
+          "x": 0.3066757023334503,
+          "id": "S-D20",
+          "type": "occupied",
+          "name": "Johana Garcia"
+        },
+        {
+          "y": 0.5299902558326721,
+          "type": "special",
+          "x": 0.20067687332630157,
+          "id": "S-D21",
+          "name": "Iturri LAV."
+        },
+        {
+          "id": "S-D22",
+          "name": "D. Millan Darpe",
+          "y": 0.5348963737487793,
+          "type": "occupied",
+          "x": 0.23598745465278625
+        },
+        {
+          "id": "S-D23",
+          "type": "occupied",
+          "x": 0.2584834098815918,
+          "name": "Nihad Elham.",
+          "y": 0.5257985591888428
+        },
+        {
+          "x": 0.2875957489013672,
+          "roseta": "5-076",
+          "type": "occupied",
+          "personId": "igonzalez",
+          "y": 0.5334042310714722,
+          "id": "S-D24",
+          "name": "Ivan Gonzalez",
+          "location": "Ampliación oficinas sur",
+          "deviceName": "pcs-lpt-231"
+        },
+        {
+          "name": "Gonzalo Barbero",
+          "id": "S-D25",
+          "type": "occupied",
+          "y": 0.532307505607605,
+          "x": 0.3094993829727173
+        },
+        {
+          "x": 0.340822696685791,
+          "y": 0.41937166452407837,
+          "id": "S-R01",
+          "type": "occupied",
+          "name": "Paola ETT"
+        },
+        {
+          "location": "Ampliación oficinas sur",
+          "x": 0.3637318015098572,
+          "y": 0.4181738793849945,
+          "roseta": "5-043",
+          "personId": "vlopez",
+          "name": "Valentin Lopez",
+          "id": "S-R02",
+          "type": "occupied",
+          "deviceName": "pcs-lpt-094"
+        },
+        {
+          "id": "S-R03",
+          "y": 0.4483863115310669,
+          "type": "special",
+          "name": "Colab. OI",
+          "x": 0.34014394879341125
+        },
+        {
+          "x": 0.3635523319244385,
+          "type": "occupied",
+          "name": "Eduardo Glez.",
+          "id": "S-R04",
+          "y": 0.44758906960487366
+        },
+        {
+          "deviceName": "pcs-lpt-219",
+          "personId": "rsainz",
+          "location": "Ampliación oficinas sur",
+          "name": "Rocío Sainz",
+          "roseta": "5-048",
+          "y": 0.47519755363464355,
+          "id": "S-R05",
+          "type": "occupied",
+          "x": 0.3421644866466522
+        },
+        {
+          "y": 0.47410017251968384,
+          "location": "Ampliación oficinas sur",
+          "personId": "iventura",
+          "type": "occupied",
+          "deviceName": "pcs-lpt-083",
+          "name": "Ivan Ventura",
+          "id": "S-R06",
+          "roseta": "5-047",
+          "x": 0.3631707727909088
+        },
+        {
+          "id": "S-R07",
+          "name": "Marisa Gomez",
+          "x": 0.34379032254219055,
+          "y": 0.5096082091331482,
+          "type": "occupied"
+        },
+        {
+          "type": "occupied",
+          "x": 0.36169376969337463,
+          "y": 0.5075103640556335,
+          "name": "Homer Bada ETT",
+          "id": "S-R08"
+        },
+        {
+          "y": 0.5334126949310303,
+          "name": "Mariana Tejada",
+          "type": "occupied",
+          "x": 0.34180736541748047,
+          "id": "S-R09"
+        },
+        {
+          "x": 0.363612562417984,
+          "id": "S-R10",
+          "y": 0.5336160659790039,
+          "type": "occupied",
+          "roseta": "5-071",
+          "name": "Beatriz Cuerda",
+          "location": "Ampliación oficinas sur",
+          "deviceName": "pcs-lpt-243",
+          "personId": "bcuerda"
+        },
+        {
+          "id": "S-M01",
+          "x": 0.4255269467830658,
+          "name": "Christophe",
+          "type": "occupied",
+          "y": 0.19266009330749512
+        },
+        {
+          "deviceName": "pcs-lpt-912",
+          "roseta": "2-184",
+          "id": "S-M02",
+          "type": "occupied",
+          "y": 0.19646769762039185,
+          "name": "Elisa Borrego",
+          "location": "Open Space Sur",
+          "x": 0.45935869216918945,
+          "personId": "eborrego"
+        },
+        {
+          "id": "S-M03",
+          "type": "occupied",
+          "name": "E. Calleja",
+          "x": 0.5015942454338074,
+          "personId": "ecalleja",
+          "deviceName": "pcs-lpt-199",
+          "y": 0.19176413118839264,
+          "roseta": "2-163",
+          "location": "Open Space Sur (Despacho)"
+        },
+        {
+          "roseta": "5-076",
+          "location": "Ampliación oficinas sur",
+          "deviceName": "pcs-lpt-231",
+          "y": 0.23621642589569092,
+          "personId": "igonzalez",
+          "id": "S-M04",
+          "type": "occupied",
+          "x": 0.42024847865104675,
+          "name": "Ignacio Glez."
+        },
+        {
+          "name": "Samuel Quintana Beca",
+          "type": "occupied",
+          "id": "S-M05",
+          "x": 0.4215804934501648,
+          "y": 0.28807535767555237
+        },
+        {
+          "x": 0.44189587235450745,
+          "id": "S-M06",
+          "type": "free",
+          "name": "LIBRE",
+          "y": 0.28987917304039
+        },
+        {
+          "name": "Jose Molina Beca",
+          "id": "S-M07",
+          "y": 0.2836768925189972,
+          "type": "occupied",
+          "x": 0.4878259599208832
+        },
+        {
+          "y": 0.2878836393356323,
+          "type": "occupied",
+          "name": "Ana Blasco",
+          "personId": "ablasco",
+          "id": "S-M08",
+          "deviceName": "pcs-lpt-072",
+          "roseta": "2-174",
+          "x": 0.5119458436965942,
+          "location": "Open Space Sur"
+        },
+        {
+          "y": 0.34592965245246887,
+          "name": "LIBRE",
+          "x": 0.41991403698921204,
+          "id": "S-M09",
+          "type": "free"
+        },
+        {
+          "name": "Daniel Becario",
+          "y": 0.32761654257774353,
+          "type": "occupied",
+          "id": "S-M10",
+          "x": 0.4477207660675049
+        },
+        {
+          "name": "Victoria Perez ETT",
+          "x": 0.42382586002349854,
+          "type": "occupied",
+          "id": "S-M11",
+          "y": 0.36184296011924744
+        },
+        {
+          "x": 0.4479410648345947,
+          "name": "Ana Sofía Arellano",
+          "id": "S-M12",
+          "type": "occupied",
+          "y": 0.36414748430252075
+        },
+        {
+          "x": 0.42776429653167725,
+          "id": "S-M13",
+          "y": 0.42348507046699524,
+          "type": "occupied",
+          "name": "Jose Merchan"
+        },
+        {
+          "name": "Daniela",
+          "y": 0.4446958005428314,
+          "id": "S-M14",
+          "x": 0.423875093460083,
+          "type": "occupied"
+        },
+        {
+          "x": 0.42811453342437744,
+          "type": "occupied",
+          "y": 0.5089206695556641,
+          "id": "S-M17",
+          "name": "Eduardo de Juan"
+        },
+        {
+          "type": "occupied",
+          "name": "GUILLEM ETT-IT",
+          "x": 0.44205442070961,
+          "id": "S-M18",
+          "y": 0.5720327496528625
+        },
+        {
+          "x": 0.4200727641582489,
+          "y": 0.610028088092804,
+          "id": "S-M19",
+          "name": "ANDREA ETT-IT",
+          "type": "occupied"
+        },
+        {
+          "type": "occupied",
+          "x": 0.4496299624443054,
+          "name": "Christian del Olmo",
+          "y": 0.5245277285575867,
+          "id": "S-M20"
+        },
+        {
+          "name": "A. Cubos",
+          "type": "occupied",
+          "y": 0.3604496717453003,
+          "personId": "acubos",
+          "roseta": "2-211",
+          "location": "Open Space Sur",
+          "id": "S-E01",
+          "x": 0.493466317653656,
+          "deviceName": "pcs-lpt-076"
+        },
+        {
+          "id": "S-E02",
+          "name": "Paz Martinez",
+          "y": 0.3644556701183319,
+          "roseta": "3-101",
+          "personId": "pmartinez",
+          "location": "S-110 (Escritorio)",
+          "type": "occupied",
+          "x": 0.517983078956604,
+          "deviceName": "pcs-dsk-676"
+        },
+        {
+          "name": "Inés Perez",
+          "y": 0.36636102199554443,
+          "x": 0.5521050691604614,
+          "type": "occupied",
+          "id": "S-E03"
+        },
+        {
+          "y": 0.3662632703781128,
+          "type": "occupied",
+          "x": 0.57271808385849,
+          "name": "Jesus Gullón",
+          "id": "S-E04"
+        },
+        {
+          "type": "occupied",
+          "id": "S-E05",
+          "name": "Ana Fernandez",
+          "y": 0.34594330191612244,
+          "x": 0.5459935069084167
+        },
+        {
+          "name": "LIBRE",
+          "y": 0.345937579870224,
+          "x": 0.4929591119289398,
+          "id": "S-E06",
+          "type": "free"
+        },
+        {
+          "name": "LIBRE",
+          "y": 0.34593984484672546,
+          "x": 0.5139725208282471,
+          "id": "S-E07",
+          "type": "free"
+        },
+        {
+          "x": 0.49349620938301086,
+          "name": "Isabel Mateos",
+          "type": "occupied",
+          "y": 0.4239937663078308,
+          "id": "S-E08"
+        },
+        {
+          "x": 0.5154072046279907,
+          "y": 0.42399656772613525,
+          "id": "S-E09",
+          "type": "occupied",
+          "name": "Inés Gil Moreno"
+        },
+        {
+          "y": 0.4566139280796051,
+          "type": "occupied",
+          "id": "S-E10",
+          "x": 0.5160216093063354,
+          "name": "Becaria Marina Molinero"
+        },
+        {
+          "y": 0.5180320739746094,
+          "x": 0.48803868889808655,
+          "name": "LIBRE",
+          "id": "S-E11",
+          "type": "free"
+        },
+        {
+          "y": 0.4797205626964569,
+          "id": "S-E12",
+          "roseta": "2-251",
+          "personId": "lserrano",
+          "location": "Open Space Sur",
+          "x": 0.4923219680786133,
+          "deviceName": "pcs-lpt-074",
+          "name": "Lorena Serrano",
+          "type": "occupied"
+        },
+        {
+          "type": "occupied",
+          "roseta": "2-264",
+          "deviceName": "pcs-lpt-077",
+          "location": "Open Space Sur",
+          "x": 0.5144443511962891,
+          "name": "Yolanda Mendiol",
+          "personId": "ymendiola",
+          "y": 0.5107340812683105,
+          "id": "S-E13"
+        },
+        {
+          "personId": "palcaniz",
+          "name": "Pilar Alcañiz",
+          "deviceName": "pcs-lpt-911",
+          "y": 0.5274345874786377,
+          "x": 0.4904439449310303,
+          "type": "occupied",
+          "roseta": "2-262",
+          "id": "S-E14",
+          "location": "Open Space Sur"
+        },
+        {
+          "personId": "arodriguez",
+          "y": 0.5323392152786255,
+          "location": "S-212",
+          "x": 0.5136535167694092,
+          "roseta": "3-539",
+          "type": "occupied",
+          "id": "S-E15",
+          "name": "Alfonso Rguez.",
+          "deviceName": "pcs-lpt-280"
+        },
+        {
+          "id": "S-E16",
+          "name": "LIBRE",
+          "y": 0.4660225510597229,
+          "type": "free",
+          "x": 0.5470393300056458
+        },
+        {
+          "y": 0.46602559089660645,
+          "type": "free",
+          "name": "LIBRE",
+          "x": 0.5690494179725647,
+          "id": "S-E17"
+        },
+        {
+          "id": "S-E18",
+          "type": "free",
+          "x": 0.5470634698867798,
+          "name": "LIBRE",
+          "y": 0.5300439596176147
+        },
+        {
+          "name": "LIBRE",
+          "y": 0.5300473570823669,
+          "id": "S-E19",
+          "type": "free",
+          "x": 0.5690710544586182
+        },
+        {
+          "type": "free",
+          "id": "S-E20",
+          "name": "LIBRE",
+          "y": 0.6050506234169006,
+          "x": 0.5470917224884033
+        },
+        {
+          "type": "occupied",
+          "id": "S-E21",
+          "y": 0.5303484797477722,
+          "name": "Mayte Díaz",
+          "x": 0.5758735537528992
+        },
+        {
+          "id": "S-P01",
+          "name": "LIBRE",
+          "type": "free",
+          "x": 0.5289222598075867,
+          "y": 0.19877579808235168
+        },
+        {
+          "type": "free",
+          "y": 0.19877851009368896,
+          "name": "LIBRE",
+          "x": 0.5669572949409485,
+          "id": "S-P02"
+        },
+        {
+          "y": 0.19647836685180664,
+          "location": "Open Space Sur (Despacho)",
+          "name": "Lara Vadillo",
+          "x": 0.6103975772857666,
+          "roseta": "2-160",
+          "personId": "lvadillo",
+          "type": "occupied",
+          "id": "S-P03",
+          "deviceName": "pcs-lpt-922"
+        },
+        {
+          "personId": "ccuevas",
+          "x": 0.6495345830917358,
+          "location": "Open Space Sur (Despacho)",
+          "type": "occupied",
+          "y": 0.191774383187294,
+          "name": "C. Cuevas",
+          "deviceName": "pcs-lpt-224",
+          "id": "S-P04",
+          "roseta": "2-159"
+        },
+        {
+          "type": "occupied",
+          "id": "S-P05",
+          "x": 0.6912765502929688,
+          "y": 0.19488176703453064,
+          "name": "Mª Lisa Basile"
+        },
+        {
+          "id": "S-P06",
+          "y": 0.1942829042673111,
+          "type": "occupied",
+          "name": "José A. López-Vilariño",
+          "x": 0.7198052406311035
+        },
+        {
+          "x": 0.7650517821311951,
+          "location": "Open Space Sur (Despacho)",
+          "personId": "sllamera",
+          "type": "occupied",
+          "y": 0.20129624009132385,
+          "roseta": "2-156",
+          "id": "S-P07",
+          "name": "Sandra Llamera Compliance",
+          "deviceName": "pcs-lpt-932"
+        },
+        {
+          "x": 0.801690399646759,
+          "deviceName": "pcs-lpt-230",
+          "y": 0.19178494811058044,
+          "roseta": "2-315",
+          "name": "H. Pieper",
+          "type": "occupied",
+          "id": "S-P08",
+          "personId": "hpieper",
+          "location": "Open Space Sur (Despacho)"
+        },
+        {
+          "name": "Luis Mora",
+          "location": "Direccion",
+          "type": "occupied",
+          "deviceName": "pcs-lpt-229",
+          "y": 0.22803978621959686,
+          "id": "S-P09",
+          "personId": "lmora",
+          "x": 0.8469334840774536,
+          "roseta": "2-316"
+        },
+        {
+          "id": "S-P10",
+          "y": 0.22934508323669434,
+          "x": 0.8915793299674988,
+          "name": "JMFS",
+          "type": "occupied"
+        },
+        {
+          "personId": "smasa",
+          "deviceName": "pcs-lpt-233",
+          "x": 0.8987646698951721,
+          "roseta": "2-151",
+          "y": 0.3204559087753296,
+          "name": "Sonia Masa",
+          "type": "occupied",
+          "location": "Secretaría Dirección",
+          "id": "S-P11"
+        },
+        {
+          "id": "S-O01",
+          "y": 0.2898961305618286,
+          "type": "free",
+          "name": "LIBRE",
+          "x": 0.6220316290855408
+        },
+        {
+          "y": 0.28248995542526245,
+          "name": "Olga Chousa",
+          "x": 0.6436474323272705,
+          "type": "occupied",
+          "id": "S-O02"
+        },
+        {
+          "name": "Cristina Izquierdo",
+          "type": "occupied",
+          "x": 0.676475465297699,
+          "id": "S-O03",
+          "y": 0.2870981693267822
+        },
+        {
+          "type": "occupied",
+          "y": 0.2884018123149872,
+          "x": 0.6998952031135559,
+          "id": "S-O04",
+          "name": "Maria Arregui"
+        },
+        {
+          "y": 0.28770533204078674,
+          "id": "S-O05",
+          "name": "Azucena Esteban",
+          "deviceName": "pcs-lpt-903",
+          "type": "occupied",
+          "x": 0.7459344267845154,
+          "personId": "aesteban",
+          "location": "Open Space Sur",
+          "roseta": "2-189"
+        },
+        {
+          "id": "S-O06",
+          "roseta": "2-192",
+          "x": 0.7669528722763062,
+          "deviceName": "pcs-lpt-091",
+          "type": "occupied",
+          "y": 0.27739545702934265,
+          "location": "Open Space Sur",
+          "personId": "marizmendi",
+          "name": "Maria Arizmendi"
+        },
+        {
+          "type": "occupied",
+          "name": "Pablo Castañeda",
+          "id": "S-O07",
+          "x": 0.6186366081237793,
+          "y": 0.321027934551239
+        },
+        {
+          "x": 0.6420577168464661,
+          "id": "S-O08",
+          "name": "Colaborador I+D",
+          "type": "special",
+          "y": 0.33794641494750977
+        },
+        {
+          "personId": "clopez",
+          "name": "Cesar Lopez",
+          "type": "occupied",
+          "x": 0.6780824065208435,
+          "location": "Open Space Sur",
+          "y": 0.3260389268398285,
+          "roseta": "2-185",
+          "deviceName": "pcs-lpt-907",
+          "id": "S-O09"
+        },
+        {
+          "name": "Elena Borrego",
+          "type": "occupied",
+          "x": 0.7002996802330017,
+          "id": "S-O10",
+          "y": 0.3276427686214447
+        },
+        {
+          "y": 0.33225226402282715,
+          "type": "occupied",
+          "x": 0.74833744764328,
+          "location": "Open Space Sur",
+          "roseta": "2-190",
+          "name": "Vladimir Udalov",
+          "deviceName": "pcs-lpt-068",
+          "id": "S-O11",
+          "personId": "vudalov"
+        },
+        {
+          "x": 0.7739578485488892,
+          "type": "special",
+          "y": 0.3320547342300415,
+          "name": "José Mª Pierna ESCOLTA",
+          "id": "S-O12"
+        },
+        {
+          "y": 0.3658684194087982,
+          "deviceName": "pcs-lpt-100",
+          "location": "Open Space Sur",
+          "personId": "fgarcia",
+          "type": "occupied",
+          "name": "Fernando García",
+          "roseta": "2-203",
+          "x": 0.6210494637489319,
+          "id": "S-O13"
+        },
+        {
+          "type": "occupied",
+          "id": "S-O14",
+          "name": "Cristina Alvarez",
+          "y": 0.3609673082828522,
+          "x": 0.6470659971237183
+        },
+        {
+          "type": "occupied",
+          "id": "S-O15",
+          "y": 0.35586628317832947,
+          "name": "Julen Rguez.",
+          "x": 0.6770860552787781
+        },
+        {
+          "location": "Open Space Sur",
+          "deviceName": "pcs-lpt-921",
+          "x": 0.7007028460502625,
+          "name": "Gracia Espinos",
+          "y": 0.3548680245876312,
+          "id": "S-O16",
+          "type": "occupied",
+          "personId": "gespinosa",
+          "roseta": "2-202"
+        },
+        {
+          "name": "Beatriz de Rivas",
+          "deviceName": "pcs-lpt-080",
+          "location": "Open Space Sur",
+          "y": 0.36678406596183777,
+          "id": "S-O17",
+          "personId": "bderivas",
+          "type": "occupied",
+          "x": 0.7520409226417542,
+          "roseta": "2-195"
+        },
+        {
+          "x": 0.7709547877311707,
+          "y": 0.36598554253578186,
+          "type": "occupied",
+          "name": "Leticia Gcia-Blanch",
+          "id": "S-O18"
+        },
+        {
+          "type": "free",
+          "y": 0.46503135561943054,
+          "name": "LIBRE",
+          "id": "S-O19",
+          "x": 0.6140704154968262
+        },
+        {
+          "id": "S-O20",
+          "y": 0.4650344252586365,
+          "name": "LIBRE",
+          "type": "free",
+          "x": 0.636081337928772
+        },
+        {
+          "roseta": "2-226",
+          "personId": "cmauriello",
+          "name": "Chiara Mauriello",
+          "location": "Open Space Sur",
+          "deviceName": "pcs-lpt-107",
+          "type": "occupied",
+          "y": 0.41920965909957886,
+          "id": "S-O21",
+          "x": 0.6409741044044495
+        },
+        {
+          "x": 0.6214707493782043,
+          "id": "S-O22",
+          "y": 0.451625794172287,
+          "name": "Manuel Ramos",
+          "type": "occupied"
+        },
+        {
+          "y": 0.5170547366142273,
+          "name": "LIBRE",
+          "x": 0.6390938758850098,
+          "type": "free",
+          "id": "S-O23"
+        },
+        {
+          "type": "occupied",
+          "y": 0.4755398631095886,
+          "roseta": "2-244",
+          "location": "Open Space Sur",
+          "deviceName": "pcs-lpt-084",
+          "name": "Begoña Froilan",
+          "x": 0.6409859657287598,
+          "id": "S-O24",
+          "personId": "bfroilan"
+        },
+        {
+          "deviceName": "pcs-lpt-242",
+          "location": "Open Space Sur",
+          "y": 0.5072490572929382,
+          "type": "occupied",
+          "id": "S-O25",
+          "name": "Helena Sullivan",
+          "personId": "hsullivan",
+          "x": 0.6214843988418579,
+          "roseta": "2-273"
+        },
+        {
+          "id": "S-O26",
+          "type": "occupied",
+          "y": 0.5072521567344666,
+          "name": "Noelia Garrido",
+          "x": 0.6422932147979736
+        },
+        {
+          "name": "Pepa Guillen",
+          "type": "occupied",
+          "y": 0.5339562296867371,
+          "id": "S-O27",
+          "x": 0.6204906105995178
+        },
+        {
+          "x": 0.6416986584663391,
+          "y": 0.5343595743179321,
+          "name": "Carmen Carrero",
+          "id": "S-O28",
+          "type": "occupied"
+        },
+        {
+          "id": "S-O29",
+          "type": "occupied",
+          "personId": "efernandez",
+          "name": "Esther Fdez.",
+          "y": 0.42061519622802734,
+          "roseta": "2-228",
+          "deviceName": "pcs-lpt-240",
+          "location": "Open Space Sur",
+          "x": 0.677395761013031
+        },
+        {
+          "y": 0.41991767287254333,
+          "name": "Natalia Molina",
+          "x": 0.7007097601890564,
+          "id": "S-O30",
+          "type": "occupied"
+        },
+        {
+          "type": "occupied",
+          "y": 0.4507329761981964,
+          "x": 0.6780004501342773,
+          "id": "S-O31",
+          "name": "Santiago Aparicio"
+        },
+        {
+          "name": "Inés García",
+          "x": 0.6749024391174316,
+          "type": "occupied",
+          "y": 0.4745442271232605,
+          "id": "S-O32"
+        },
+        {
+          "name": "Pablo Montes",
+          "x": 0.7016159296035767,
+          "type": "occupied",
+          "id": "S-O33",
+          "y": 0.47434788942337036
+        },
+        {
+          "type": "occupied",
+          "x": 0.7038207650184631,
+          "y": 0.5106624960899353,
+          "name": "Almudena Sanchez",
+          "id": "S-O34"
+        },
+        {
+          "x": 0.6749112606048584,
+          "name": "Becario Juan Ruiz",
+          "y": 0.5331645011901855,
+          "type": "occupied",
+          "id": "S-O35"
+        },
+        {
+          "id": "S-O36",
+          "type": "occupied",
+          "x": 0.7005217671394348,
+          "name": "Javier Pérez",
+          "y": 0.5342687964439392
+        },
+        {
+          "name": "TT-OPS Ana T.",
+          "x": 0.7431374192237854,
+          "id": "S-O37",
+          "y": 0.46604976058006287,
+          "type": "special"
+        },
+        {
+          "type": "occupied",
+          "x": 0.7719544172286987,
+          "name": "Cristina Compliance",
+          "id": "S-O38",
+          "y": 0.42272859811782837
+        },
+        {
+          "type": "occupied",
+          "y": 0.4549442529678345,
+          "name": "Santiago Agesta",
+          "id": "S-O39",
+          "x": 0.7448381185531616
+        },
+        {
+          "id": "S-O40",
+          "name": "Beatriz Rojas",
+          "x": 0.7660502791404724,
+          "y": 0.4560477137565613,
+          "type": "occupied"
+        },
+        {
+          "type": "free",
+          "x": 0.7431396245956421,
+          "y": 0.5360758900642395,
+          "id": "S-O41",
+          "name": "LIBRE"
+        },
+        {
+          "name": "Beca OPS Laura",
+          "y": 0.4704550504684448,
+          "id": "S-O42",
+          "type": "occupied",
+          "x": 0.765749990940094
+        },
+        {
+          "x": 0.746940553188324,
+          "name": "VIAJES Andrea",
+          "id": "S-O43",
+          "y": 0.5064675211906433,
+          "type": "special"
+        },
+        {
+          "y": 0.5860883593559265,
+          "name": "TT-OPS",
+          "x": 0.7691500782966614,
+          "id": "S-O44",
+          "type": "special"
+        },
+        {
+          "y": 0.6160845756530762,
+          "x": 0.7431420683860779,
+          "type": "special",
+          "id": "S-O45",
+          "name": "Ordenanza"
+        },
+        {
+          "type": "occupied",
+          "y": 0.533478856086731,
+          "x": 0.7663496732711792,
+          "name": "Gloria Fdez.",
+          "id": "S-O46"
+        },
+        {
+          "x": 0.9052132964134216,
+          "type": "free",
+          "y": 0.5441034436225891,
+          "id": "S-O47",
+          "name": "LIBRE"
+        },
+        {
+          "y": 0.5912802219390869,
+          "name": "MJ Pontes",
+          "x": 0.7192336320877075,
+          "type": "occupied",
+          "id": "S-B01"
+        },
+        {
+          "y": 0.5912858247756958,
+          "name": "Marian Garcia",
+          "id": "S-B02",
+          "x": 0.7521442770957947,
+          "type": "occupied"
+        },
+        {
+          "y": 0.5912913084030151,
+          "type": "occupied",
+          "deviceName": "pcs-lpt-223",
+          "roseta": "2-285",
+          "id": "S-B03",
+          "location": "Open Space Sur (Despacho)",
+          "name": "Edu Torne",
+          "x": 0.7842552065849304,
+          "personId": "etorne"
+        },
+        {
+          "personId": "agarces",
+          "x": 0.8163665533065796,
+          "name": "Arancha Garcés",
+          "deviceName": "pcs-lpt-212",
+          "roseta": "2-284",
+          "y": 0.593096911907196,
+          "type": "occupied",
+          "id": "S-B04",
+          "location": "Open Space Sur (Despacho)"
+        },
+        {
+          "type": "occupied",
+          "name": "Angel Gonzalez",
+          "x": 0.4913926422595978,
+          "y": 0.6293384432792664,
+          "id": "S-B05"
+        },
+        {
+          "location": "S-410",
+          "x": 0.5243953466415405,
+          "type": "occupied",
+          "roseta": "1-060/1-146/1-179/1-180/1-344",
+          "personId": "eperez",
+          "name": "E. Perez",
+          "id": "S-B06",
+          "y": 0.6246450543403625,
+          "deviceName": "pcs-lpt-170, wks-hpl-151/152/515/520"
+        },
+        {
+          "y": 0.6309489011764526,
+          "name": "Kostas Vasilakis",
+          "type": "occupied",
+          "id": "S-B07",
+          "x": 0.5507020354270935
+        },
+        {
+          "deviceName": "pcs-lpt-915",
+          "x": 0.5867078900337219,
+          "roseta": "2-295",
+          "name": "Bea Garcia",
+          "location": "Open Space Sur (Despacho)",
+          "y": 0.629955530166626,
+          "id": "S-B08",
+          "personId": "bgarcia",
+          "type": "occupied"
+        },
+        {
+          "id": "S-B09",
+          "x": 0.6151135563850403,
+          "y": 0.6312605142593384,
+          "name": "Maria Membiela",
+          "type": "occupied"
+        },
+        {
+          "x": 0.6551214456558228,
+          "roseta": "2-290",
+          "name": "Joaquin Rico",
+          "y": 0.6295679211616516,
+          "location": "Open Space Sur (Despacho)",
+          "personId": "jrico",
+          "id": "S-B10",
+          "deviceName": "pcs-lpt-071",
+          "type": "occupied"
+        },
+        {
+          "personId": "paviles",
+          "type": "occupied",
+          "x": 0.6844280362129211,
+          "location": "Open Space Sur (Despacho)",
+          "roseta": "2-289",
+          "y": 0.6295732259750366,
+          "deviceName": "pcs-lpt-916",
+          "id": "S-B11",
+          "name": "Pablo Aviles"
+        },
+        {
+          "x": 0.19216908514499664,
+          "y": 0.7229485511779785,
+          "name": "Sala 12",
+          "id": "S-S01",
+          "type": "special"
+        },
+        {
+          "type": "special",
+          "y": 0.7229563593864441,
+          "id": "S-S02",
+          "x": 0.23016251623630524,
+          "name": "Sala 11"
+        },
+        {
+          "type": "special",
+          "y": 0.7229641079902649,
+          "id": "S-S03",
+          "name": "Sala 10",
+          "x": 0.26815667748451233
+        },
+        {
+          "type": "occupied",
+          "deviceName": "pcs-lpt-046",
+          "x": 0.3184833824634552,
+          "id": "S-L01",
+          "y": 0.6375057101249695,
+          "name": "Candida Blazquez",
+          "roseta": "5-088",
+          "location": "Ampliación oficinas sur",
+          "personId": "cblazquez"
+        },
+        {
+          "y": 0.6364096999168396,
+          "name": "Noelia Ramal ETT",
+          "id": "S-L02",
+          "x": 0.33918333053588867,
+          "type": "occupied"
+        },
+        {
+          "y": 0.6636986136436462,
+          "x": 0.3174038529396057,
+          "type": "occupied",
+          "deviceName": "pcs-lpt-942",
+          "personId": "nrodriguez",
+          "location": "Ampliación oficinas sur",
+          "roseta": "5-090",
+          "id": "S-L03",
+          "name": "Nelly Rguez."
+        },
+        {
+          "name": "Leticia Barbero",
+          "y": 0.6662023663520813,
+          "x": 0.3412054777145386,
+          "type": "occupied",
+          "personId": "lbarbero",
+          "roseta": "5-089",
+          "location": "Ampliación oficinas sur",
+          "id": "S-L04",
+          "deviceName": "pcs-lpt-906"
+        },
+        {
+          "deviceName": "pcs-lpt-944",
+          "name": "Cristina Espiga",
+          "y": 0.6997855305671692,
+          "x": 0.3190319240093231,
+          "type": "occupied",
+          "location": "Ampliación oficinas sur",
+          "id": "S-L05",
+          "personId": "cespiga",
+          "roseta": "5-092"
+        },
+        {
+          "y": 0.69989013671875,
+          "id": "S-L06",
+          "x": 0.3428303003311157,
+          "type": "occupied",
+          "name": "Alfredo García"
+        },
+        {
+          "y": 0.7767308354377747,
+          "personId": "mjulian",
+          "name": "Maria Julian",
+          "deviceName": "pcs-lpt-685",
+          "location": "Ampliación oficinas sur (despacho)",
+          "roseta": "5-096",
+          "id": "S-L07",
+          "x": 0.27010294795036316,
+          "type": "occupied"
+        },
+        {
+          "type": "occupied",
+          "id": "S-L08",
+          "roseta": "5-095",
+          "location": "Ampliación oficinas sur (despacho)",
+          "name": "Osvaldo Nestares",
+          "deviceName": "pcs-lpt-228",
+          "y": 0.7761373519897461,
+          "personId": "onestares",
+          "x": 0.2981959879398346
+        },
+        {
+          "personId": "ssanjose",
+          "location": "Ampliación oficinas sur (despacho)",
+          "type": "occupied",
+          "x": 0.3279895484447479,
+          "deviceName": "pcs-lpt-109",
+          "name": "Susana SanJose",
+          "id": "S-L09",
+          "y": 0.7761438488960266,
+          "roseta": "5-094"
+        },
+        {
+          "name": "",
+          "id": "custom-36ef9fd4-2d7c-4ad2-87ea-dda17b4999b8",
+          "x": 0.6587166382737081,
+          "y": 0.10446749202682001,
+          "type": "free"
+        }
+      ],
+      "id": "sur",
+      "name": "Open Space Sur"
+    },
+    {
+      "id": "id",
+      "name": "I+D",
+      "image": "plano_id.svg",
+      "seats": []
+    },
+    {
+      "id": "qc",
+      "name": "Quality Control",
+      "image": "plano_qc_limpio.svg",
+      "seats": []
+    }
+  ]
+}

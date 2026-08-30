@@ -1,0 +1,12 @@
+'use strict';
+const fs = require('fs'); const path = require('path');
+const app = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'js', 'core', 'app.js'), 'utf8');
+const tests=[]; const test=(name,fn)=>tests.push({name,fn}); const assert=(value,message)=>{if(!value) throw new Error(message);};
+test('background selection cleanup is centralized',()=>{assert(app.includes('function clearWorkspaceSelection('),'central clear function missing'); assert(app.includes("$('bulk-clear').onclick = () => clearWorkspaceSelection()"),'bulk clear does not reuse central method');});
+test('simple background click clears but pan does not',()=>{assert(app.includes('moved: false'),'pan movement state missing'); assert(app.includes('> 4) ui.pan.moved = true'),'movement threshold missing'); assert(app.includes('if (event.button === 0 && pan && !pan.moved) handleMapBackgroundClick()'),'background-click guard missing');});
+test('pins and cards do not initiate background clearing',()=>assert(app.includes("event.target.closest('.pin, .cluster')"),'pin/card guard missing'));
+test('rectangle mode remains prior to pan/background logic',()=>assert(app.includes("if (ui.selectionMode && event.button === 0 && !event.target.closest('.pin, .cluster'))"),'rectangle precedence missing'));
+test('create mode and planner are protected',()=>{assert(app.includes('function handleMapBackgroundClick() { if (ui.adding || ui.moving || plannerState().status !== \'idle\') return;'),'create/planner guard missing'); assert(app.includes("if (ui.adding) { const context = ui.addingContext;"),'create click flow missing');});
+test('background click closes cluster focus through a central handler',()=>{assert(app.includes('function handleMapBackgroundClick()'),'background helper missing');assert(app.includes('clearWorkspaceSelection({ closeAreaFocus: true })'),'background does not close area focus');assert(app.includes('if (event.button === 0 && pan && !pan.moved) handleMapBackgroundClick()'),'background route missing')});
+test('plan click no longer unconditionally closes detail',()=>{const line=app.match(/\$\('plan'\)\.addEventListener\('click',[\s\S]*?\}\);/); assert(line && !line[0].includes('closeDetailPanel()'),'plan click still closes panel');});
+let passed=0;for(const item of tests){try{item.fn();passed++;}catch(error){console.error(`FAIL: ${item.name}: ${error.message}`);}}console.log(`Selection interaction harness: ${passed}/${tests.length} passed, ${tests.length-passed} failed`);process.exitCode=passed===tests.length?0:1;

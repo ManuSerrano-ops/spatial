@@ -1,0 +1,10 @@
+{
+  "networkRoot": "C:\\ruta\\a\\PlanosV3-windows-spatial-git-isolated\\runtime-data",
+  "dataFolder": "data",
+  "backupFolder": "backups",
+  "logsFolder": "logs",
+  "logMaxFileSizeBytes": 1048576,
+  "logMaxHistoryFiles": 5,
+  "backupRetentionMode": "disabled",
+  "readOnly": false
+}

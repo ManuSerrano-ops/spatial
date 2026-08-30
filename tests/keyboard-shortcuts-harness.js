@@ -1,0 +1,6 @@
+'use strict';
+const fs=require('fs');const path=require('path');const app=fs.readFileSync(path.join(__dirname,'..','Resources','js','core','app.js'),'utf8');const tests=[];const test=(name,fn)=>tests.push({name,fn});const assert=(v,m)=>{if(!v)throw new Error(m);};
+test('global Ctrl+Z reuses central undo button',()=>assert(app.includes("event.ctrlKey && event.key.toLowerCase() === 'z'")&&app.includes("$('undo').click()"),'central undo missing'));
+test('text editing is excluded from global Ctrl+Z',()=>{const i=app.indexOf("event.ctrlKey && event.key.toLowerCase() === 'z'");const prefix=app.slice(Math.max(0,i-700),i);assert(prefix.includes('!editable'),'editable exception missing');assert(/HTMLInputElement|HTMLTextAreaElement|isContentEditable/.test(app),'editable types missing');});
+test('global undo prevents duplicate browser handling only outside editors',()=>{const i=app.indexOf("event.ctrlKey && event.key.toLowerCase() === 'z'");const line=app.slice(i,i+180);assert(line.includes('event.preventDefault()'),'global prevent default missing');});
+let passed=0;for(const t of tests){try{t.fn();passed++;}catch(e){console.error(`FAIL: ${t.name}: ${e.message}`)}}console.log(`Keyboard shortcuts harness: ${passed}/${tests.length} passed, ${tests.length-passed} failed`);process.exitCode=passed===tests.length?0:1;

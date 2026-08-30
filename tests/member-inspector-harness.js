@@ -1,0 +1,11 @@
+'use strict';
+const fs = require('fs'); const path = require('path');
+const resources = path.join(__dirname, '..', 'Resources'); const html = fs.readFileSync(path.join(resources, 'index.html'), 'utf8'); const app = fs.readFileSync(path.join(resources, 'js', 'core', 'app.js'), 'utf8'); const cellDetail = fs.readFileSync(path.join(resources, 'js', 'features', 'map', 'cell-detail-feature.js'), 'utf8');
+const tests = []; const test = (name, fn) => tests.push({ name, fn }); const assert = (value, message) => { if (!value) throw new Error(message); };
+test('Area Detail has delegated member actions', () => assert(html.includes('id="area-detail-list"') && app.includes("$('area-detail-list').onclick"), 'delegation'));
+test('member row names the full inspector action', () => assert(app.includes('Abrir inspector completo'), 'explicit inspector label'));
+test('member action opens official selectSeat path without moving viewport', () => assert(app.includes('function openAreaMemberInspector') && app.includes('selectSeat(workspaceId, null, true, true, true)') && !app.match(/function openAreaMemberInspector[\s\S]*?function updateCellMetadata/)[0].includes('centerSelectedSeat()'), 'official inspector'));
+test('official Inspector retains all existing fields and actions', () => ['seat-name', 'assignment-status', 'person', 'device', 'roseta', 'notes', 'save', 'move-seat', 'panel-history', 'delete-assignment', 'delete-seat'].forEach(id => assert(html.includes(`id="${id}"`), id)));
+test('cluster removal is explicit text', () => assert(app.includes("remove.textContent = 'Quitar del cluster'"), 'remove text'));
+test('cell membership controls no longer use ambiguous plus', () => { assert(html.includes('js/features/map/cell-detail-feature.js'), 'cell detail module not loaded'); assert(cellDetail.includes("'Añadir a selección'"), 'add text'); assert(!cellDetail.includes("select.textContent = appState.selectedWorkspaces.has(seat.id) ? '✓' : '+'"), 'ambiguous plus remains'); });
+let passed = 0; for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } } console.log(`Member inspector harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`); process.exitCode = passed === tests.length ? 0 : 1;

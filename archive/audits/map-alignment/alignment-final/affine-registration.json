@@ -1,0 +1,29 @@
+{
+  "norte": {
+    "bestLightToDarkEdgeMatchWithin8px": 0.08931,
+    "uniformScale_offsetX_offsetY_validPoints": [
+      0.8999999999999999,
+      -816,
+      224,
+      795
+    ]
+  },
+  "nivel3": {
+    "bestLightToDarkEdgeMatchWithin8px": 0.11551,
+    "uniformScale_offsetX_offsetY_validPoints": [
+      0.6499999999999999,
+      336,
+      560,
+      632
+    ]
+  },
+  "sur": {
+    "bestLightToDarkEdgeMatchWithin8px": 0.2159,
+    "uniformScale_offsetX_offsetY_validPoints": [
+      0.9999999999999998,
+      0,
+      -16,
+      3534
+    ]
+  }
+}

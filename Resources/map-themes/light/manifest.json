@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 2,
+  "generator": "tools/build-light-maps.py",
+  "canvas": "#fafafa",
+  "assets": [
+    {
+      "id": "norte",
+      "kind": "vector-remapped",
+      "source": "Resources/plano_norte_limpio.svg",
+      "sourceSha256": "c8740b38110a552247f659c56b3f1f004aa56a2f5e5098ba9ced1ad6a917e55b",
+      "sourceBounds": [
+        0,
+        0,
+        1588,
+        1122.6667
+      ],
+      "canonical": "Resources/plano_norte_limpio.svg",
+      "canonicalSha256": "c8740b38110a552247f659c56b3f1f004aa56a2f5e5098ba9ced1ad6a917e55b",
+      "dark": "plano_norte_limpio.svg",
+      "light": "map-themes/light/plano_norte_limpio.svg",
+      "viewBox": [
+        0,
+        0,
+        1588,
+        1122.6667
+      ],
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "darkSha256": "c8740b38110a552247f659c56b3f1f004aa56a2f5e5098ba9ced1ad6a917e55b",
+      "quality": {
+        "100": {
+          "mode": "vector",
+          "status": "pass"
+        },
+        "150": {
+          "mode": "vector",
+          "status": "pass"
+        },
+        "200": {
+          "mode": "vector",
+          "status": "pass"
+        }
+      },
+      "derivation": "operational-vector-fallback-v1",
+      "lightSha256": "5ecb79b1e887ca922ced261ff7c9da0967c0717cac4d7cdd8b30d31800801da4"
+    },
+    {
+      "id": "nivel3",
+      "kind": "vector-remapped",
+      "source": "Resources/plano_nivel3_limpio.svg",
+      "sourceSha256": "764a19c44ca9877b60fed58001bf27b0b0b12f725f52f269d5a956e2ae61a0af",
+      "sourceBounds": [
+        0,
+        0,
+        1588,
+        1122.6667
+      ],
+      "canonical": "Resources/plano_nivel3_limpio.svg",
+      "canonicalSha256": "764a19c44ca9877b60fed58001bf27b0b0b12f725f52f269d5a956e2ae61a0af",
+      "dark": "plano_nivel3_limpio.svg",
+      "light": "map-themes/light/plano_nivel3_limpio.svg",
+      "viewBox": [
+        0,
+        0,
+        1588,
+        1122.6667
+      ],
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "darkSha256": "764a19c44ca9877b60fed58001bf27b0b0b12f725f52f269d5a956e2ae61a0af",
+      "quality": {
+        "100": {
+          "mode": "vector",
+          "status": "pass"
+        },
+        "150": {
+          "mode": "vector",
+          "status": "pass"
+        },
+        "200": {
+          "mode": "vector",
+          "status": "pass"
+        }
+      },
+      "derivation": "operational-vector-fallback-v1",
+      "lightSha256": "3ffb58e64ac2ec7e821592ffc4f9ac8bc37fe859999b62805ff4168db26cf699"
+    },
+    {
+      "id": "sur",
+      "kind": "vector-cleaned-remapped",
+      "source": "../Plano_Open_Space_Sur_Modular_CORREGIDO.svg",
+      "sourceSha256": "177082fe3f4111fb01c295dc60ebde9a9f03f4b451ca62e3b76fcfe8e07bf26d",
+      "sourceBounds": [
+        0,
+        0,
+        842,
+        595
+      ],
+      "canonical": "Resources/plano_sur_limpio.svg",
+      "canonicalSha256": "297eaf02cae0854e24acb9a5bdb8569bf85783323a0c4dd3b7b654e1212a4ae8",
+      "dark": "plano_sur_limpio.svg",
+      "light": "map-themes/light/plano_sur_limpio.svg",
+      "viewBox": [
+        0,
+        0,
+        1122.6667,
+        793.33331
+      ],
+      "cropTop": 0,
+      "cropLeft": 0,
+      "scaleX": 1.3333333729216152,
+      "scaleY": 1.333333294117647,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "transform": [
+        1.3333333729216152,
+        0.0,
+        0.0,
+        1.333333294117647,
+        0.0,
+        0.0
+      ],
+      "darkSha256": "297eaf02cae0854e24acb9a5bdb8569bf85783323a0c4dd3b7b654e1212a4ae8",
+      "quality": {
+        "100": {
+          "mode": "vector",
+          "status": "pass"
+        },
+        "150": {
+          "mode": "vector",
+          "status": "pass"
+        },
+        "200": {
+          "mode": "vector",
+          "status": "pass"
+        }
+      },
+      "derivation": "sur-architectural-direct-paths-v2",
+      "lightSha256": "2f895fb6e57639c9c9631fa6bca6f4cfb8020cae19345026481f526b144cf669"
+    },
+    {
+      "id": "id",
+      "kind": "vector-remapped",
+      "source": "Resources/plano_id.svg",
+      "sourceSha256": "18a5430082eff76c6767b1fed1b3cb9054a43a8f76aa9ab54347281e8fa2bfb8",
+      "sourceBounds": [
+        0,
+        0,
+        1122.5601,
+        1587.36
+      ],
+      "canonical": "Resources/plano_id.svg",
+      "canonicalSha256": "18a5430082eff76c6767b1fed1b3cb9054a43a8f76aa9ab54347281e8fa2bfb8",
+      "dark": "plano_id.svg",
+      "light": "map-themes/light/plano_id.svg",
+      "viewBox": [
+        0,
+        0,
+        1122.5601,
+        1587.36
+      ],
+      "cropTop": 0,
+      "cropLeft": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "darkSha256": "18a5430082eff76c6767b1fed1b3cb9054a43a8f76aa9ab54347281e8fa2bfb8",
+      "quality": {
+        "100": {
+          "mode": "vector",
+          "status": "pass"
+        },
+        "150": {
+          "mode": "vector",
+          "status": "pass"
+        },
+        "200": {
+          "mode": "vector",
+          "status": "pass"
+        }
+      },
+      "lightSha256": "f9b3ed1473590a05f1175a6938fd74f9276bd13c7856d9389d1e19cee1ac908e"
+    },
+    {
+      "id": "qc",
+      "kind": "vector-remapped",
+      "source": "Resources/plano_qc_limpio.svg",
+      "sourceSha256": "1e065fa03004e78fecd293dbafcc0f1d7dceeeaa5d17ca35f19da806e62ea9d7",
+      "sourceBounds": [
+        0,
+        0,
+        793.33331,
+        1122.6667
+      ],
+      "canonical": "Resources/plano_qc_limpio.svg",
+      "canonicalSha256": "1e065fa03004e78fecd293dbafcc0f1d7dceeeaa5d17ca35f19da806e62ea9d7",
+      "dark": "plano_qc_limpio.svg",
+      "light": "map-themes/light/plano_qc_limpio.svg",
+      "viewBox": [
+        0,
+        0,
+        793.33331,
+        1122.6667
+      ],
+      "cropTop": 0,
+      "cropLeft": 0,
+      "scaleX": 1,
+      "scaleY": 1,
+      "offsetX": 0,
+      "offsetY": 0,
+      "rotation": 0,
+      "transform": [
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "darkSha256": "1e065fa03004e78fecd293dbafcc0f1d7dceeeaa5d17ca35f19da806e62ea9d7",
+      "quality": {
+        "100": {
+          "mode": "vector",
+          "status": "pass"
+        },
+        "150": {
+          "mode": "vector",
+          "status": "pass"
+        },
+        "200": {
+          "mode": "vector",
+          "status": "pass"
+        }
+      },
+      "lightSha256": "64b542d4d293bf13dd7587e1413b58175e0a4aa64cdbb3087431c43d6fe9ed87"
+    }
+  ]
+}

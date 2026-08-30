@@ -1,0 +1,28 @@
+# Build outputs
+bin/
+obj/
+**/bin/
+**/obj/
+publish/
+publish-*/
+TestResults/
+
+# IDE and user files
+.vs/
+*.user
+
+# Local runtime configuration and generated state
+config.json
+runtime-data/
+qa-runtime-data/
+archive/releases/
+uifigmastyle_UX_REDESIGN_MODULAR/
+
+# Historical release packages and generated state
+runtime-data/logs/
+qa-runtime-data/logs/
+
+# Python and browser caches
+**/__pycache__/
+*.py[cod]
+chrome-profile/
