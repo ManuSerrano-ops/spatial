@@ -25,6 +25,7 @@
 
 ## Defectos anotados
 
+- [ ] **P3 · Diálogo de forma de cluster inalcanzable.** `#cluster-shape-dialog` está declarado en `Resources/index.html`, pero no tiene ninguna ruta de apertura con `showModal()`, `show()` ni `open`; `#apply-dialog` no es un diálogo, sino el botón de aplicar dentro de `#diff-dialog`. No eliminar ni conectar este código fuera de una tarea dedicada.
 - [x] **P1 · Distribución incompleta.** Resuelto mediante `deployment/New-DeploymentPackage.ps1` e `Install-PlanoOpenSpaceIT.ps1`: generan un paquete mínimo, inicializan de forma segura los nueve JSON compartidos, validan instalaciones existentes y nunca sobrescriben datos. Diseño en `docs/reference/DEPLOYMENT_DESIGN.md`.
 
 
