@@ -197,6 +197,36 @@ kbd { padding: 1px 5px; border: 1px solid color-mix(in srgb, var(--chrome-text) 
 .app-topbar .more-menu.open .more-panel { display: grid; }
 .app-topbar .more-panel button, .app-topbar .more-panel .appearance-control { width: 100%; justify-content: flex-start; color: var(--ink); }
 .app-topbar .more-panel select { color: var(--ink); background: var(--surface); }
+.responsive-more-action { display: none; }
+@media (max-width: 1600px) {
+  :root[data-theme="high-contrast"] .app-topbar .brand-title,
+  :root[data-theme="projector"] .app-topbar .brand-title,
+  :root[data-theme="high-contrast"] .app-topbar .zone-control > span,
+  :root[data-theme="projector"] .app-topbar .zone-control > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  :root[data-theme="high-contrast"] .app-topbar #new-scenario,
+  :root[data-theme="projector"] .app-topbar #new-scenario { display: none; }
+  :root[data-theme="high-contrast"] .app-topbar .responsive-more-action,
+  :root[data-theme="projector"] .app-topbar .responsive-more-action { display: inline-flex; }
+  :root[data-theme="high-contrast"] .app-topbar #scenario-mode,
+  :root[data-theme="projector"] .app-topbar #scenario-mode,
+  :root[data-theme="high-contrast"] .app-topbar .add-seat-action,
+  :root[data-theme="projector"] .app-topbar .add-seat-action,
+  :root[data-theme="high-contrast"] .app-topbar #apply,
+  :root[data-theme="projector"] .app-topbar #apply { flex: 0 0 auto; }
+}
+@media (max-width: 1200px) {
+  :root[data-theme="high-contrast"] .global-search-control,
+  :root[data-theme="projector"] .global-search-control { width: min(24vw, 260px); }
+  :root[data-theme="high-contrast"] .zone-control select,
+  :root[data-theme="projector"] .zone-control select { width: min(150px, 16vw); }
+}
 main.app-shell { display: grid; grid-template-columns: var(--sidebar-width) minmax(0, 1fr) auto; grid-template-rows: minmax(0, 1fr) var(--statusbar-height); min-height: 0; height: auto; overflow: hidden; }
 .app-sidebar { grid-row: 1 / 3; display: grid; align-content: start; gap: 2px; padding: var(--space-3) 8px; border-right: 1px solid var(--line); background: var(--surface); }
 .nav-item { justify-content: flex-start; min-height: 34px; border-color: transparent; background: transparent; color: var(--muted); font-weight: 650; text-align: left; }

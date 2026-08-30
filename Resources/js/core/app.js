@@ -797,6 +797,10 @@
   $('map-select').onchange = event => focusSeat(event.target.value, null);
   if ($('scenario-guide')) $('scenario-guide').onclick = () => $('scenario-guide-dialog').showModal();
   $('new-scenario').onclick = () => { $('scenario-name').value = ''; $('scenario-dialog').showModal(); $('scenario-name').focus(); };
+  $('more-new-scenario').onclick = () => {
+    closeMoreMenu();
+    $('new-scenario').click();
+  };
   $('scenario-view-create').onclick = () => $('new-scenario').click();
   $('scenario-refresh').onclick = () => { getDiff(false); refreshSpatialAnalytics(); };
     $('refresh-analytics').onclick = refreshSpatialAnalytics;
