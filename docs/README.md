@@ -9,6 +9,7 @@
 ## Operación y calidad
 
 - `qa/TESTING.md`: estrategia y comandos de prueba.
+- `qa/WCAG_2.5.8_EQUIVALENT_TARGET.md`: decisión trazable sobre el objetivo táctil equivalente de los pines.
 - `qa/MANUAL_QA_CHECKLIST.md`: validación manual.
 - `qa/RELEASE_READINESS.md`: criterios de publicación.
 - `runbooks/WORKFLOW.md`: flujo operativo de trabajo.

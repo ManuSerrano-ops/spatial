@@ -681,6 +681,19 @@
         renderHeatmap();
     if (mode === 'dashboard') renderDashboard();
   }
+  function showActiveMapInList() {
+    if (!ui.mapId) return;
+    appState.filters = { ...appState.filters, quick: 'all', zone: ui.mapId, person: '', device: '', roseta: '', only: false };
+    $('filter-zone').value = ui.mapId;
+    $('filter-person').value = '';
+    $('filter-device').value = '';
+    $('filter-roseta').value = '';
+    $('filter-only').checked = false;
+    $('filter-bar').querySelectorAll('button').forEach(button => button.classList.toggle('active', button.dataset.filter === 'all'));
+    setViewMode('list');
+    workspaceFilterUiFeature.updateCount();
+    $('listview').focus({ preventScroll: true });
+  }
   function selectedProblem() { return appState.validation.results.find(result => result.id === appState.selectedProblemId) || null; }
   function filteredProblems() { return appState.validation.results.filter(result => validationHelpers.problemMatches(result, appState.problemFilters)).filter(result => !appState.problemFilters.workspaceId || getProblemsForWorkspace(appState.problemFilters.workspaceId).includes(result)); }
   function renderProblemFilters() { const results = appState.validation.results; const filters = appState.problemFilters; const bindOptions = (id, values, selected, label) => { const control = $(id); if (!control) return; control.replaceChildren(new Option(label, ''), ...values.map(value => new Option(value.label, value.value))); control.value = selected; }; bindOptions('problem-filter-rule', [...groupProblemsByRule(results).keys()].sort().map(value => ({ value, label: value })), filters.ruleId, 'Todos'); bindOptions('problem-filter-map', maps().map(map => ({ value: map.id, label: map.name || map.id })), filters.mapId, 'Todos'); bindOptions('problem-filter-entity', [...new Set(results.map(result => result.entityType).filter(Boolean))].sort().map(value => ({ value, label: value })), filters.entityType, 'Todas'); $('problem-filter-severity').value = filters.severity; $('problem-filter-text').value = filters.text; }
@@ -855,6 +868,7 @@
   document.querySelectorAll('[data-app-view]').forEach(button => button.onclick = () => setViewMode(button.dataset.appView));
   document.querySelectorAll('[data-dialog]').forEach(button => button.onclick = () => openDialog(button.dataset.dialog));
   $('map-view').onclick = () => setViewMode('map'); $('list-view').onclick = () => setViewMode('list');
+  $('map-to-list').onclick = event => { event.preventDefault(); showActiveMapInList(); };
   workspaceFilterUiFeature.bindControls();
   $('selection-mode').onclick = () => { const enabled = setSelectionMode(!ui.selectionMode); setStatus(enabled ? 'Modo selección rectangular activo.' : 'Modo selección rectangular desactivado. Los puestos ya seleccionados se conservan.'); };
   [['layer-seats', 'seats'], ['layer-grid', 'grid'], ['layer-labels', 'labels'], ['layer-people', 'people'], ['layer-devices', 'devices'], ['layer-rosetas', 'network'], ['layer-problems', 'problems'], ['layer-heatmap', 'heatmap']].forEach(([id, layer]) => $(id).onchange = event => { appState.layers[layer] = event.target.checked; updateLayerPresentation(); render(); });
