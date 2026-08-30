@@ -26,5 +26,15 @@ test('analytics includes a persistent-cluster table with navigation', () => {
   for (const heading of ['Cluster', 'Plano', 'Total', 'Ocupados', 'Libres', 'Reservados', 'Ocupación', 'Problemas']) assert(app.includes(`<th>${heading}</th>`), `cluster metric ${heading} missing`);
   assert(app.includes('row.querySelector(\'button\').onclick = () => openAreaDetail(area.id);'), 'cluster navigation missing');
 });
+test('analytics problems reuse semantic problem rows and table formatting travels with the table', () => {
+  assert(html.includes('<ul id="analytics-problems-list" class="analytics-problems-list"></ul>'), 'analytics problems are not a list');
+  assert(app.includes("button.className = `problem-row severity-${problem.severity.toLowerCase()}`"), 'analytics problems do not reuse problem rows');
+  assert(app.includes("const item = document.createElement('li')"), 'analytics problems lack list items');
+  assert(html.includes('id="analytics-table" class="analytics-table"'), 'map table lacks shared table class');
+  assert(app.includes("table.className = 'analytics-table'"), 'cluster table lacks shared table class');
+  const css = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'app.css'), 'utf8');
+  assert(css.includes('.analytics-table th, .analytics-table td'), 'cell formatting remains tied to scroll container');
+  assert(!css.includes('.analytics-table-scroll th, .analytics-table-scroll td'), 'scroll container still owns table formatting');
+});
 let passed = 0; for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } }
 console.log(`Analytics final harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`); process.exitCode = passed === tests.length ? 0 : 1;
