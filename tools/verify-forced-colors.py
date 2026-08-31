@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -52,7 +53,7 @@ def pin_style_script() -> str:
       ([theme, appearance]) => {
         document.documentElement.dataset.theme = theme;
         document.documentElement.dataset.mapAppearance = appearance;
-        const properties = ['backgroundColor', 'borderColor', 'borderStyle', 'borderRadius', 'borderWidth'];
+        const properties = ['backgroundColor', 'borderColor', 'borderStyle', 'borderRadius', 'borderWidth', 'color'];
         const styleFor = element => Object.fromEntries(properties.map(property => [property, getComputedStyle(element)[property]]));
         const legendFor = state => document.querySelector(`.legend-marker.state-${state}`);
         const states = ['free', 'occupied', 'reserved'];
@@ -82,7 +83,12 @@ def pin_style_script() -> str:
           outlineColor: getComputedStyle(occupied).outlineColor,
           outlineStyle: getComputedStyle(occupied).outlineStyle,
           outlineWidth: getComputedStyle(occupied).outlineWidth,
-          outlineOffset: getComputedStyle(occupied).outlineOffset
+          outlineOffset: getComputedStyle(occupied).outlineOffset,
+          innerRingColor: getComputedStyle(occupied, '::before').borderColor,
+          innerRingStyle: getComputedStyle(occupied, '::before').borderStyle,
+          innerRingWidth: getComputedStyle(occupied, '::before').borderWidth,
+          innerRingInset: getComputedStyle(occupied, '::before').inset,
+          innerRingContent: getComputedStyle(occupied, '::before').content
         };
         const resolveSystemColor = (property, value) => {
           const probe = document.createElement('span');
@@ -130,8 +136,62 @@ def assert_focus_visible(result: dict[str, Any], context: str) -> None:
         raise AssertionError(f"El foco no tiene contorno visible en {context}: {focused}")
     if all(before[key] == focused[key] for key in ("outlineColor", "outlineStyle", "outlineWidth", "outlineOffset")):
         raise AssertionError(f"El pin ocupado con foco no difiere del no enfocado en {context}: {focused}")
-    if focused["outlineColor"] == result["pins"]["occupied"]["backgroundColor"]:
-        raise AssertionError(f"El foco comparte color con el estado ocupado en {context}: {focused}")
+    if focused["innerRingColor"] != result["systemColors"]["CanvasText"] or focused["innerRingStyle"] == "none" or focused["innerRingWidth"] == "0px":
+        raise AssertionError(f"El foco no conserva el anillo interior CanvasText en {context}: {focused}")
+    assert_focus_contrast(result, context)
+
+
+def parse_rgb(value: str) -> tuple[int, int, int]:
+    match = re.fullmatch(r"rgb\((\d+),\s*(\d+),\s*(\d+)\)", value)
+    if not match:
+        raise AssertionError(f"Color computado no RGB: {value}")
+    return tuple(int(channel) for channel in match.groups())
+
+
+def relative_luminance(value: str) -> float:
+    channels = []
+    for channel in parse_rgb(value):
+        normalized = channel / 255
+        channels.append(normalized / 12.92 if normalized <= 0.04045 else ((normalized + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+
+
+def contrast_ratio(foreground: str, background: str) -> float:
+    lighter, darker = sorted((relative_luminance(foreground), relative_luminance(background)), reverse=True)
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def focus_contrasts(result: dict[str, Any]) -> dict[str, float]:
+    canvas_text = result["systemColors"]["CanvasText"]
+    return {
+        state: contrast_ratio(canvas_text, result["pins"][state]["backgroundColor"])
+        for state in ("free", "occupied", "reserved")
+    }
+
+
+def assert_focus_contrast(result: dict[str, Any], context: str) -> None:
+    contrasts = focus_contrasts(result)
+    failures = {state: value for state, value in contrasts.items() if value < 3}
+    if failures:
+        raise AssertionError(f"El anillo interior de foco no alcanza 3:1 en {context}: {failures}")
+
+
+def assert_combination_equivalence(results: list[tuple[str, str, dict[str, Any]]]) -> None:
+    baseline = results[0][2]
+    for theme, appearance, result in results:
+        context = f"{theme} / mapa {appearance}"
+        for family in ("pins", "legend"):
+            for state in ("free", "occupied", "reserved"):
+                for property_name, expected in baseline[family][state].items():
+                    known_dark_selection = theme == "penpot-dark" and state == "occupied" and property_name in {"backgroundColor", "color"}
+                    if not known_dark_selection and result[family][state][property_name] != expected:
+                        raise AssertionError(
+                            f"{family} {state}.{property_name} difiere del baseline fuera de la variación "
+                            f"SelectedItem conocida en {context}."
+                        )
+        for property_name, expected in baseline["focused"].items():
+            if result["focused"][property_name] != expected:
+                raise AssertionError(f"El foco difiere del baseline en {context}: {property_name}")
 
 
 def compact(style: dict[str, str]) -> str:
@@ -196,6 +256,7 @@ def main() -> None:
                     assert_legend_matches(result, label)
                     assert_focus_visible(result, label)
                     results.append((theme, appearance, result))
+            assert_combination_equivalence(results)
             browser.close()
     finally:
         server.shutdown()
@@ -212,6 +273,14 @@ def main() -> None:
             f"{compact(result['pins']['occupied'])} | {compact(result['pins']['reserved'])} | {focus} |"
         )
     print()
+    print("El anillo interior CanvasText contrasta contra todos los rellenos de pin:")
+    print("| Tema | Plano | Libre | Ocupado | Reservado |")
+    print("|---|---|---:|---:|---:|")
+    for theme, appearance, result in results:
+        contrasts = focus_contrasts(result)
+        print(f"| {theme} | {appearance} | {contrasts['free']:.2f}:1 | {contrasts['occupied']:.2f}:1 | {contrasts['reserved']:.2f}:1 |")
+    print()
+    print("Invariante de equivalencia: las ocho combinaciones coinciden salvo SelectedItem/SelectedItemText en penpot-dark.")
     print("Colores del sistema que Chromium resolvió en la primera combinación:")
     print(json.dumps(results[0][2]["systemColors"], ensure_ascii=False, indent=2))
 

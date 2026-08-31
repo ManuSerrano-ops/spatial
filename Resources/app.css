@@ -524,4 +524,13 @@ main.app-shell > .workspace-region { overflow: hidden; }
     outline: 3px solid Highlight;
     outline-offset: 4px;
   }
+
+  .pin:focus-visible::before {
+    position: absolute;
+    inset: -3px;
+    border: 2px solid CanvasText;
+    border-radius: inherit;
+    content: "";
+    pointer-events: none;
+  }
 }
