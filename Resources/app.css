@@ -475,3 +475,53 @@ main.app-shell > .workspace-region { overflow: hidden; }
 @media (max-height: 620px) { .detail-panel-header .detail-summary { display: none; } .statusbar { min-height: 0; } }
 @media (max-width: 900px) { .detail-panel { position: fixed; top: var(--topbar-height); right: 0; bottom: var(--statusbar-height); width: min(390px, 92vw); height: auto; min-height: 0; } }
 @media (max-width: 700px) { .area-detail-actions, .area-detail-danger { grid-template-columns: minmax(0, 1fr); } .area-detail-member > button:first-child { grid-template-columns: minmax(0, 1fr); } .bulk-bar #bulk-create-area { flex: 1 1 100%; } }
+
+/* Los pines transmiten estado solo por color y forma; conservan esos dos canales
+   con los colores de alto contraste elegidos por el sistema operativo. */
+@media (forced-colors: active) {
+  .pin,
+  :root[data-map-appearance="light"] .pin,
+  .legend-marker.state-free,
+  .legend-marker.state-occupied,
+  .legend-marker.state-reserved {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  .pin > * { forced-color-adjust: auto; }
+
+  .pin[data-state="free"],
+  :root[data-map-appearance="light"] .pin[data-state="free"],
+  .legend-marker.state-free {
+    background: Canvas;
+    border-color: CanvasText;
+    border-style: solid;
+    border-radius: 50%;
+    color: CanvasText;
+  }
+
+  .pin[data-state="occupied"],
+  :root[data-map-appearance="light"] .pin[data-state="occupied"],
+  .legend-marker.state-occupied {
+    background: SelectedItem;
+    border-color: CanvasText;
+    border-style: solid;
+    border-radius: 50%;
+    color: SelectedItemText;
+  }
+
+  .pin[data-state="reserved"],
+  :root[data-map-appearance="light"] .pin[data-state="reserved"],
+  .legend-marker.state-reserved {
+    background: Canvas;
+    border: 4px double CanvasText;
+    border-radius: 4px;
+    color: CanvasText;
+  }
+
+  .pin:focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 4px;
+  }
+}
