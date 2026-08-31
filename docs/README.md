@@ -17,6 +17,7 @@
 
 ## Contexto
 
-- `decisions/`: diseños y decisiones de persistencia y retención.
+- `decisions/`: diseños y decisiones de persistencia, retención y renderizado en contraste alto.
+- `decisions/FORCED_COLORS_RENDERING.md`: restricción de Chromium y patrón para indicadores en `forced-colors`.
 - `plans/`: planes de producto/rediseño.
 - `reference/`: inventarios y auditorías de funcionalidades.
