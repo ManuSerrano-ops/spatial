@@ -12,14 +12,18 @@ namespace PlanoOpenSpaceIT.Windows;
 public partial class MainWindow : Window
 {
     private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-    private DataStore? _store;
-    private WebViewBridge? _bridge;
+    private readonly WindowInitialization<DataStore, WebViewBridge> _initialization;
     private readonly UserPreferencesStore _userPreferences = new();
     private readonly ExportFolderResolver _exportFolderResolver;
     private bool _isClosing;
 
     public MainWindow()
     {
+        _initialization = new WindowInitialization<DataStore, WebViewBridge>(
+            DataStore.Create,
+            store => new WebViewBridge(store),
+            store => store.LogLifecycleStart(),
+            SubscribeWebMessages);
         _exportFolderResolver = new ExportFolderResolver(_userPreferences, new WindowsExportFolderDialog());
         InitializeComponent();
         Loaded += OnLoaded;
@@ -27,29 +31,39 @@ public partial class MainWindow : Window
         Closed += OnClosed;
     }
 
-    private async void OnLoaded(object sender, RoutedEventArgs e)
+    private async void OnLoaded(object sender, RoutedEventArgs e) => await InitializeAsync();
+
+    private async void OnRetry(object sender, RoutedEventArgs e) => await InitializeAsync();
+
+    private async Task InitializeAsync()
     {
+        ErrorPanel.Visibility = Visibility.Collapsed;
         try
         {
-            _store = DataStore.Create();
-            _bridge = new WebViewBridge(_store);
-            _store.LogLifecycleStart();
-            Browser.CreationProperties = new CoreWebView2CreationProperties
-            {
-                UserDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PlanoOpenSpaceITUiFigma", "WebView2")
-            };
-            await Browser.EnsureCoreWebView2Async();
-            Browser.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
-            var resourcesPath = ExtractEmbeddedResources();
-            var index = Path.Combine(resourcesPath, "index.html");
-            if (!File.Exists(index)) throw new FileNotFoundException("No se encontró index.html en los recursos embebidos.", index);
-            Browser.CoreWebView2.SetVirtualHostNameToFolderMapping("plano.local", resourcesPath, CoreWebView2HostResourceAccessKind.Allow);
-            Browser.Source = new Uri("https://plano.local/index.html");
+            await _initialization.InitializeAsync(InitializeWebViewAsync);
         }
         catch (Exception ex)
         {
-            ErrorText.Text = $"No se pudo iniciar Plano Open Space IT.\n\n{ex.Message}";
+            ErrorText.Text = $"No se pudo iniciar Plano Open Space IT.\n\n{UserFacingError(ex)}";
             ErrorPanel.Visibility = Visibility.Visible;
+            ErrorPanel.Focus();
+        }
+    }
+
+    private void OnOpenLogs(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var configPath = Path.Combine(AppContext.BaseDirectory, "config.json");
+            var config = JsonSerializer.Deserialize<AppConfig>(File.ReadAllText(configPath)) ?? throw new InvalidDataException();
+            var logsPath = Path.Combine(config.NetworkRoot, config.LogsFolder);
+            Directory.CreateDirectory(logsPath);
+            Process.Start(new ProcessStartInfo(logsPath) { UseShellExecute = true });
+        }
+        catch
+        {
+            ErrorText.Text = "No se pudo abrir la carpeta de logs.";
+            ErrorPanel.Focus();
         }
     }
 
@@ -57,8 +71,25 @@ public partial class MainWindow : Window
     {
         _isClosing = true;
         if (Browser.CoreWebView2 is not null) Browser.CoreWebView2.WebMessageReceived -= OnWebMessageReceived;
-        _store?.LogLifecycleClosing();
+        _initialization.Store?.LogLifecycleClosing();
     }
+
+    private async Task InitializeWebViewAsync(Action subscribeWebMessages)
+    {
+        Browser.CreationProperties = new CoreWebView2CreationProperties
+        {
+            UserDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PlanoOpenSpaceITUiFigma", "WebView2")
+        };
+        await Browser.EnsureCoreWebView2Async();
+        subscribeWebMessages();
+        var resourcesPath = ExtractEmbeddedResources();
+        var index = Path.Combine(resourcesPath, "index.html");
+        if (!File.Exists(index)) throw new FileNotFoundException("No se encontró index.html en los recursos embebidos.", index);
+        Browser.CoreWebView2.SetVirtualHostNameToFolderMapping("plano.local", resourcesPath, CoreWebView2HostResourceAccessKind.Allow);
+        Browser.Source = new Uri("https://plano.local/index.html");
+    }
+
+    private void SubscribeWebMessages() => Browser.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
 
     private void OnClosed(object? sender, EventArgs e)
     {
@@ -95,7 +126,7 @@ public partial class MainWindow : Window
         if (_isClosing) return;
         if (!IsTrustedWebMessageSource(e.Source))
         {
-            _store?.LogBridgeAction("untrustedOrigin", success: false, durationMs: 0);
+            _initialization.Store?.LogBridgeAction("untrustedOrigin", success: false, durationMs: 0);
             return;
         }
         string action = "unknown";
@@ -136,7 +167,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            if (!dispatched) _store?.LogBridgeAction("unknown", success: false, stopwatch.ElapsedMilliseconds);
+            if (!dispatched) _initialization.Store?.LogBridgeAction("unknown", success: false, stopwatch.ElapsedMilliseconds);
             if (!_isClosing) Reply($"{action}Result", false, null, UserFacingError(ex));
         }
     }
@@ -168,7 +199,7 @@ public partial class MainWindow : Window
         Title = title;
     }
 
-    private WebViewBridge Bridge => _bridge ?? throw new InvalidOperationException("El almacén de datos no se ha inicializado.");
+    private WebViewBridge Bridge => _initialization.Bridge ?? throw new InvalidOperationException("El almacén de datos no se ha inicializado.");
 
     private void Reply(string action, bool success, JsonNode? data, string? error)
     {

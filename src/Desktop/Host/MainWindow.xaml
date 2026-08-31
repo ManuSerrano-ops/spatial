@@ -8,9 +8,16 @@
                       xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
                       AutomationProperties.AutomationId="PlanoOpenSpaceIT.WebView"
                       AutomationProperties.Name="Contenido de la aplicación Plano Open Space IT" />
-        <Border x:Name="ErrorPanel" Background="White" Padding="32" Visibility="Collapsed"
+        <Border x:Name="ErrorPanel" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Padding="32" Visibility="Collapsed" Focusable="True"
                 AutomationProperties.AutomationId="PlanoOpenSpaceIT.ErrorPanel">
-            <TextBlock x:Name="ErrorText" TextWrapping="Wrap" FontSize="16" />
+            <StackPanel MaxWidth="680">
+                <TextBox x:Name="ErrorText" IsReadOnly="True" TextWrapping="Wrap" FontSize="16" BorderThickness="0" Background="Transparent"
+                         AutomationProperties.LiveSetting="Assertive" />
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <Button x:Name="RetryButton" Padding="14,7" Click="OnRetry">Reintentar</Button>
+                    <Button x:Name="OpenLogsButton" Margin="10,0,0,0" Padding="14,7" Click="OnOpenLogs">Abrir carpeta de logs</Button>
+                </StackPanel>
+            </StackPanel>
         </Border>
     </Grid>
 </Window>

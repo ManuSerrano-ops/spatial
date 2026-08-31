@@ -19,6 +19,8 @@ if (args is ["--hold-lock", var lockPath])
 var tests = new (string Name, Action Test)[]
 {
     ("trusted WebView origin", TrustedWebViewOrigin),
+    ("window initialization is idempotent", WindowInitializationIsIdempotent),
+    ("window initialization retries WebView without duplicating session", WindowInitializationRetriesWebViewWithoutDuplicatingSession),
     ("user preferences preserve keyboard shortcut choice", UserPreferencesPreserveKeyboardShortcutChoice),
     ("reality load and display locations", RealityLoadAndDisplayLocations),
     ("scenario diff and validation", ScenarioDiffAndValidation),
@@ -55,6 +57,77 @@ static void TrustedWebViewOrigin()
     Assert(MainWindow.IsTrustedWebMessageSource("https://plano.local/index.html"), "The local virtual host is trusted.");
     Assert(!MainWindow.IsTrustedWebMessageSource("https://example.invalid/index.html"), "External origins are rejected.");
     Assert(!MainWindow.IsTrustedWebMessageSource("file:///tmp/index.html"), "File origins are rejected.");
+}
+
+static void WindowInitializationIsIdempotent()
+{
+    var storeCount = 0;
+    var bridgeCount = 0;
+    var lifecycleStartCount = 0;
+    var subscriptionCount = 0;
+    var webViewInitializationCount = 0;
+    var initialization = new WindowInitialization<object, object>(
+        () => { storeCount++; return new object(); },
+        _ => { bridgeCount++; return new object(); },
+        _ => lifecycleStartCount++,
+        () => subscriptionCount++);
+
+    Task InitializeWebView(Action subscribe)
+    {
+        webViewInitializationCount++;
+        subscribe();
+        return Task.CompletedTask;
+    }
+
+    initialization.InitializeAsync(InitializeWebView).GetAwaiter().GetResult();
+    var firstStore = initialization.Store;
+    var firstBridge = initialization.Bridge;
+    initialization.InitializeAsync(InitializeWebView).GetAwaiter().GetResult();
+
+    Equal(1, storeCount, "Two startup calls create one DataStore.");
+    Equal(1, bridgeCount, "Two startup calls create one WebView bridge.");
+    Equal(1, lifecycleStartCount, "Two startup calls log lifecycle.start once.");
+    Equal(1, subscriptionCount, "Two startup calls attach one WebView message handler.");
+    Equal(1, webViewInitializationCount, "A completed startup does not reinitialize WebView2.");
+    Assert(ReferenceEquals(firstStore, initialization.Store), "The DataStore instance remains stable.");
+    Assert(ReferenceEquals(firstBridge, initialization.Bridge), "The WebView bridge instance remains stable.");
+}
+
+static void WindowInitializationRetriesWebViewWithoutDuplicatingSession()
+{
+    var storeCount = 0;
+    var bridgeCount = 0;
+    var lifecycleStartCount = 0;
+    var subscriptionCount = 0;
+    var webViewInitializationCount = 0;
+    var initialization = new WindowInitialization<object, object>(
+        () => { storeCount++; return new object(); },
+        _ => { bridgeCount++; return new object(); },
+        _ => lifecycleStartCount++,
+        () => subscriptionCount++);
+
+    Task FailAfterSubscription(Action subscribe)
+    {
+        webViewInitializationCount++;
+        subscribe();
+        return Task.FromException(new InvalidOperationException("WebView2 no disponible."));
+    }
+
+    try { initialization.InitializeAsync(FailAfterSubscription).GetAwaiter().GetResult(); }
+    catch (InvalidOperationException) { }
+
+    initialization.InitializeAsync(subscribe =>
+    {
+        webViewInitializationCount++;
+        subscribe();
+        return Task.CompletedTask;
+    }).GetAwaiter().GetResult();
+
+    Equal(1, storeCount, "A retry after WebView failure reuses the DataStore.");
+    Equal(1, bridgeCount, "A retry after WebView failure reuses the bridge.");
+    Equal(1, lifecycleStartCount, "A retry after WebView failure preserves one lifecycle.start.");
+    Equal(1, subscriptionCount, "A retry after WebView failure preserves one message handler.");
+    Equal(2, webViewInitializationCount, "A retry repeats only the failed WebView initialization.");
 }
 
 static void UserPreferencesPreserveKeyboardShortcutChoice()
