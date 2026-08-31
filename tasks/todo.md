@@ -26,7 +26,15 @@
 ## Defectos anotados
 
 - [ ] **P3 · Diálogo de forma de cluster inalcanzable.** `#cluster-shape-dialog` está declarado en `Resources/index.html`, pero no tiene ninguna ruta de apertura con `showModal()`, `show()` ni `open`; `#apply-dialog` no es un diálogo, sino el botón de aplicar dentro de `#diff-dialog`. No eliminar ni conectar este código fuera de una tarea dedicada.
-- [ ] **P2 · Coordenadas de puestos extremadamente próximas en Sur.** La medición de WCAG 2.5.8 encontró pares distintos entre 7,38 y 13,34 px a 88,67 % de zoom inicial, incluidos `S-E19`/`S-E21`. Revisar estos datos con el plano físico y añadir validación de separación si se confirman duplicados o posiciones erróneas; no corregirlos desde CSS.
+- [ ] **P2 · Coordenadas de puestos extremadamente próximas en Sur.** A 88,67 % de zoom inicial, la mediana de distancia al vecino más próximo es 22,90 px y hay 29 pares únicos por debajo de 20 px. Los cinco mínimos (7,38–13,34 px) son una cola extrema y sus IDs saltan uno o dos números, patrón que apunta a coordenadas de captura erróneas más que a mesas consecutivas. Contrastar con el plano físico y añadir validación de separación si se confirman anomalías; no corregirlos desde CSS.
+
+  | Puesto A | Coordenadas A | Puesto B | Coordenadas B | Distancia |
+  |---|---|---|---|---:|
+  | `S-E19` | `(0,56907105, 0,53004736)` | `S-E21` | `(0,57587355, 0,53034848)` | 7,38 px |
+  | `S-O23` | `(0,63909388, 0,51705474)` | `S-O26` | `(0,64229321, 0,50725216)` | 8,28 px |
+  | `S-O40` | `(0,76605028, 0,45604771)` | `S-O42` | `(0,76574999, 0,47045505)` | 11,06 px |
+  | `S-O19` | `(0,61407042, 0,46503136)` | `S-O22` | `(0,62147075, 0,45162579)` | 13,05 px |
+  | `S-O37` | `(0,74313742, 0,46604976)` | `S-O39` | `(0,74383202, 0,44868491)` | 13,34 px |
 - [ ] **P3 · I+D y Quality Control no tienen puestos definidos.** `runtime-data/data/maps.json` configura `id` y `qc`, pero ambos contienen cero `seats`. Confirmar si son planos previstos sin inventario o datos operativos incompletos.
 - [ ] **P1 · Incumplimiento WCAG 2.1.1: coordenadas no operables con teclado.** Mover y Añadir puesto terminan exclusivamente con un clic sobre `#plan`; no se pueden completar sin puntero. Diseñar una alternativa de posicionamiento por teclado para ambas operaciones en una tarea dedicada.
 - [x] **P1 · Distribución incompleta.** Resuelto mediante `deployment/New-DeploymentPackage.ps1` e `Install-PlanoOpenSpaceIT.ps1`: generan un paquete mínimo, inicializan de forma segura los nueve JSON compartidos, validan instalaciones existentes y nunca sobrescriben datos. Diseño en `docs/reference/DEPLOYMENT_DESIGN.md`.

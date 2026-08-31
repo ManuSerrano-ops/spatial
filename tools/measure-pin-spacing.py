@@ -12,6 +12,7 @@ import os
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from statistics import median
 from typing import Any
 
 from playwright.sync_api import sync_playwright
@@ -127,6 +128,9 @@ def main() -> None:
                       const nearest = centers.map((center, index) => Math.min(...centers
                         .filter((_, otherIndex) => otherIndex !== index)
                         .map(other => Math.hypot(center.x - other.x, center.y - other.y))));
+                      const pairDistances = centers.flatMap((center, index) => centers
+                        .slice(index + 1)
+                        .map(other => Math.hypot(center.x - other.x, center.y - other.y)));
                       const stage = document.querySelector('#stage');
                       const plan = document.querySelector('#plan');
                       const transform = getComputedStyle(stage).transform;
@@ -135,6 +139,7 @@ def main() -> None:
                         pinCount: centers.length,
                         minimum: nearest.length ? Math.min(...nearest) : null,
                         nearest,
+                        pairDistancesBelow20: pairDistances.filter(distance => distance < 20).length,
                         zoom: match ? Number(match[1]) : 1,
                         viewport: [document.querySelector('#mapwrap').clientWidth, document.querySelector('#mapwrap').clientHeight],
                         plan: [plan.getBoundingClientRect().width, plan.getBoundingClientRect().height]
@@ -181,15 +186,17 @@ def main() -> None:
     print("P5 = percentil 5 de la distancia al vecino más próximo de cada pin.")
     print(f"Ruta teclado mapa → lista → inspector verificada: {'sí' if keyboard_equivalence_verified else 'no'}." )
     print()
-    print("| Plano | Pines | Zoom inicial | Área visible | Plano renderizado | Mínimo | P5 |")
-    print("|---|---:|---:|---:|---:|---:|---:|")
+    print("| Plano | Pines | Zoom inicial | Área visible | Plano renderizado | Mínimo | P5 | P50/mediana | Pares <20 px |")
+    print("|---|---:|---:|---:|---:|---:|---:|---:|---:|")
     for map_data, result in zip(maps, measurements, strict=True):
         viewport = f"{result['viewport'][0]}×{result['viewport'][1]}"
         plan = f"{result['plan'][0]:.0f}×{result['plan'][1]:.0f}"
         print(
             f"| {map_data['name']} ({map_data['id']}) | {result['pinCount']} | "
             f"{result['zoom'] * 100:.2f} % | {viewport} | {plan} | "
-            f"{format_distance(result['minimum'])} | {format_distance(percent5(result['nearest']))} |"
+            f"{format_distance(result['minimum'])} | {format_distance(percent5(result['nearest']))} | "
+            f"{format_distance(median(result['nearest']) if result['nearest'] else None)} | "
+            f"{result['pairDistancesBelow20']} |"
         )
 
 
