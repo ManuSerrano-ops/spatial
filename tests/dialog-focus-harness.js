@@ -20,18 +20,21 @@ const equal = (actual, expected, message) => {
 function createFocusable(document, connected = true) {
   return {
     isConnected: connected,
-    focus() { document.activeElement = this; }
+    focus() { document.activeElement = this; },
+    blur() { document.activeElement = document.body; }
   };
 }
 
-function createDialog() {
+function createDialog(document = null) {
   let closeListener = null;
   return {
     open: false,
     addEventListener(type, listener, options) {
       if (type === 'close' && options?.once) closeListener = listener;
     },
-    showModal() { this.open = true; },
+    showModal() { this.open = true; if (document) document.activeElement = this; },
+    contains(value) { return value === this; },
+    blur() { if (document) document.activeElement = document.body; },
     close() {
       this.open = false;
       const listener = closeListener;
@@ -42,6 +45,8 @@ function createDialog() {
 }
 
 function loadFocusHelpers(document, dialogs) {
+  document.body ??= { focus() { document.activeElement = this; } };
+  document.documentElement ??= {};
   const source = app
     .match(/  function captureFocusRestorer[\s\S]*?\n  function hideContextMenu/)[0]
     .replace(/\n  function hideContextMenu$/, '');
@@ -104,7 +109,19 @@ test('a disconnected opener is ignored safely', () => {
   document.activeElement = opener;
   openDialog('dialog');
   dialogs.dialog.close();
-  assert(document.activeElement === opener, 'closing changed focus without a connected opener');
+  assert(document.activeElement === document.body, 'closing did not return focus to body for a disconnected opener');
+});
+
+test('closing without an opener leaves focus on body, not in the closed dialog', () => {
+  const document = { activeElement: null, body: null };
+  document.body = { focus() { document.activeElement = this; } };
+  document.activeElement = document.body;
+  const dialogs = { dialog: createDialog(document) };
+  const { openDialog } = loadFocusHelpers(document, dialogs);
+  openDialog('dialog');
+  dialogs.dialog.close();
+  assert(!dialogs.dialog.contains(document.activeElement), 'focus remained in the closed dialog');
+  assert(document.activeElement === document.body, 'focus did not return to body');
 });
 
 test('the restorer has no dependency on an opener outside another dialog', () => {
