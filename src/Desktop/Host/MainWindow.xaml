@@ -1,11 +1,15 @@
 <Window x:Class="PlanoOpenSpaceIT.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Plano Open Space IT" Width="1400" Height="900" MinWidth="1100" MinHeight="560">
+        Title="Plano Open Space IT" Width="1400" Height="900" MinWidth="1100" MinHeight="560"
+        AutomationProperties.AutomationId="PlanoOpenSpaceIT.MainWindow">
     <Grid>
         <wv2:WebView2 x:Name="Browser"
-                      xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" />
-        <Border x:Name="ErrorPanel" Background="White" Padding="32" Visibility="Collapsed">
+                      xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+                      AutomationProperties.AutomationId="PlanoOpenSpaceIT.WebView"
+                      AutomationProperties.Name="Contenido de la aplicación Plano Open Space IT" />
+        <Border x:Name="ErrorPanel" Background="White" Padding="32" Visibility="Collapsed"
+                AutomationProperties.AutomationId="PlanoOpenSpaceIT.ErrorPanel">
             <TextBlock x:Name="ErrorText" TextWrapping="Wrap" FontSize="16" />
         </Border>
     </Grid>
