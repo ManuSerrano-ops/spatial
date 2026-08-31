@@ -51,10 +51,19 @@ pantalla.
 | Mover | Abrir detalle; `Tab` hasta **Mover** y `Enter` | Activa la misma selección de destino en el plano. |
 | Ver historial | Abrir detalle; `Tab` hasta **Historial** y `Enter` | Abre el mismo diálogo de historial. |
 
-La colocación final de **Mover** usa hoy un clic de coordenada sobre el plano,
-tanto desde la ruta del pin como desde la lista. Es una limitación transversal,
-registrada en `tasks/todo.md`; no es una acción exclusiva del pin ni se cambia
-como parte de esta tarea.
+## Incumplimiento conocido — WCAG 2.1.1 Teclado (nivel A)
+
+La colocación final de **Mover** exige hoy un clic de coordenada sobre `#plan`.
+La acción se alcanza con teclado desde la ficha, pero no se puede completar sin
+puntero. Esto incumple WCAG 2.1.1, nivel A; no queda mitigado por la excepción
+de control equivalente de WCAG 2.5.8.
+
+El alcance no se limita a **Mover**: **Añadir puesto** también activa un modo
+que termina exclusivamente con un clic de coordenada sobre `#plan`. La
+selección de destinos del planificador no entra en este incumplimiento porque
+sus pines son botones nativos y se pueden activar con teclado. No se implementa
+la corrección en esta tarea; debe planificarse y resolverse de forma conjunta
+para ambas operaciones espaciales.
 
 ## Verificación manual
 
