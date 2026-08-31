@@ -43,25 +43,25 @@
     <div class="header-actions">
       <label class="zone-control"><span>Zona</span><select id="map-select" aria-label="Plano o zona"></select></label>
       <select id="scenario-mode" aria-label="Contexto de datos"></select>
-      <button id="new-scenario" type="button" title="Crea una simulación aislada sin modificar la realidad."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-plus"></use></svg><span>Escenario</span></button>
-      <button id="add-seat" class="add-seat-action" type="button" title="Activa el modo para crear un puesto haciendo clic sobre el plano."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-armchair"></use></svg><span id="add-seat-label">Añadir puesto</span></button>
+      <button id="new-scenario" type="button" aria-label="Crea una simulación aislada sin modificar la realidad."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-plus"></use></svg><span>Escenario</span></button>
+      <button id="add-seat" class="add-seat-action" type="button" aria-label="Activa el modo para crear un puesto haciendo clic sobre el plano."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-armchair"></use></svg><span id="add-seat-label">Añadir puesto</span></button>
       <div id="more-menu" class="more-menu">
         <button id="more" class="more-toggle icon-only" type="button" aria-label="Más acciones" aria-expanded="false" title="Más acciones"><svg class="icon icon-20" aria-hidden="true"><use href="#icon-ellipsis"></use></svg></button>
         <div id="more-panel" class="more-panel">
           <button id="more-new-scenario" class="responsive-more-action" type="button"><svg class="icon icon-16" aria-hidden="true"><use href="#icon-plus"></use></svg><span>Crear escenario</span></button>
-          <label class="appearance-control" title="Cambia la apariencia local de la aplicación"><svg class="icon icon-16" aria-hidden="true"><use href="#icon-palette"></use></svg><span>Apariencia</span><select id="theme" aria-label="Apariencia"><option value="professional-light">Claro profesional</option><option value="penpot-dark">Penpot oscuro</option><option value="high-contrast">Alto contraste</option><option value="projector">Proyector</option></select></label>
+          <label class="appearance-control" aria-label="Cambia la apariencia local de la aplicación"><svg class="icon icon-16" aria-hidden="true"><use href="#icon-palette"></use></svg><span>Apariencia</span><select id="theme" aria-label="Apariencia"><option value="professional-light">Claro profesional</option><option value="penpot-dark">Penpot oscuro</option><option value="high-contrast">Alto contraste</option><option value="projector">Proyector</option></select></label>
           <label class="single-key-shortcuts-control"><input id="single-key-shortcuts-enabled" type="checkbox" checked><span>Atajos de una tecla</span></label>
-          <button id="undo" type="button" title="Deshace el último cambio del contexto actual." disabled><svg class="icon icon-16" aria-hidden="true"><use href="#icon-undo-2"></use></svg><span>Deshacer</span></button>
-          <button id="history" type="button" title="Muestra el registro auditable de cambios confirmados."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-history"></use></svg><span>Historial</span></button>
-          <button id="diff" type="button" title="Compara el escenario activo con la realidad de partida." disabled><svg class="icon icon-16" aria-hidden="true"><use href="#icon-arrow-left-right"></use></svg><span>Diff</span></button>
-          <button id="backups" type="button" title="Lista puntos de recuperación y permite restaurarlos."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-archive-restore"></use></svg><span>Backups</span></button>
-          <button id="export-excel" type="button" title="Exporta la realidad confirmada al Excel de parcheo de campo."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-file-spreadsheet"></use></svg><span>Exportar</span></button>
-          <button id="integrity" type="button" title="Informa de referencias y estados de datos incoherentes sin corregirlos."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-shield-check"></use></svg><span>Verificar integridad</span></button>
-          <button id="delete-scenario" class="danger" type="button" title="Elimina el escenario activo y todos sus cambios propuestos." disabled><svg class="icon icon-16" aria-hidden="true"><use href="#icon-trash-2"></use></svg><span>Eliminar escenario</span></button>
+          <button id="undo" type="button" aria-label="Deshace el último cambio del contexto actual." disabled><svg class="icon icon-16" aria-hidden="true"><use href="#icon-undo-2"></use></svg><span>Deshacer</span></button>
+          <button id="history" type="button" aria-label="Muestra el registro auditable de cambios confirmados."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-history"></use></svg><span>Historial</span></button>
+          <button id="diff" type="button" aria-label="Compara el escenario activo con la realidad de partida." disabled><svg class="icon icon-16" aria-hidden="true"><use href="#icon-arrow-left-right"></use></svg><span>Diff</span></button>
+          <button id="backups" type="button" aria-label="Lista puntos de recuperación y permite restaurarlos."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-archive-restore"></use></svg><span>Backups</span></button>
+          <button id="export-excel" type="button" aria-label="Exporta la realidad confirmada al Excel de parcheo de campo."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-file-spreadsheet"></use></svg><span>Exportar</span></button>
+          <button id="integrity" type="button" aria-label="Informa de referencias y estados de datos incoherentes sin corregirlos."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-shield-check"></use></svg><span>Verificar integridad</span></button>
+          <button id="delete-scenario" class="danger" type="button" aria-label="Elimina el escenario activo y todos sus cambios propuestos." disabled><svg class="icon icon-16" aria-hidden="true"><use href="#icon-trash-2"></use></svg><span>Eliminar escenario</span></button>
         </div>
       </div>
-      <button id="apply" type="button" class="primary" title="Aplica únicamente los cambios seleccionados tras confirmarlo." disabled><svg class="icon icon-16" aria-hidden="true"><use href="#icon-circle-check"></use></svg><span>Aplicar</span></button>
-      <button id="reload" class="icon-only" type="button" aria-label="Recargar datos" title="Vuelve a leer los datos compartidos."><svg class="icon icon-20" aria-hidden="true"><use href="#icon-refresh-cw"></use></svg></button>
+      <button id="apply" type="button" class="primary" aria-label="Aplica únicamente los cambios seleccionados tras confirmarlo." disabled><svg class="icon icon-16" aria-hidden="true"><use href="#icon-circle-check"></use></svg><span>Aplicar</span></button>
+      <button id="reload" class="icon-only" type="button" aria-label="Vuelve a leer los datos compartidos."><svg class="icon icon-20" aria-hidden="true"><use href="#icon-refresh-cw"></use></svg></button>
     </div>
   </header>
 
@@ -78,7 +78,7 @@
     <section class="workspace-region">
       <div class="workspace-header">
         <div class="view-toolbar">
-        <div class="view-switch" role="group" aria-label="Vista"><button id="map-view" class="active" type="button">Mapa</button><button id="list-view" type="button">Lista</button></div><button id="selection-mode" class="selection-mode-toggle" type="button" aria-pressed="false" title="Seleccionar puestos">Seleccionar</button>
+        <div class="view-switch" role="group" aria-label="Vista"><button id="map-view" class="active" type="button">Mapa</button><button id="list-view" type="button">Lista</button></div><button id="selection-mode" class="selection-mode-toggle" type="button" aria-pressed="false" aria-label="Seleccionar puestos">Seleccionar</button>
         <div id="filter-bar" class="filter-bar" aria-label="Filtros rápidos">
           <button data-filter="all" class="active">Todos</button><button data-filter="occupied">Ocupados</button><button data-filter="free">Libres</button><button data-filter="reserved">Reservados</button><button data-filter="partial">Incompletos</button>
         </div>
@@ -139,10 +139,10 @@
   <dialog id="create-cluster-dialog"><form id="create-cluster-form" class="dialog-content"><p class="eyebrow">CLUSTER MANUAL</p><h2>Crear cluster</h2><p id="create-cluster-summary"></p><p id="create-cluster-conflicts" class="detail-summary hidden"></p><label>Nombre<input id="create-cluster-name" required maxlength="80" autocomplete="off" placeholder="Ej. Equipo Finanzas"></label><div class="dialog-actions"><button id="create-cluster-cancel" type="button">Cancelar</button><button id="create-cluster-available" class="hidden" type="button">Crear solo con disponibles</button><button id="create-cluster-move" class="hidden" type="button">Mover y crear</button><button id="create-cluster-confirm" class="primary" type="submit">Crear cluster</button></div></form></dialog>
 
   <dialog id="scenario-dialog"><form method="dialog" class="dialog-content">
-    <button class="dialog-close icon-only" type="button" value="cancel" aria-label="Cerrar" title="Cierra este diálogo sin crear un escenario."><svg class="icon icon-20" aria-hidden="true"><use href="#icon-x"></use></svg></button>
+    <button class="dialog-close icon-only" type="button" value="cancel" aria-label="Cierra este diálogo sin crear un escenario."><svg class="icon icon-20" aria-hidden="true"><use href="#icon-x"></use></svg></button>
     <p class="eyebrow">CONTROL DE CAMBIOS</p><h2><svg class="icon icon-20" aria-hidden="true"><use href="#icon-plus"></use></svg>Crear escenario</h2><p>Los cambios se guardarán aislados hasta aplicarlos.</p>
     <label>Nombre del escenario<input id="scenario-name" required maxlength="100" placeholder="Ej. Reorganización planta 2"></label>
-    <div class="dialog-actions"><button id="cancel-scenario" type="button" title="Descarta el nombre y cierra el diálogo.">Cancelar</button><button id="create-scenario-confirm" class="primary" type="button" title="Crea una simulación aislada a partir de la realidad actual."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-plus"></use></svg><span>Crear escenario</span></button></div>
+    <div class="dialog-actions"><button id="cancel-scenario" type="button" aria-label="Descarta el nombre y cierra el diálogo.">Cancelar</button><button id="create-scenario-confirm" class="primary" type="button" aria-label="Crea una simulación aislada a partir de la realidad actual."><svg class="icon icon-16" aria-hidden="true"><use href="#icon-plus"></use></svg><span>Crear escenario</span></button></div>
   </form></dialog>
 
   <dialog id="undo-dialog"><div class="dialog-content wide-dialog">
