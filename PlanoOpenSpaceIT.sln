@@ -5,6 +5,10 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanoOpenSpaceIT.Windows", "PlanoOpenSpaceIT.Windows.csproj", "{A4FD714D-EE47-46EC-9E40-8D06DCF9A025}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{365EF7B2-B8BC-4F9A-895A-E549173DA52D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanoOpenSpaceIT.Domain", "src\PlanoOpenSpaceIT.Domain\PlanoOpenSpaceIT.Domain.csproj", "{ED7CF6FE-4834-4A3A-AFB5-25C1DC6CD0E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,12 @@ Global
 		{A4FD714D-EE47-46EC-9E40-8D06DCF9A025}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4FD714D-EE47-46EC-9E40-8D06DCF9A025}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4FD714D-EE47-46EC-9E40-8D06DCF9A025}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED7CF6FE-4834-4A3A-AFB5-25C1DC6CD0E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED7CF6FE-4834-4A3A-AFB5-25C1DC6CD0E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED7CF6FE-4834-4A3A-AFB5-25C1DC6CD0E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED7CF6FE-4834-4A3A-AFB5-25C1DC6CD0E6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ED7CF6FE-4834-4A3A-AFB5-25C1DC6CD0E6} = {365EF7B2-B8BC-4F9A-895A-E549173DA52D}
 	EndGlobalSection
 EndGlobal

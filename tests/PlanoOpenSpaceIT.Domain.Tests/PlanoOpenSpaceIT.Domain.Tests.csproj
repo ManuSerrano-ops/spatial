@@ -4,6 +4,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
+    <AssemblyName>PlanoOpenSpaceIT.Domain.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,9 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="../../src/Domain/Workspaces/SeatState.cs" Link="Domain/Workspaces/SeatState.cs" />
-    <Compile Include="../../src/Domain/Validation/ValidationEngine.cs" Link="Domain/Validation/ValidationEngine.cs" />
-    <Compile Include="../../src/Domain/Scenarios/ScenarioDiffEngine.cs" Link="Domain/Scenarios/ScenarioDiffEngine.cs" />
-    <Compile Include="../../src/Domain/Analytics/SpatialAnalyticsEngine.cs" Link="Domain/Analytics/SpatialAnalyticsEngine.cs" />
+    <ProjectReference Include="..\..\src\PlanoOpenSpaceIT.Domain\PlanoOpenSpaceIT.Domain.csproj" />
   </ItemGroup>
 </Project>
