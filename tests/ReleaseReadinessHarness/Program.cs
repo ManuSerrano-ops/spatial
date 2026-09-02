@@ -22,6 +22,13 @@ var tests = new (string Name, Action Test)[]
     ("window initialization is idempotent", WindowInitializationIsIdempotent),
     ("window initialization retries WebView without duplicating session", WindowInitializationRetriesWebViewWithoutDuplicatingSession),
     ("user preferences preserve keyboard shortcut choice", UserPreferencesPreserveKeyboardShortcutChoice),
+    ("window geometry preserves a valid rectangle", WindowGeometryPreservesValidRectangle),
+    ("window geometry falls back to the explicit primary monitor", WindowGeometryFallsBackToPrimaryMonitor),
+    ("window geometry fits an oversized rectangle", WindowGeometryFitsOversizedRectangle),
+    ("window geometry handles invalid numbers", WindowGeometryHandlesInvalidNumbers),
+    ("window geometry repositions negative edges", WindowGeometryRepositionsNegativeEdges),
+    ("window geometry keeps a secondary monitor placement", WindowGeometryKeepsSecondaryMonitorPlacement),
+    ("window geometry handles no monitors", WindowGeometryHandlesNoMonitors),
     ("reality load and display locations", RealityLoadAndDisplayLocations),
     ("scenario diff and validation", ScenarioDiffAndValidation),
     ("planner scenario keeps reality unchanged", PlannerScenarioKeepsRealityUnchanged),
@@ -154,6 +161,56 @@ static void UserPreferencesPreserveKeyboardShortcutChoice()
     {
         if (Directory.Exists(folder)) Directory.Delete(folder, true);
     }
+}
+
+static void WindowGeometryPreservesValidRectangle()
+{
+    var primary = new WindowBounds(0, 0, 1600, 1000);
+    var saved = new WindowBounds(120, 80, 1000, 700);
+    Equal(saved, WindowGeometry.Clamp(saved, new[] { primary }, primary), "A valid rectangle is unchanged.");
+}
+
+static void WindowGeometryFallsBackToPrimaryMonitor()
+{
+    var primary = new WindowBounds(0, 0, 1600, 1000);
+    var secondary = new WindowBounds(1600, 0, 1200, 1000);
+    var disconnected = new WindowBounds(4200, 100, 1000, 700);
+    Equal(new WindowBounds(100, 50, 1400, 900), WindowGeometry.Clamp(disconnected, new[] { primary, secondary }, primary), "A disconnected monitor falls back centered on the explicit primary monitor.");
+}
+
+static void WindowGeometryFitsOversizedRectangle()
+{
+    var primary = new WindowBounds(0, 0, 1600, 900);
+    var oversized = new WindowBounds(100, 100, 2400, 1400);
+    Equal(new WindowBounds(0, 0, 1600, 900), WindowGeometry.Clamp(oversized, new[] { primary }, primary), "A rectangle larger than its screen is fitted to that working area.");
+}
+
+static void WindowGeometryHandlesInvalidNumbers()
+{
+    var primary = new WindowBounds(0, 0, 1600, 1000);
+    var invalid = new WindowBounds(double.NaN, 0, double.PositiveInfinity, 700);
+    Equal(new WindowBounds(100, 50, 1400, 900), WindowGeometry.Clamp(invalid, new[] { primary }, primary), "Invalid saved values receive a centered safe fallback.");
+}
+
+static void WindowGeometryRepositionsNegativeEdges()
+{
+    var primary = new WindowBounds(0, 0, 1600, 1000);
+    var partial = new WindowBounds(-120, -40, 800, 600);
+    Equal(new WindowBounds(0, 0, 800, 600), WindowGeometry.Clamp(partial, new[] { primary }, primary), "A rectangle beyond the top or left edge is repositioned instead of discarded.");
+}
+
+static void WindowGeometryKeepsSecondaryMonitorPlacement()
+{
+    var primary = new WindowBounds(0, 0, 1600, 1000);
+    var secondary = new WindowBounds(1600, 0, 1280, 1024);
+    var saved = new WindowBounds(1800, 120, 1000, 800);
+    Equal(saved, WindowGeometry.Clamp(saved, new[] { primary, secondary }, primary), "A rectangle centered on the secondary monitor remains there.");
+}
+
+static void WindowGeometryHandlesNoMonitors()
+{
+    var saved = new WindowBounds(100, 100, 1000, 700);
+    Equal(WindowGeometry.DefaultBounds, WindowGeometry.Clamp(saved, [], default), "No working areas return the documented safe default at 0,0.");
 }
 
 static void RealityLoadAndDisplayLocations()

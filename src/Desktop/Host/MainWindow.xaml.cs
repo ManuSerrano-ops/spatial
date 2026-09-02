@@ -26,10 +26,13 @@ public partial class MainWindow : Window
             SubscribeWebMessages);
         _exportFolderResolver = new ExportFolderResolver(_userPreferences, new WindowsExportFolderDialog());
         InitializeComponent();
+        SourceInitialized += OnSourceInitialized;
         Loaded += OnLoaded;
         Closing += OnClosing;
         Closed += OnClosed;
     }
+
+    private void OnSourceInitialized(object? sender, EventArgs e) => RestoreWindowPlacement();
 
     private async void OnLoaded(object sender, RoutedEventArgs e) => await InitializeAsync();
 
@@ -69,10 +72,47 @@ public partial class MainWindow : Window
 
     private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
+        PersistWindowPlacement();
         _isClosing = true;
         if (Browser.CoreWebView2 is not null) Browser.CoreWebView2.WebMessageReceived -= OnWebMessageReceived;
         _initialization.Store?.LogLifecycleClosing();
     }
+
+    private void RestoreWindowPlacement()
+    {
+        var preferences = _userPreferences.Load();
+        if (preferences.WindowWidth is not double width
+            || preferences.WindowHeight is not double height
+            || preferences.WindowLeft is not double left
+            || preferences.WindowTop is not double top) return;
+
+        var screens = System.Windows.Forms.Screen.AllScreens;
+        var workingAreas = screens.Select(screen => ToWindowBounds(screen.WorkingArea)).ToArray();
+        var primaryScreen = screens.FirstOrDefault(screen => screen.Primary);
+        var primaryWorkingArea = primaryScreen is null ? default : ToWindowBounds(primaryScreen.WorkingArea);
+        var restored = WindowGeometry.Clamp(new WindowBounds(left, top, width, height), workingAreas, primaryWorkingArea);
+
+        Left = restored.Left;
+        Top = restored.Top;
+        Width = restored.Width;
+        Height = restored.Height;
+        if (string.Equals(preferences.WindowState, nameof(WindowState.Maximized), StringComparison.Ordinal)) WindowState = WindowState.Maximized;
+    }
+
+    private void PersistWindowPlacement()
+    {
+        try
+        {
+            var bounds = WindowState == WindowState.Maximized ? RestoreBounds : new Rect(Left, Top, Width, Height);
+            _userPreferences.SaveWindowPlacement(new WindowBounds(bounds.Left, bounds.Top, bounds.Width, bounds.Height), WindowState == WindowState.Maximized);
+        }
+        catch
+        {
+            // Closing must not be blocked when local UI preferences cannot be written.
+        }
+    }
+
+    private static WindowBounds ToWindowBounds(System.Drawing.Rectangle area) => new(area.Left, area.Top, area.Width, area.Height);
 
     private async Task InitializeWebViewAsync(Action subscribeWebMessages)
     {

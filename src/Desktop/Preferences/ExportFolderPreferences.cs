@@ -7,7 +7,12 @@ internal sealed record ExportFolderPreferences(
     string? ExportFolder,
     bool SkipExportFolderPrompt,
     string? Theme = null,
-    bool SingleKeyShortcutsEnabled = true);
+    bool SingleKeyShortcutsEnabled = true,
+    double? WindowWidth = null,
+    double? WindowHeight = null,
+    double? WindowLeft = null,
+    double? WindowTop = null,
+    string? WindowState = null);
 internal sealed record ExportFolderChoice(string Folder, bool UseAlways);
 internal sealed record ExportFolderResolution(bool Cancelled, string? Folder)
 {
@@ -56,6 +61,21 @@ internal sealed class UserPreferencesStore : IUserPreferencesStore
         {
             Theme = theme is null ? preferences.Theme : UiThemes.Normalize(theme),
             SingleKeyShortcutsEnabled = singleKeyShortcutsEnabled ?? preferences.SingleKeyShortcutsEnabled
+        });
+    }
+
+    internal void SaveWindowPlacement(WindowBounds bounds, bool isMaximized)
+    {
+        if (!bounds.IsFiniteAndPositive) return;
+
+        var preferences = Load();
+        Save(preferences with
+        {
+            WindowWidth = bounds.Width,
+            WindowHeight = bounds.Height,
+            WindowLeft = bounds.Left,
+            WindowTop = bounds.Top,
+            WindowState = isMaximized ? nameof(System.Windows.WindowState.Maximized) : nameof(System.Windows.WindowState.Normal)
         });
     }
 
