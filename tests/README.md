@@ -17,6 +17,11 @@ tests/
 └─ *feature-harness.js          factories extraidas de core/app.js
 ```
 
-Los proyectos C# de harness siguen en sus propias carpetas bajo `tests/` porque tienen proyecto y restauracion independientes.
+Las pruebas C# se agrupan por dependencia de plataforma:
+
+- `PlanoOpenSpaceIT.Domain.Tests/`: `net8.0`, sin WPF; ejecutable también en Ubuntu.
+- `PlanoOpenSpaceIT.Desktop.Tests/`: `net8.0-windows` con WPF; cubre WebView2, recursos embebidos, bridge y ciclo de vida nativo.
+
+`tools/verify.ps1` ejecuta ambos proyectos con `dotnet test`. El contador manual `tools/count-csharp-assertions.py` sirve únicamente para migraciones de aserciones y no forma parte de la verificación continua.
 
 No mover un harness solo por estetica: antes hay que actualizar sus `require(...)`, sus rutas a `Resources/` y el descubrimiento de `tools/verify.ps1`.

@@ -20,11 +20,14 @@ try {
     & python 'tests/test_light_maps.py'
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-    Get-ChildItem -Path 'tests' -Recurse -Filter '*.csproj' | Sort-Object FullName | ForEach-Object {
-        dotnet restore $_.FullName
+    @(
+        'tests/PlanoOpenSpaceIT.Domain.Tests/PlanoOpenSpaceIT.Domain.Tests.csproj',
+        'tests/PlanoOpenSpaceIT.Desktop.Tests/PlanoOpenSpaceIT.Desktop.Tests.csproj'
+    ) | ForEach-Object {
+        dotnet restore $_
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-        dotnet run --project $_.FullName --no-restore -p:UseSharedCompilation=false
+        dotnet test $_ --no-restore -p:UseSharedCompilation=false
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }
 

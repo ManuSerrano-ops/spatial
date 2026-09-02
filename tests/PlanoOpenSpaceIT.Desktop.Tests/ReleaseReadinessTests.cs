@@ -6,67 +6,23 @@ using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 using System.Xml.Linq;
 using PlanoOpenSpaceIT.Windows;
+using Xunit;
 
-if (args is ["--hold-lock", var lockPath])
+namespace PlanoOpenSpaceIT.Desktop.Tests;
+
+public sealed class ReleaseReadinessTests
 {
-    using var heldLock = new FileStream(lockPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
-    Console.WriteLine("LOCKED");
-    Console.Out.Flush();
-    Thread.Sleep(TimeSpan.FromSeconds(30));
-    return 0;
+
+[Fact]
+    public void TrustedWebViewOrigin()
+{
+    Xunit.Assert.True(MainWindow.IsTrustedWebMessageSource("https://plano.local/index.html"), "The local virtual host is trusted.");
+    Xunit.Assert.True(!MainWindow.IsTrustedWebMessageSource("https://example.invalid/index.html"), "External origins are rejected.");
+    Xunit.Assert.True(!MainWindow.IsTrustedWebMessageSource("file:///tmp/index.html"), "File origins are rejected.");
 }
 
-var tests = new (string Name, Action Test)[]
-{
-    ("trusted WebView origin", TrustedWebViewOrigin),
-    ("window initialization is idempotent", WindowInitializationIsIdempotent),
-    ("window initialization retries WebView without duplicating session", WindowInitializationRetriesWebViewWithoutDuplicatingSession),
-    ("user preferences preserve keyboard shortcut choice", UserPreferencesPreserveKeyboardShortcutChoice),
-    ("window geometry preserves a valid rectangle", WindowGeometryPreservesValidRectangle),
-    ("window geometry falls back to the explicit primary monitor", WindowGeometryFallsBackToPrimaryMonitor),
-    ("window geometry fits an oversized rectangle", WindowGeometryFitsOversizedRectangle),
-    ("window geometry handles invalid numbers", WindowGeometryHandlesInvalidNumbers),
-    ("window geometry repositions negative edges", WindowGeometryRepositionsNegativeEdges),
-    ("window geometry keeps a secondary monitor placement", WindowGeometryKeepsSecondaryMonitorPlacement),
-    ("window geometry handles no monitors", WindowGeometryHandlesNoMonitors),
-    ("reality load and display locations", RealityLoadAndDisplayLocations),
-    ("scenario diff and validation", ScenarioDiffAndValidation),
-    ("planner scenario keeps reality unchanged", PlannerScenarioKeepsRealityUnchanged),
-    ("legacy planner scenario moves verified seat payload atomically", LegacyPlannerScenarioMovesVerifiedSeatPayloadAtomically),
-    ("legacy planner supports a person-only source", LegacyPlannerSupportsPersonOnlySource),
-    ("analytics uses effective scenario state", AnalyticsUsesScenarioState),
-    ("atomic movement applies as a whole operation", AtomicMovementAppliesAsWholeOperation),
-    ("atomic movement rejects half group without writes", AtomicMovementRejectsHalfGroupWithoutWrites),
-    ("atomic movement rejects mixed partial selection", AtomicMovementRejectsMixedPartialSelection),
-    ("whole atomic group applies with independent edits", WholeAtomicGroupAppliesWithIndependentEdits),
-    ("stale scenario apply rejects without mutating reality", StaleScenarioApplyRejectsWithoutMutatingReality),
-    ("real undo restores isolated state", RealUndoRestoresState),
-    ("bulk reservations are effective-state atomic", BulkReservationsAreEffectiveStateAtomic),
-    ("export creates a structurally valid OOXML workbook", ExportCreatesValidOoxmlWorkbook),
-    ("invalid JSON load preserves fixture data", InvalidJsonLoadPreservesFixtureData),
-    ("truncated JSON load preserves fixture data", TruncatedJsonLoadPreservesFixtureData),
-    ("missing mandatory JSON load preserves fixture data", MissingMandatoryJsonLoadPreservesFixtureData),
-    ("failed load cannot save an empty dataset", FailedLoadCannotSaveEmptyDataset),
-    ("exclusive file lock rejects direct save without publishing data", ExclusiveFileLockRejectsDirectSave)
-};
-
-var passed = 0;
-foreach (var (name, test) in tests)
-{
-    try { test(); passed++; }
-    catch (Exception exception) { Console.Error.WriteLine($"FAIL: {name}: {exception.Message}"); }
-}
-Console.WriteLine($"ReleaseReadinessHarness: {passed}/{tests.Length} passed, {tests.Length - passed} failed");
-return passed == tests.Length ? 0 : 1;
-
-static void TrustedWebViewOrigin()
-{
-    Assert(MainWindow.IsTrustedWebMessageSource("https://plano.local/index.html"), "The local virtual host is trusted.");
-    Assert(!MainWindow.IsTrustedWebMessageSource("https://example.invalid/index.html"), "External origins are rejected.");
-    Assert(!MainWindow.IsTrustedWebMessageSource("file:///tmp/index.html"), "File origins are rejected.");
-}
-
-static void WindowInitializationIsIdempotent()
+[Fact]
+    public async Task WindowInitializationIsIdempotent()
 {
     var storeCount = 0;
     var bridgeCount = 0;
@@ -86,21 +42,22 @@ static void WindowInitializationIsIdempotent()
         return Task.CompletedTask;
     }
 
-    initialization.InitializeAsync(InitializeWebView).GetAwaiter().GetResult();
+    await initialization.InitializeAsync(InitializeWebView);
     var firstStore = initialization.Store;
     var firstBridge = initialization.Bridge;
-    initialization.InitializeAsync(InitializeWebView).GetAwaiter().GetResult();
+    await initialization.InitializeAsync(InitializeWebView);
 
-    Equal(1, storeCount, "Two startup calls create one DataStore.");
-    Equal(1, bridgeCount, "Two startup calls create one WebView bridge.");
-    Equal(1, lifecycleStartCount, "Two startup calls log lifecycle.start once.");
-    Equal(1, subscriptionCount, "Two startup calls attach one WebView message handler.");
-    Equal(1, webViewInitializationCount, "A completed startup does not reinitialize WebView2.");
-    Assert(ReferenceEquals(firstStore, initialization.Store), "The DataStore instance remains stable.");
-    Assert(ReferenceEquals(firstBridge, initialization.Bridge), "The WebView bridge instance remains stable.");
+    Xunit.Assert.Equal(1, storeCount);
+    Xunit.Assert.Equal(1, bridgeCount);
+    Xunit.Assert.Equal(1, lifecycleStartCount);
+    Xunit.Assert.Equal(1, subscriptionCount);
+    Xunit.Assert.Equal(1, webViewInitializationCount);
+    Xunit.Assert.True(ReferenceEquals(firstStore, initialization.Store), "The DataStore instance remains stable.");
+    Xunit.Assert.True(ReferenceEquals(firstBridge, initialization.Bridge), "The WebView bridge instance remains stable.");
 }
 
-static void WindowInitializationRetriesWebViewWithoutDuplicatingSession()
+[Fact]
+    public async Task WindowInitializationRetriesWebViewWithoutDuplicatingSession()
 {
     var storeCount = 0;
     var bridgeCount = 0;
@@ -120,24 +77,25 @@ static void WindowInitializationRetriesWebViewWithoutDuplicatingSession()
         return Task.FromException(new InvalidOperationException("WebView2 no disponible."));
     }
 
-    try { initialization.InitializeAsync(FailAfterSubscription).GetAwaiter().GetResult(); }
+    try { await initialization.InitializeAsync(FailAfterSubscription); }
     catch (InvalidOperationException) { }
 
-    initialization.InitializeAsync(subscribe =>
+    await initialization.InitializeAsync(subscribe =>
     {
         webViewInitializationCount++;
         subscribe();
         return Task.CompletedTask;
-    }).GetAwaiter().GetResult();
+    });
 
-    Equal(1, storeCount, "A retry after WebView failure reuses the DataStore.");
-    Equal(1, bridgeCount, "A retry after WebView failure reuses the bridge.");
-    Equal(1, lifecycleStartCount, "A retry after WebView failure preserves one lifecycle.start.");
-    Equal(1, subscriptionCount, "A retry after WebView failure preserves one message handler.");
-    Equal(2, webViewInitializationCount, "A retry repeats only the failed WebView initialization.");
+    Xunit.Assert.Equal(1, storeCount);
+    Xunit.Assert.Equal(1, bridgeCount);
+    Xunit.Assert.Equal(1, lifecycleStartCount);
+    Xunit.Assert.Equal(1, subscriptionCount);
+    Xunit.Assert.Equal(2, webViewInitializationCount);
 }
 
-static void UserPreferencesPreserveKeyboardShortcutChoice()
+[Fact]
+    public void UserPreferencesPreserveKeyboardShortcutChoice()
 {
     var folder = Path.Combine(Path.GetTempPath(), "PlanoOpenSpaceITPreferences", Guid.NewGuid().ToString("N"));
     var preferencesPath = Path.Combine(folder, "user-preferences.json");
@@ -147,15 +105,15 @@ static void UserPreferencesPreserveKeyboardShortcutChoice()
         File.WriteAllText(preferencesPath, "{\"exportFolder\":\"C:\\\\exports\",\"skipExportFolderPrompt\":true,\"theme\":\"penpot-dark\"}");
 
         var store = new UserPreferencesStore(preferencesPath);
-        Assert(store.LoadSingleKeyShortcutsEnabled(), "Profiles without the shortcut preference enable it by default.");
+        Xunit.Assert.True(store.LoadSingleKeyShortcutsEnabled(), "Profiles without the shortcut preference enable it by default.");
         store.SaveUserPreferences(null, false);
 
         var reloaded = new UserPreferencesStore(preferencesPath);
         var saved = reloaded.Load();
-        Equal("C:\\exports", saved.ExportFolder, "Saving shortcuts preserves the export folder.");
-        Assert(saved.SkipExportFolderPrompt, "Saving shortcuts preserves export folder behavior.");
-        Equal("penpot-dark", reloaded.LoadTheme(), "Saving shortcuts preserves the theme.");
-        Assert(!reloaded.LoadSingleKeyShortcutsEnabled(), "The shortcut choice survives a reload.");
+        Xunit.Assert.Equal("C:\\exports", saved.ExportFolder);
+        Xunit.Assert.True(saved.SkipExportFolderPrompt, "Saving shortcuts preserves export folder behavior.");
+        Xunit.Assert.Equal("penpot-dark", reloaded.LoadTheme());
+        Xunit.Assert.True(!reloaded.LoadSingleKeyShortcutsEnabled(), "The shortcut choice survives a reload.");
     }
     finally
     {
@@ -163,83 +121,93 @@ static void UserPreferencesPreserveKeyboardShortcutChoice()
     }
 }
 
-static void WindowGeometryPreservesValidRectangle()
+[Fact]
+    public void WindowGeometryPreservesValidRectangle()
 {
     var primary = new WindowBounds(0, 0, 1600, 1000);
     var saved = new WindowBounds(120, 80, 1000, 700);
-    Equal(saved, WindowGeometry.Clamp(saved, new[] { primary }, primary), "A valid rectangle is unchanged.");
+    Xunit.Assert.Equal(saved, WindowGeometry.Clamp(saved, new[] { primary }, primary));
 }
 
-static void WindowGeometryFallsBackToPrimaryMonitor()
+[Fact]
+    public void WindowGeometryFallsBackToPrimaryMonitor()
 {
     var primary = new WindowBounds(0, 0, 1600, 1000);
     var secondary = new WindowBounds(1600, 0, 1200, 1000);
     var disconnected = new WindowBounds(4200, 100, 1000, 700);
-    Equal(new WindowBounds(100, 50, 1400, 900), WindowGeometry.Clamp(disconnected, new[] { primary, secondary }, primary), "A disconnected monitor falls back centered on the explicit primary monitor.");
+    Xunit.Assert.Equal(new WindowBounds(100, 50, 1400, 900), WindowGeometry.Clamp(disconnected, new[] { primary, secondary }, primary));
 }
 
-static void WindowGeometryFitsOversizedRectangle()
+[Fact]
+    public void WindowGeometryFitsOversizedRectangle()
 {
     var primary = new WindowBounds(0, 0, 1600, 900);
     var oversized = new WindowBounds(100, 100, 2400, 1400);
-    Equal(new WindowBounds(0, 0, 1600, 900), WindowGeometry.Clamp(oversized, new[] { primary }, primary), "A rectangle larger than its screen is fitted to that working area.");
+    Xunit.Assert.Equal(new WindowBounds(0, 0, 1600, 900), WindowGeometry.Clamp(oversized, new[] { primary }, primary));
 }
 
-static void WindowGeometryHandlesInvalidNumbers()
+[Fact]
+    public void WindowGeometryHandlesInvalidNumbers()
 {
     var primary = new WindowBounds(0, 0, 1600, 1000);
     var invalid = new WindowBounds(double.NaN, 0, double.PositiveInfinity, 700);
-    Equal(new WindowBounds(100, 50, 1400, 900), WindowGeometry.Clamp(invalid, new[] { primary }, primary), "Invalid saved values receive a centered safe fallback.");
+    Xunit.Assert.Equal(new WindowBounds(100, 50, 1400, 900), WindowGeometry.Clamp(invalid, new[] { primary }, primary));
 }
 
-static void WindowGeometryRepositionsNegativeEdges()
+[Fact]
+    public void WindowGeometryRepositionsNegativeEdges()
 {
     var primary = new WindowBounds(0, 0, 1600, 1000);
     var partial = new WindowBounds(-120, -40, 800, 600);
-    Equal(new WindowBounds(0, 0, 800, 600), WindowGeometry.Clamp(partial, new[] { primary }, primary), "A rectangle beyond the top or left edge is repositioned instead of discarded.");
+    Xunit.Assert.Equal(new WindowBounds(0, 0, 800, 600), WindowGeometry.Clamp(partial, new[] { primary }, primary));
 }
 
-static void WindowGeometryKeepsSecondaryMonitorPlacement()
+[Fact]
+    public void WindowGeometryKeepsSecondaryMonitorPlacement()
 {
     var primary = new WindowBounds(0, 0, 1600, 1000);
     var secondary = new WindowBounds(1600, 0, 1280, 1024);
     var saved = new WindowBounds(1800, 120, 1000, 800);
-    Equal(saved, WindowGeometry.Clamp(saved, new[] { primary, secondary }, primary), "A rectangle centered on the secondary monitor remains there.");
+    Xunit.Assert.Equal(saved, WindowGeometry.Clamp(saved, new[] { primary, secondary }, primary));
 }
 
-static void WindowGeometryHandlesNoMonitors()
+[Fact]
+    public void WindowGeometryHandlesNoMonitors()
 {
     var saved = new WindowBounds(100, 100, 1000, 700);
-    Equal(WindowGeometry.DefaultBounds, WindowGeometry.Clamp(saved, [], default), "No working areas return the documented safe default at 0,0.");
+    Xunit.Assert.Equal(WindowGeometry.DefaultBounds, WindowGeometry.Clamp(saved, [], default));
 }
 
-static void RealityLoadAndDisplayLocations()
+[Fact]
+    public void RealityLoadAndDisplayLocations()
 {
     using var fixture = new Fixture();
     var package = fixture.Store.Load();
     var maps = package["maps"]?["maps"]?.AsArray().OfType<JsonObject>().ToArray() ?? [];
-    Equal(2, maps.Length, "The isolated reality exposes both maps.");
+    Xunit.Assert.Equal(2, maps.Length);
     var locations = maps.SelectMany(map => map["seats"]?.AsArray().OfType<JsonObject>() ?? [])
         .Select(seat => seat["displayLocation"]?.GetValue<string>())
         .ToArray();
-    Assert(locations.All(location => !string.IsNullOrWhiteSpace(location)), "Every seat has a display location.");
-    Equal(locations.Length, locations.Distinct(StringComparer.Ordinal).Count(), "The fixture has no display location collisions.");
+    Xunit.Assert.True(locations.All(location => !string.IsNullOrWhiteSpace(location)), "Every seat has a display location.");
+    Xunit.Assert.Equal(locations.Length, locations.Distinct(StringComparer.Ordinal).Count());
 }
 
-static void ScenarioDiffAndValidation()
+[Fact]
+    public void ScenarioDiffAndValidation()
 {
     using var fixture = new Fixture();
     var created = fixture.Store.CreateScenario(new JsonObject { ["name"] = "Cambio aislado" });
     var scenarioId = Text(created["scenarioId"]);
     fixture.Store.SaveAssignment(new JsonObject { ["scenarioId"] = scenarioId, ["workstationId"] = "N-02", ["personId"] = "person-3", ["status"] = "confirmed" }, false);
     var diff = fixture.Store.GetScenarioDiff(new JsonObject { ["scenarioId"] = scenarioId });
-    Assert((diff["changes"]?.AsArray().Count ?? 0) > 0, "The isolated edit produces a scenario diff.");
+    Xunit.Assert.True((diff["changes"]?.AsArray().Count ?? 0) > 0, "The isolated edit produces a scenario diff.");
     var validation = fixture.Store.RunValidation(scenarioId);
-    Assert(validation["summary"] is JsonObject, "Validation runs on the effective scenario state.");
-    Equal("N-01", AssignmentSeat(fixture.ReadJson("assignments.json"), "person-1"), "Reality remains unchanged before Apply.");
+    Xunit.Assert.True(validation["summary"] is JsonObject, "Validation runs on the effective scenario state.");
+    Xunit.Assert.Equal("N-01", AssignmentSeat(fixture.ReadJson("assignments.json"), "person-1"));
 }
 
-static void PlannerScenarioKeepsRealityUnchanged()
+[Fact]
+    public void PlannerScenarioKeepsRealityUnchanged()
 {
     using var fixture = new Fixture();
     var before = fixture.Read("assignments.json");
@@ -249,19 +217,20 @@ static void PlannerScenarioKeepsRealityUnchanged()
         ["requests"] = new JsonArray(new JsonObject { ["sourceWorkspaceId"] = "N-01", ["destinationWorkspaceId"] = "N-02" })
     });
     var scenarioId = Text(created["scenarioId"]);
-    Equal(before, fixture.Read("assignments.json"), "Planner creation does not write reality.");
+    Xunit.Assert.Equal(before, fixture.Read("assignments.json"));
     var operations = fixture.ReadJson("scenarios.json")["scenarios"]?.AsArray().OfType<JsonObject>().Single(item => Text(item["id"]) == scenarioId)?["operations"]?.AsArray().OfType<JsonObject>().ToArray()
         ?? throw new InvalidOperationException("Planner scenario operations are missing.");
-    Equal(1, operations.Length, "Planner creation persists one operation per movement pair.");
-    Equal($"movement|{scenarioId}|norte|N-01|norte|N-02", Text(operations[0]["id"]), "Movement operation identity is deterministic from scenario and technical endpoints.");
-    Equal("movement", Text(operations[0]["type"]), "Persisted operation has the movement type.");
-    Assert(operations[0]["atomic"]?.GetValue<bool>() == true, "Persisted movement operation is atomic.");
-    SequenceEqual(new[] { "assignment|N-01", "assignment|N-02" }, operations[0]["members"]?.AsArray().Select(Text) ?? [], "Persisted operation members are canonical raw diff IDs.");
+    Xunit.Assert.Single(operations);
+    Xunit.Assert.Equal($"movement|{scenarioId}|norte|N-01|norte|N-02", Text(operations[0]["id"]));
+    Xunit.Assert.Equal("movement", Text(operations[0]["type"]));
+    Xunit.Assert.True(operations[0]["atomic"]?.GetValue<bool>() == true, "Persisted movement operation is atomic.");
+    Xunit.Assert.Equal(new[] { "assignment|N-01", "assignment|N-02" }, operations[0]["members"]?.AsArray().Select(Text) ?? []);
     var effective = fixture.Store.Load(scenarioId);
-    Equal("N-02", AssignmentSeat(effective["assignments"]!.AsObject(), "person-1"), "Planner movement exists only in the scenario draft.");
+    Xunit.Assert.Equal("N-02", AssignmentSeat(effective["assignments"]!.AsObject(), "person-1"));
 }
 
-static void LegacyPlannerScenarioMovesVerifiedSeatPayloadAtomically()
+[Fact]
+    public void LegacyPlannerScenarioMovesVerifiedSeatPayloadAtomically()
 {
     using var fixture = new Fixture(legacySource: true);
     var mapsBefore = fixture.ReadJson("maps.json");
@@ -274,45 +243,46 @@ static void LegacyPlannerScenarioMovesVerifiedSeatPayloadAtomically()
     });
     var scenarioId = Text(created["scenarioId"]);
 
-    EqualJson(mapsBefore, fixture.ReadJson("maps.json"), "Legacy planner creation leaves reality maps unchanged.");
-    EqualJson(assignmentsBefore, fixture.ReadJson("assignments.json"), "Legacy planner creation leaves reality assignments unchanged.");
-    EqualJson(positionsBefore, fixture.ReadJson("positions.json"), "Legacy planner creation leaves reality positions unchanged.");
+    TestAssertions.EqualJson(mapsBefore, fixture.ReadJson("maps.json"), "Legacy planner creation leaves reality maps unchanged.");
+    TestAssertions.EqualJson(assignmentsBefore, fixture.ReadJson("assignments.json"), "Legacy planner creation leaves reality assignments unchanged.");
+    TestAssertions.EqualJson(positionsBefore, fixture.ReadJson("positions.json"), "Legacy planner creation leaves reality positions unchanged.");
 
     var draft = fixture.Store.Load(scenarioId);
     var source = Workspace(draft, "norte", "N-01");
     var destination = Assignment(draft["assignments"]!.AsObject(), "N-02");
-    Equal("", Text(source["personId"]), "The legacy source person is cleared in the draft.");
-    Equal("", Text(source["deviceName"]), "The legacy source device name is cleared only after its device is resolved for movement.");
-    Equal("person-1", Text(destination["personId"]), "The destination assignment carries the verified person ID.");
-    Equal("device-legacy-1", Text(destination["deviceId"]), "The destination assignment carries the uniquely resolved device ID.");
-    Equal("legacy-destination-roseta", Text(destination["roseta"]), "The destination assignment uses the destination roseta.");
-    Assert(destination["locationId"] is null && destination["reference"] is null, "Legacy destination assignments do not inherit source location or reference data.");
-    Equal(1, draft["assignments"]?["assignments"]?.AsArray().OfType<JsonObject>().Count(item => Text(item["personId"]) == "person-1") ?? 0, "The draft contains the moved person exactly once.");
+    Xunit.Assert.Equal("", Text(source["personId"]));
+    Xunit.Assert.Equal("", Text(source["deviceName"]));
+    Xunit.Assert.Equal("person-1", Text(destination["personId"]));
+    Xunit.Assert.Equal("device-legacy-1", Text(destination["deviceId"]));
+    Xunit.Assert.Equal("legacy-destination-roseta", Text(destination["roseta"]));
+    Xunit.Assert.True(destination["locationId"] is null && destination["reference"] is null, "Legacy destination assignments do not inherit source location or reference data.");
+    Xunit.Assert.Single(draft["assignments"]?["assignments"]?.AsArray().OfType<JsonObject>().Where(item => Text(item["personId"]) == "person-1") ?? []);
 
     var members = AtomicMembers(ScenarioChanges(fixture, scenarioId), "seat|norte|N-01");
-    SequenceEqual(new[] { "assignment|N-02", "seat|norte|N-01" }, members.Select(change => Text(change["id"])), "Legacy movement operations contain the source seat and destination assignment diffs.");
+    Xunit.Assert.Equal(new[] { "assignment|N-02", "seat|norte|N-01" }, members.Select(change => Text(change["id"])));
     var beforePartial = fixture.DataHashes();
     var partialError = Capture(() => fixture.Store.ApplyScenario(new JsonObject { ["scenarioId"] = scenarioId, ["changeIds"] = ChangeIds(members.Take(1)) }));
-    Assert(partialError.Contains("atomic-operation-incomplete", StringComparison.Ordinal), "A half legacy movement is rejected.");
-    EqualHashes(beforePartial, fixture.DataHashes(), "Rejected legacy half movement leaves all persisted data unchanged.");
+    Xunit.Assert.True(partialError.Contains("atomic-operation-incomplete", StringComparison.Ordinal), "A half legacy movement is rejected.");
+    TestAssertions.EqualHashes(beforePartial, fixture.DataHashes(), "Rejected legacy half movement leaves all persisted data unchanged.");
 
-    Equal(0, fixture.Store.RunValidation(scenarioId)["count"]?.GetValue<int>() ?? -1, "The legacy scenario validates without duplicate person or device assignments.");
+    Xunit.Assert.Equal(0, fixture.Store.RunValidation(scenarioId)["count"]?.GetValue<int>() ?? -1);
     fixture.Store.ApplyScenario(new JsonObject { ["scenarioId"] = scenarioId, ["changeIds"] = ChangeIds(members) });
     var appliedMaps = fixture.ReadJson("maps.json");
     var appliedAssignments = fixture.ReadJson("assignments.json");
     var appliedSource = Workspace(new JsonObject { ["maps"] = appliedMaps }, "norte", "N-01");
-    Equal("", Text(appliedSource["personId"]), "Applying the legacy movement clears the real source person.");
-    Equal("", Text(appliedSource["deviceName"]), "Applying the legacy movement clears the real source device name.");
-    Equal("N-02", AssignmentSeat(appliedAssignments, "person-1"), "Applying the complete legacy movement occupies the destination.");
-    Equal(0, fixture.Store.RunValidation()["count"]?.GetValue<int>() ?? -1, "The applied legacy movement validates without duplicate person or device assignments.");
+    Xunit.Assert.Equal("", Text(appliedSource["personId"]));
+    Xunit.Assert.Equal("", Text(appliedSource["deviceName"]));
+    Xunit.Assert.Equal("N-02", AssignmentSeat(appliedAssignments, "person-1"));
+    Xunit.Assert.Equal(0, fixture.Store.RunValidation()["count"]?.GetValue<int>() ?? -1);
 
     fixture.Store.UndoLastChange(new JsonObject());
-    EqualDocumentContent(mapsBefore, fixture.ReadJson("maps.json"), "Undo restores the legacy source seat exactly.");
-    EqualDocumentContent(assignmentsBefore, fixture.ReadJson("assignments.json"), "Undo removes the legacy destination assignment exactly.");
-    EqualDocumentContent(positionsBefore, fixture.ReadJson("positions.json"), "Undo restores positions exactly.");
+    TestAssertions.EqualDocumentContent(mapsBefore, fixture.ReadJson("maps.json"), "Undo restores the legacy source seat exactly.");
+    TestAssertions.EqualDocumentContent(assignmentsBefore, fixture.ReadJson("assignments.json"), "Undo removes the legacy destination assignment exactly.");
+    TestAssertions.EqualDocumentContent(positionsBefore, fixture.ReadJson("positions.json"), "Undo restores positions exactly.");
 }
 
-static void LegacyPlannerSupportsPersonOnlySource()
+[Fact]
+    public void LegacyPlannerSupportsPersonOnlySource()
 {
     using var fixture = new Fixture(legacySource: true, legacyDevice: false);
     var created = fixture.Store.CreateScenarioFromMovementPlan(new JsonObject
@@ -322,11 +292,12 @@ static void LegacyPlannerSupportsPersonOnlySource()
     });
     var draft = fixture.Store.Load(Text(created["scenarioId"]));
     var destination = Assignment(draft["assignments"]!.AsObject(), "N-02");
-    Assert(destination["deviceId"] is null, "A legacy source without a device creates a person-only destination assignment.");
-    Equal(0, fixture.Store.RunValidation(Text(created["scenarioId"]))["count"]?.GetValue<int>() ?? -1, "A person-only legacy movement validates.");
+    Xunit.Assert.True(destination["deviceId"] is null, "A legacy source without a device creates a person-only destination assignment.");
+    Xunit.Assert.Equal(0, fixture.Store.RunValidation(Text(created["scenarioId"]))["count"]?.GetValue<int>() ?? -1);
 }
 
-static void AnalyticsUsesScenarioState()
+[Fact]
+    public void AnalyticsUsesScenarioState()
 {
     using var fixture = new Fixture();
     var created = fixture.Store.CreateScenarioFromMovementPlan(new JsonObject
@@ -335,11 +306,12 @@ static void AnalyticsUsesScenarioState()
         ["requests"] = new JsonArray(new JsonObject { ["sourceWorkspaceId"] = "N-01", ["destinationWorkspaceId"] = "N-02" })
     });
     var analytics = fixture.Store.RunSpatialAnalytics(Text(created["scenarioId"]));
-    Assert(analytics["result"]?["totals"] is JsonObject, "Scenario analytics returns totals.");
-    Assert(analytics["baseline"] is JsonObject, "Scenario analytics returns its base for Compare.");
+    Xunit.Assert.True(analytics["result"]?["totals"] is JsonObject, "Scenario analytics returns totals.");
+    Xunit.Assert.True(analytics["baseline"] is JsonObject, "Scenario analytics returns its base for Compare.");
 }
 
-static void AtomicMovementAppliesAsWholeOperation()
+[Fact]
+    public void AtomicMovementAppliesAsWholeOperation()
 {
     using var fixture = new Fixture();
     var created = fixture.Store.CreateScenarioFromMovementPlan(new JsonObject
@@ -353,14 +325,15 @@ static void AtomicMovementAppliesAsWholeOperation()
 
     var applied = fixture.Store.ApplyScenario(new JsonObject { ["scenarioId"] = scenarioId, ["changeIds"] = ChangeIds(members) });
 
-    Equal(2, applied["applied"]?.GetValue<int>() ?? 0, "Applying a movement applies both atomic members.");
-    Equal(0, applied["remaining"]?.GetValue<int>() ?? 0, "A wholly applied movement leaves no pending members.");
-    Equal("N-02", AssignmentSeat(fixture.ReadJson("assignments.json"), "person-1"), "The complete movement reaches reality.");
-    Assert((fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0) > 0, "Apply creates a recoverable backup.");
-    Assert((fixture.Store.GetEvents()["events"]?.AsArray().Count ?? 0) > 0, "Apply writes audit history.");
+    Xunit.Assert.Equal(2, applied["applied"]?.GetValue<int>() ?? 0);
+    Xunit.Assert.Equal(0, applied["remaining"]?.GetValue<int>() ?? 0);
+    Xunit.Assert.Equal("N-02", AssignmentSeat(fixture.ReadJson("assignments.json"), "person-1"));
+    Xunit.Assert.True((fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0) > 0, "Apply creates a recoverable backup.");
+    Xunit.Assert.True((fixture.Store.GetEvents()["events"]?.AsArray().Count ?? 0) > 0, "Apply writes audit history.");
 }
 
-static void AtomicMovementRejectsHalfGroupWithoutWrites()
+[Fact]
+    public void AtomicMovementRejectsHalfGroupWithoutWrites()
 {
     using var fixture = new Fixture();
     var created = fixture.Store.CreateScenarioFromMovementPlan(new JsonObject
@@ -374,12 +347,13 @@ static void AtomicMovementRejectsHalfGroupWithoutWrites()
 
     var error = Capture(() => fixture.Store.ApplyScenario(new JsonObject { ["scenarioId"] = scenarioId, ["changeIds"] = ChangeIds(members.Take(1)) }));
 
-    Assert(error.Contains("atomic-operation-incomplete", StringComparison.Ordinal), "A partial movement is rejected with the atomic-operation-incomplete error.");
-    Equal(before, fixture.Read("assignments.json"), "Rejected atomic Apply leaves reality byte-for-byte unchanged.");
-    Equal(2, ScenarioChanges(fixture, scenarioId).Length, "Rejected atomic Apply preserves both scenario members.");
+    Xunit.Assert.True(error.Contains("atomic-operation-incomplete", StringComparison.Ordinal), "A partial movement is rejected with the atomic-operation-incomplete error.");
+    Xunit.Assert.Equal(before, fixture.Read("assignments.json"));
+    Xunit.Assert.Equal(2, ScenarioChanges(fixture, scenarioId).Length);
 }
 
-static void AtomicMovementRejectsMixedPartialSelection()
+[Fact]
+    public void AtomicMovementRejectsMixedPartialSelection()
 {
     using var fixture = new Fixture();
     var created = fixture.Store.CreateScenarioFromMovementPlan(new JsonObject
@@ -395,12 +369,13 @@ static void AtomicMovementRejectsMixedPartialSelection()
 
     var error = Capture(() => fixture.Store.ApplyScenario(new JsonObject { ["scenarioId"] = scenarioId, ["changeIds"] = ChangeIds(new[] { members[0], independent }) }));
 
-    Assert(error.Contains("atomic-operation-incomplete", StringComparison.Ordinal), "Independent edits cannot make a partial atomic movement valid.");
-    Equal(before, fixture.Read("assignments.json"), "Mixed partial rejection leaves reality byte-for-byte unchanged.");
-    Assert(string.IsNullOrEmpty(AssignmentSeat(fixture.ReadJson("assignments.json"), "person-3")), "The selected independent edit is not written after rejection.");
+    Xunit.Assert.True(error.Contains("atomic-operation-incomplete", StringComparison.Ordinal), "Independent edits cannot make a partial atomic movement valid.");
+    Xunit.Assert.Equal(before, fixture.Read("assignments.json"));
+    Xunit.Assert.True(string.IsNullOrEmpty(AssignmentSeat(fixture.ReadJson("assignments.json"), "person-3")), "The selected independent edit is not written after rejection.");
 }
 
-static void WholeAtomicGroupAppliesWithIndependentEdits()
+[Fact]
+    public void WholeAtomicGroupAppliesWithIndependentEdits()
 {
     using var fixture = new Fixture();
     var created = fixture.Store.CreateScenarioFromMovementPlan(new JsonObject
@@ -418,16 +393,17 @@ static void WholeAtomicGroupAppliesWithIndependentEdits()
 
     var applied = fixture.Store.ApplyScenario(new JsonObject { ["scenarioId"] = scenarioId, ["changeIds"] = ChangeIds(selectedOperation.Append(independent)) });
 
-    Equal(3, applied["applied"]?.GetValue<int>() ?? 0, "A whole operation and an independent edit apply together.");
-    Equal(2, applied["remaining"]?.GetValue<int>() ?? 0, "The unselected movement remains pending as a whole group.");
-    Equal("N-02", AssignmentSeat(fixture.ReadJson("assignments.json"), "person-1"), "The selected movement reaches reality.");
+    Xunit.Assert.Equal(3, applied["applied"]?.GetValue<int>() ?? 0);
+    Xunit.Assert.Equal(2, applied["remaining"]?.GetValue<int>() ?? 0);
+    Xunit.Assert.Equal("N-02", AssignmentSeat(fixture.ReadJson("assignments.json"), "person-1"));
     var remaining = ScenarioChanges(fixture, scenarioId);
-    Equal(2, remaining.Length, "Only the unselected operation remains in the diff.");
-    Assert(remaining.All(change => Text(change["operationId"]) == Text(remaining[0]["operationId"]) && change["atomic"]?.GetValue<bool>() == true), "Both pending members remain in the same atomic operation.");
-    SequenceEqual(new[] { "assignment|S-01", "assignment|S-02" }, remaining.Select(change => Text(change["id"])).Order(StringComparer.Ordinal), "The pending operation retains its canonical raw diff members.");
+    Xunit.Assert.Equal(2, remaining.Length);
+    Xunit.Assert.True(remaining.All(change => Text(change["operationId"]) == Text(remaining[0]["operationId"]) && change["atomic"]?.GetValue<bool>() == true), "Both pending members remain in the same atomic operation.");
+    Xunit.Assert.Equal(new[] { "assignment|S-01", "assignment|S-02" }, remaining.Select(change => Text(change["id"])).Order(StringComparer.Ordinal));
 }
 
-static void StaleScenarioApplyRejectsWithoutMutatingReality()
+[Fact]
+    public void StaleScenarioApplyRejectsWithoutMutatingReality()
 {
     using var fixture = new Fixture();
     var created = fixture.Store.CreateScenarioFromMovementPlan(new JsonObject
@@ -442,12 +418,13 @@ static void StaleScenarioApplyRejectsWithoutMutatingReality()
 
     var error = Capture(() => fixture.Store.ApplyScenario(new JsonObject { ["scenarioId"] = scenarioId, ["changeIds"] = new JsonArray(changeId) }));
 
-    Assert(error.Contains("La realidad cambió desde la creación del escenario", StringComparison.Ordinal), "A stale scenario Apply is rejected by baseRevision.");
-    Equal(beforeApply, fixture.Read("assignments.json"), "Rejected Apply leaves reality byte-for-byte unchanged.");
-    Assert((fixture.Store.GetScenarioDiff(new JsonObject { ["scenarioId"] = scenarioId })["changes"]?.AsArray().Count ?? 0) > 0, "Rejected Apply preserves the scenario draft for review.");
+    Xunit.Assert.True(error.Contains("La realidad cambió desde la creación del escenario", StringComparison.Ordinal), "A stale scenario Apply is rejected by baseRevision.");
+    Xunit.Assert.Equal(beforeApply, fixture.Read("assignments.json"));
+    Xunit.Assert.True((fixture.Store.GetScenarioDiff(new JsonObject { ["scenarioId"] = scenarioId })["changes"]?.AsArray().Count ?? 0) > 0, "Rejected Apply preserves the scenario draft for review.");
 }
 
-static void RealUndoRestoresState()
+[Fact]
+    public void RealUndoRestoresState()
 {
     using var fixture = new Fixture();
     var created = fixture.Store.CreateScenarioFromMovementPlan(new JsonObject
@@ -459,10 +436,11 @@ static void RealUndoRestoresState()
     var members = AtomicMembers(ScenarioChanges(fixture, scenarioId), "assignment|N-01");
     fixture.Store.ApplyScenario(new JsonObject { ["scenarioId"] = scenarioId, ["changeIds"] = ChangeIds(members) });
     fixture.Store.UndoLastChange(new JsonObject());
-    Equal("N-01", AssignmentSeat(fixture.ReadJson("assignments.json"), "person-1"), "Undo restores the backup state.");
+    Xunit.Assert.Equal("N-01", AssignmentSeat(fixture.ReadJson("assignments.json"), "person-1"));
 }
 
-static void BulkReservationsAreEffectiveStateAtomic()
+[Fact]
+    public void BulkReservationsAreEffectiveStateAtomic()
 {
     VerifyQaBulk04MixedSelectionEvidence();
     VerifyQaBulk04ConcurrentRealityChangeIsAtomic();
@@ -502,38 +480,38 @@ static void BulkReservationsAreEffectiveStateAtomic()
         ["status"] = "reserved"
     });
 
-    Equal(5, result["updated"]?.GetValue<int>() ?? -1, "One bulk operation updates all five targets.");
-    Equal(5, fixture.ReadJson("assignments.json")["assignments"]?.AsArray().OfType<JsonObject>().Count(item => Text(item["workstationId"]).StartsWith("F-", StringComparison.Ordinal) && Text(item["status"]) == "reserved") ?? 0, "All five effective-Free targets become reserved, regardless of seat.type.");
+    Xunit.Assert.Equal(5, result["updated"]?.GetValue<int>() ?? -1);
+    Xunit.Assert.Equal(5, fixture.ReadJson("assignments.json")["assignments"]?.AsArray().OfType<JsonObject>().Count(item => Text(item["workstationId"]).StartsWith("F-", StringComparison.Ordinal) && Text(item["status"]) == "reserved") ?? 0);
     var events = fixture.Store.GetEvents()["events"]?.AsArray().OfType<JsonObject>().ToArray() ?? [];
-    Equal(1, events.Length, "The bulk operation writes one history event.");
-    Equal("Puestos reservados", Text(events[0]["title"]), "The history title is human-readable.");
-    Equal("5 puestos", Text(events[0]["description"]), "The history description reports the updated count.");
-    Equal(1, fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0, "The bulk operation creates one backup.");
+    Xunit.Assert.Single(events);
+    Xunit.Assert.Equal("Puestos reservados", Text(events[0]["title"]));
+    Xunit.Assert.Equal("5 puestos", Text(events[0]["description"]));
+    Xunit.Assert.Single(fixture.Store.GetBackups()["backups"]?.AsArray() ?? new JsonArray());
 
     fixture.Store.UndoLastChange(new JsonObject());
-    EqualDocumentContent(mapsBefore, fixture.ReadJson("maps.json"), "One Undo restores the exact mixed map snapshot.");
-    EqualDocumentContent(assignmentsBefore, fixture.ReadJson("assignments.json"), "One Undo restores the exact mixed assignment snapshot.");
-    EqualDocumentContent(positionsBefore, fixture.ReadJson("positions.json"), "One Undo restores the exact position snapshot.");
+    TestAssertions.EqualDocumentContent(mapsBefore, fixture.ReadJson("maps.json"), "One Undo restores the exact mixed map snapshot.");
+    TestAssertions.EqualDocumentContent(assignmentsBefore, fixture.ReadJson("assignments.json"), "One Undo restores the exact mixed assignment snapshot.");
+    TestAssertions.EqualDocumentContent(positionsBefore, fixture.ReadJson("positions.json"), "One Undo restores the exact position snapshot.");
 
     var beforeInvalid = fixture.DataHashes();
     var backupsBeforeInvalid = fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0;
     var invalidError = Capture(() => fixture.Store.BulkUpdateAssignments(new JsonObject { ["workstationIds"] = new JsonArray("F-1", "O-1"), ["status"] = "reserved" }));
-    Assert(invalidError.Contains("ocupado", StringComparison.OrdinalIgnoreCase), "A mixed request containing an occupied target is rejected.");
-    EqualHashes(beforeInvalid, fixture.DataHashes(), "The invalid mixed request is transactionally atomic and writes nothing.");
-    Equal(backupsBeforeInvalid, fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0, "The invalid request creates no backup or Undo unit.");
-    Assert(Capture(() => fixture.Store.GetUndoPreview(new JsonObject())).Contains("No hay más cambios", StringComparison.Ordinal), "The invalid request creates no Undo entry.");
+    Xunit.Assert.True(invalidError.Contains("ocupado", StringComparison.OrdinalIgnoreCase), "A mixed request containing an occupied target is rejected.");
+    TestAssertions.EqualHashes(beforeInvalid, fixture.DataHashes(), "The invalid mixed request is transactionally atomic and writes nothing.");
+    Xunit.Assert.Equal(backupsBeforeInvalid, fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0);
+    Xunit.Assert.True(Capture(() => fixture.Store.GetUndoPreview(new JsonObject())).Contains("No hay más cambios", StringComparison.Ordinal), "The invalid request creates no Undo entry.");
 
     var beforeNoOp = fixture.DataHashes();
     var backupsBeforeNoOp = fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0;
     var noOp = fixture.Store.BulkUpdateAssignments(new JsonObject { ["workstationIds"] = new JsonArray("F-1"), ["status"] = "confirmed" });
-    Equal(0, noOp["updated"]?.GetValue<int>() ?? -1, "Removing a reservation from an effective-Free target is a no-op.");
-    Assert(noOp["noOp"]?.GetValue<bool>() == true, "The result identifies the no-op.");
-    EqualHashes(beforeNoOp, fixture.DataHashes(), "A no-op writes no files or history.");
-    Equal(backupsBeforeNoOp, fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0, "A no-op creates no backup.");
+    Xunit.Assert.Equal(0, noOp["updated"]?.GetValue<int>() ?? -1);
+    Xunit.Assert.True(noOp["noOp"]?.GetValue<bool>() == true, "The result identifies the no-op.");
+    TestAssertions.EqualHashes(beforeNoOp, fixture.DataHashes(), "A no-op writes no files or history.");
+    Xunit.Assert.Equal(backupsBeforeNoOp, fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0);
 
     var empty = fixture.Store.BulkUpdateAssignments(new JsonObject { ["workstationIds"] = new JsonArray(), ["status"] = "reserved" });
-    Equal(0, empty["updated"]?.GetValue<int>() ?? -1, "An empty target list updates nothing.");
-    EqualHashes(beforeNoOp, fixture.DataHashes(), "An empty target list writes nothing.");
+    Xunit.Assert.Equal(0, empty["updated"]?.GetValue<int>() ?? -1);
+    TestAssertions.EqualHashes(beforeNoOp, fixture.DataHashes(), "An empty target list writes nothing.");
 }
 
 static void VerifyQaBulk04MixedSelectionEvidence()
@@ -548,9 +526,9 @@ static void VerifyQaBulk04MixedSelectionEvidence()
     var beforeMaps = fixture.ReadJson("maps.json");
     var beforeBySeat = QaBulk04AssignmentSnapshots(beforeAssignments, selected);
 
-    SequenceEqual(new[] { "F1", "F2", "R1", "O1", "F3" }, selected, "QA-BULK-04 conceptual selection contains Free F1, Free F2, Reserved R1, Occupied O1, Free F3.");
-    SequenceEqual(new[] { "F1", "F2", "F3" }, eligible, "QA-BULK-04 frontend eligibility excludes Reserved R1 and Occupied O1.");
-    SequenceEqual(eligible, sent, "QA-BULK-04 frontend sends only its safe subset.");
+    Xunit.Assert.Equal(new[] { "F1", "F2", "R1", "O1", "F3" }, selected);
+    Xunit.Assert.Equal(new[] { "F1", "F2", "F3" }, eligible);
+    Xunit.Assert.Equal(eligible, sent);
     Console.WriteLine($"QA-BULK-04 selected=[{string.Join(',', selected)}] eligible=[{string.Join(',', eligible)}] sent=[{string.Join(',', sent)}]");
 
     var result = fixture.Store.BulkUpdateAssignments(new JsonObject
@@ -559,26 +537,26 @@ static void VerifyQaBulk04MixedSelectionEvidence()
         ["status"] = "reserved"
     });
 
-    Equal(3, result["updated"]?.GetValue<int>() ?? -1, "QA-BULK-04 changes exactly the three sent Free workstations.");
+    Xunit.Assert.Equal(3, result["updated"]?.GetValue<int>() ?? -1);
     var afterAssignments = fixture.ReadJson("assignments.json");
     var afterBySeat = QaBulk04AssignmentSnapshots(afterAssignments, selected);
     var changed = selected.Where(id => beforeBySeat[id] != afterBySeat[id]).ToArray();
     var unchanged = selected.Where(id => beforeBySeat[id] == afterBySeat[id]).ToArray();
-    SequenceEqual(eligible, changed, "QA-BULK-04 changed set is exactly F1, F2, F3.");
-    SequenceEqual(new[] { "R1", "O1" }, unchanged, "QA-BULK-04 leaves R1 and O1 byte-for-byte unchanged.");
-    EqualJson(Assignment(beforeAssignments, "R1"), Assignment(afterAssignments, "R1"), "QA-BULK-04 leaves R1 semantically unchanged.");
-    EqualJson(Assignment(beforeAssignments, "O1"), Assignment(afterAssignments, "O1"), "QA-BULK-04 leaves O1 semantically unchanged.");
-    EqualDocumentContent(beforeMaps, fixture.ReadJson("maps.json"), "QA-BULK-04 leaves map content unchanged apart from transaction revision metadata.");
-    Equal(1, fixture.Store.GetEvents()["events"]?.AsArray().Count ?? 0, "QA-BULK-04 writes exactly one History event.");
-    Equal(1, fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0, "QA-BULK-04 writes exactly one Backup.");
+    Xunit.Assert.Equal(eligible, changed);
+    Xunit.Assert.Equal(new[] { "R1", "O1" }, unchanged);
+    TestAssertions.EqualJson(Assignment(beforeAssignments, "R1"), Assignment(afterAssignments, "R1"), "QA-BULK-04 leaves R1 semantically unchanged.");
+    TestAssertions.EqualJson(Assignment(beforeAssignments, "O1"), Assignment(afterAssignments, "O1"), "QA-BULK-04 leaves O1 semantically unchanged.");
+    TestAssertions.EqualDocumentContent(beforeMaps, fixture.ReadJson("maps.json"), "QA-BULK-04 leaves map content unchanged apart from transaction revision metadata.");
+    Xunit.Assert.Single(fixture.Store.GetEvents()["events"]?.AsArray() ?? new JsonArray());
+    Xunit.Assert.Single(fixture.Store.GetBackups()["backups"]?.AsArray() ?? new JsonArray());
     Console.WriteLine($"QA-BULK-04 changed=[{string.Join(',', changed)}] unchanged=[{string.Join(',', unchanged)}] history=1 backup=1");
 
     fixture.Store.UndoLastChange(new JsonObject());
     var undoneAssignments = fixture.ReadJson("assignments.json");
     var undoneBySeat = QaBulk04AssignmentSnapshots(undoneAssignments, selected);
-    SequenceEqual(selected, selected.Where(id => beforeBySeat[id] == undoneBySeat[id]), "QA-BULK-04 Undo restores F1, F2, F3 exactly and keeps R1/O1 intact.");
-    EqualDocumentContent(beforeAssignments, undoneAssignments, "QA-BULK-04 Undo restores the exact assignment document content.");
-    EqualDocumentContent(beforeMaps, fixture.ReadJson("maps.json"), "QA-BULK-04 Undo restores map content.");
+    Xunit.Assert.Equal(selected, selected.Where(id => beforeBySeat[id] == undoneBySeat[id]));
+    TestAssertions.EqualDocumentContent(beforeAssignments, undoneAssignments, "QA-BULK-04 Undo restores the exact assignment document content.");
+    TestAssertions.EqualDocumentContent(beforeMaps, fixture.ReadJson("maps.json"), "QA-BULK-04 Undo restores map content.");
     Console.WriteLine("QA-BULK-04 undo-restored=[F1,F2,F3] undo-unchanged=[R1,O1]");
 }
 
@@ -604,10 +582,10 @@ static void VerifyQaBulk04ConcurrentRealityChangeIsAtomic()
     }));
     var afterAttempt = fixture.DataHashes();
 
-    Assert(error.Contains("ocupado", StringComparison.OrdinalIgnoreCase), "QA-BULK-04 rejects all three IDs when F2 became Occupied after preview.");
-    EqualHashes(beforeAttempt, afterAttempt, "QA-BULK-04 concurrent rejection leaves every Reality file hash unchanged.");
-    Equal(0, fixture.Store.GetBackups()["backups"]?.AsArray().Count ?? 0, "QA-BULK-04 concurrent rejection creates no Backup.");
-    Equal(0, fixture.Store.GetEvents()["events"]?.AsArray().Count ?? 0, "QA-BULK-04 concurrent rejection creates no History.");
+    Xunit.Assert.True(error.Contains("ocupado", StringComparison.OrdinalIgnoreCase), "QA-BULK-04 rejects all three IDs when F2 became Occupied after preview.");
+    TestAssertions.EqualHashes(beforeAttempt, afterAttempt, "QA-BULK-04 concurrent rejection leaves every Reality file hash unchanged.");
+    Xunit.Assert.Empty(fixture.Store.GetBackups()["backups"]?.AsArray() ?? new JsonArray());
+    Xunit.Assert.Empty(fixture.Store.GetEvents()["events"]?.AsArray() ?? new JsonArray());
     Console.WriteLine($"QA-BULK-04 concurrency sent=[{string.Join(',', previewEligible)}] rejected=all hashes-before=[{FormatHashes(beforeAttempt)}] hashes-after=[{FormatHashes(afterAttempt)}]");
 }
 
@@ -643,7 +621,8 @@ static IReadOnlyDictionary<string, string> QaBulk04AssignmentSnapshots(JsonObjec
 
 static string FormatHashes(IReadOnlyDictionary<string, string> hashes) => string.Join(",", hashes.Select(pair => $"{pair.Key}:{pair.Value}"));
 
-static void ExportCreatesValidOoxmlWorkbook()
+[Fact]
+    public void ExportCreatesValidOoxmlWorkbook()
 {
     using var fixture = new Fixture();
     var templateRoseta = FirstTemplateRoseta();
@@ -652,14 +631,14 @@ static void ExportCreatesValidOoxmlWorkbook()
     var result = fixture.Store.ExportExcel(fixture.ExportDirectory);
     var path = Text(result["path"]);
 
-    Assert(File.Exists(path), "Export returns a file that exists.");
-    Assert(new FileInfo(path).Length > 0, "The exported workbook is non-empty.");
-    Assert((result["rosetasFromPlan"]?.GetValue<int>() ?? 0) > 0, "The export reports the fixture occupancy from the plan.");
+    Xunit.Assert.True(File.Exists(path), "Export returns a file that exists.");
+    Xunit.Assert.True(new FileInfo(path).Length > 0, "The exported workbook is non-empty.");
+    Xunit.Assert.True((result["rosetasFromPlan"]?.GetValue<int>() ?? 0) > 0, "The export reports the fixture occupancy from the plan.");
 
     using var archive = ZipFile.OpenRead(path);
     var names = archive.Entries.Select(entry => entry.FullName).ToHashSet(StringComparer.Ordinal);
     foreach (var required in new[] { "[Content_Types].xml", "_rels/.rels", "xl/workbook.xml", "xl/_rels/workbook.xml.rels", "xl/worksheets/sheet1.xml", "xl/worksheets/sheet2.xml", "xl/worksheets/sheet3.xml" })
-        Assert(names.Contains(required), $"The OOXML package contains {required}.");
+        Xunit.Assert.True(names.Contains(required), $"The OOXML package contains {required}.");
     foreach (var entry in archive.Entries.Where(entry => entry.FullName.EndsWith(".xml", StringComparison.OrdinalIgnoreCase) || entry.FullName.EndsWith(".rels", StringComparison.OrdinalIgnoreCase)))
     {
         using var stream = entry.Open();
@@ -667,33 +646,38 @@ static void ExportCreatesValidOoxmlWorkbook()
     }
 
     var workbook = ReadXml(archive, "xl/workbook.xml");
-    Assert(workbook.Descendants().Any(element => element.Name.LocalName == "sheet"), "Workbook declares worksheets.");
+    Xunit.Assert.True(workbook.Descendants().Any(element => element.Name.LocalName == "sheet"), "Workbook declares worksheets.");
     var relationships = ReadXml(archive, "xl/_rels/workbook.xml.rels");
-    Assert(relationships.Descendants().Count(element => element.Name.LocalName == "Relationship") >= 3, "Workbook relationships include the worksheets.");
+    Xunit.Assert.True(relationships.Descendants().Count(element => element.Name.LocalName == "Relationship") >= 3, "Workbook relationships include the worksheets.");
     if (names.Contains("xl/sharedStrings.xml")) _ = ReadXml(archive, "xl/sharedStrings.xml");
     var renderedText = string.Join("\n", new[] { "xl/worksheets/sheet1.xml", "xl/worksheets/sheet2.xml", "xl/worksheets/sheet3.xml" }.Select(name => ReadXml(archive, name).ToString()));
-    Assert(renderedText.Contains("person-1", StringComparison.Ordinal), "The exported sheets contain the expected fixture occupancy.");
-    Assert(fixture.ReadLogs().All(log => !log.Contains(fixture.Root, StringComparison.OrdinalIgnoreCase)), "Export audit logs do not expose the temporary absolute path.");
+    Xunit.Assert.True(renderedText.Contains("person-1", StringComparison.Ordinal), "The exported sheets contain the expected fixture occupancy.");
+    Xunit.Assert.True(fixture.ReadLogs().All(log => !log.Contains(fixture.Root, StringComparison.OrdinalIgnoreCase)), "Export audit logs do not expose the temporary absolute path.");
 }
 
-static void InvalidJsonLoadPreservesFixtureData() => FailedLoadPreservesFixtureData("{ invalid json", deleteMaps: false, "Invalid JSON is rejected.");
+[Fact]
+    public void InvalidJsonLoadPreservesFixtureData() => FailedLoadPreservesFixtureData("{ invalid json", deleteMaps: false, "Invalid JSON is rejected.");
 
-static void TruncatedJsonLoadPreservesFixtureData() => FailedLoadPreservesFixtureData("{\"maps\":[", deleteMaps: false, "Truncated JSON is rejected.");
+[Fact]
+    public void TruncatedJsonLoadPreservesFixtureData() => FailedLoadPreservesFixtureData("{\"maps\":[", deleteMaps: false, "Truncated JSON is rejected.");
 
-static void MissingMandatoryJsonLoadPreservesFixtureData() => FailedLoadPreservesFixtureData(null, deleteMaps: true, "A missing mandatory maps.json file is rejected.");
+[Fact]
+    public void MissingMandatoryJsonLoadPreservesFixtureData() => FailedLoadPreservesFixtureData(null, deleteMaps: true, "A missing mandatory maps.json file is rejected.");
 
-static void FailedLoadCannotSaveEmptyDataset()
+[Fact]
+    public void FailedLoadCannotSaveEmptyDataset()
 {
     using var fixture = new Fixture();
     fixture.WriteRaw("maps.json", "{ invalid json");
     var before = fixture.DataHashes();
     _ = Capture(() => fixture.Store.Load());
     var saveError = Capture(() => fixture.Store.SaveAssignment(new JsonObject { ["workstationId"] = "N-02", ["personId"] = "person-3", ["status"] = "confirmed" }, false));
-    Assert(saveError.Length > 0, "A save after a failed load is rejected.");
-    EqualHashes(before, fixture.DataHashes(), "A failed load cannot publish an empty or fallback dataset.");
+    Xunit.Assert.True(saveError.Length > 0, "A save after a failed load is rejected.");
+    TestAssertions.EqualHashes(before, fixture.DataHashes(), "A failed load cannot publish an empty or fallback dataset.");
 }
 
-static void ExclusiveFileLockRejectsDirectSave()
+[Fact]
+    public void ExclusiveFileLockRejectsDirectSave()
 {
     using var fixture = new Fixture();
     var before = fixture.DataHashes();
@@ -701,11 +685,11 @@ static void ExclusiveFileLockRejectsDirectSave()
     using var holder = StartLockHolder(lockPath);
     try
     {
-        Equal("LOCKED", holder.StandardOutput.ReadLine(), "The separate process holds the data lock exclusively.");
+        Xunit.Assert.Equal("LOCKED", holder.StandardOutput.ReadLine());
         var error = Capture(() => fixture.Store.SaveAssignment(new JsonObject { ["workstationId"] = "N-02", ["personId"] = "person-3", ["status"] = "confirmed" }, false));
-        Assert(error.Contains("No se pudo adquirir el bloqueo de datos", StringComparison.Ordinal), "An exclusive data lock rejects the direct save after the bounded retry.");
-        EqualHashes(before, fixture.DataHashes(), "A rejected locked save leaves all data files unchanged.");
-        Assert(!Directory.EnumerateFiles(fixture.DataDirectory, "*.tmp").Any(), "A rejected locked save publishes no transaction temporary file.");
+        Xunit.Assert.True(error.Contains("No se pudo adquirir el bloqueo de datos", StringComparison.Ordinal), "An exclusive data lock rejects the direct save after the bounded retry.");
+        TestAssertions.EqualHashes(before, fixture.DataHashes(), "A rejected locked save leaves all data files unchanged.");
+        Xunit.Assert.True(!Directory.EnumerateFiles(fixture.DataDirectory, "*.tmp").Any(), "A rejected locked save publishes no transaction temporary file.");
     }
     finally
     {
@@ -734,8 +718,8 @@ static void FailedLoadPreservesFixtureData(string? malformedContent, bool delete
     if (deleteMaps) fixture.Delete("maps.json"); else fixture.WriteRaw("maps.json", malformedContent!);
     var before = fixture.DataHashes();
     var error = Capture(() => fixture.Store.Load());
-    Assert(error.Length > 0, expectedMessage);
-    EqualHashes(before, fixture.DataHashes(), "A failed load leaves fixture data byte-for-byte unchanged.");
+    Xunit.Assert.True(error.Length > 0, expectedMessage);
+    TestAssertions.EqualHashes(before, fixture.DataHashes(), "A failed load leaves fixture data byte-for-byte unchanged.");
 }
 
 static XDocument ReadXml(ZipArchive archive, string name)
@@ -769,15 +753,6 @@ static string CellValue(XElement cell, IReadOnlyList<string> strings)
     return cell.Attribute("t")?.Value == "s" && int.TryParse(value, out var index) && index >= 0 && index < strings.Count ? strings[index] : value;
 }
 
-static void EqualHashes(IReadOnlyDictionary<string, string> expected, IReadOnlyDictionary<string, string> actual, string message)
-{
-    Equal(expected.Count, actual.Count, message + " File count differs.");
-    foreach (var (name, hash) in expected)
-    {
-        Assert(actual.TryGetValue(name, out var result), message + $" Missing {name}.");
-        Equal(hash, result, message + $" Hash differs for {name}.");
-    }
-}
 
 static string AssignmentSeat(JsonObject assignments, string personId) => assignments["assignments"]?.AsArray().OfType<JsonObject>()
     .FirstOrDefault(item => Text(item["personId"]) == personId)?["workstationId"]?.GetValue<string>() ?? "";
@@ -796,20 +771,15 @@ static JsonObject[] AtomicMembers(IEnumerable<JsonObject> changes, string member
 {
     var member = changes.Single(change => Text(change["id"]) == memberId);
     var operationId = Text(member["operationId"]);
-    Assert(operationId.Length > 0, "Atomic movement members expose an operation ID.");
-    Equal("movement", Text(member["type"]), "Atomic movement members expose their movement type.");
-    Assert(member["atomic"]?.GetValue<bool>() == true, "Atomic movement members expose atomic=true.");
+    Xunit.Assert.True(operationId.Length > 0, "Atomic movement members expose an operation ID.");
+    Xunit.Assert.Equal("movement", Text(member["type"]));
+    Xunit.Assert.True(member["atomic"]?.GetValue<bool>() == true, "Atomic movement members expose atomic=true.");
     var members = changes.Where(change => Text(change["operationId"]) == operationId).OrderBy(change => Text(change["id"]), StringComparer.Ordinal).ToArray();
-    Equal(2, members.Length, "A movement operation exposes exactly two members.");
+    Xunit.Assert.Equal(2, members.Length);
     return members;
 }
 
 static JsonArray ChangeIds(IEnumerable<JsonObject> changes) => new(changes.Select(change => (JsonNode?)Text(change["id"])).ToArray());
-
-static void SequenceEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual, string message)
-{
-    if (!expected.SequenceEqual(actual)) throw new InvalidOperationException($"{message} Expected: [{string.Join(", ", expected)}]; actual: [{string.Join(", ", actual)}].");
-}
 
 static string Capture(Action action)
 {
@@ -819,17 +789,6 @@ static string Capture(Action action)
 }
 
 static string Text(JsonNode? node) => node?.GetValue<string>() ?? node?.ToString() ?? "";
-static void Assert(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }
-static void Equal<T>(T expected, T? actual, string message) where T : notnull { if (!EqualityComparer<T>.Default.Equals(expected, actual!)) throw new InvalidOperationException($"{message} Expected {expected}; actual {actual}."); }
-static void EqualJson(JsonNode expected, JsonNode actual, string message) { if (!JsonNode.DeepEquals(expected, actual)) throw new InvalidOperationException(message); }
-static void EqualDocumentContent(JsonObject expected, JsonObject actual, string message)
-{
-    var expectedContent = (JsonObject)expected.DeepClone();
-    var actualContent = (JsonObject)actual.DeepClone();
-    expectedContent.Remove("stateRevision");
-    actualContent.Remove("stateRevision");
-    EqualJson(expectedContent, actualContent, message);
-}
 
 sealed class Fixture : IDisposable
 {
@@ -894,4 +853,6 @@ sealed class Fixture : IDisposable
     }
     private static JsonObject Position(string mapId, string seatId, double x, double y) => new() { ["mapId"] = mapId, ["seatId"] = seatId, ["x"] = x, ["y"] = y };
     private static JsonObject Assignment(string workstationId, string personId) => new() { ["workstationId"] = workstationId, ["personId"] = personId, ["status"] = "confirmed" };
+}
+
 }

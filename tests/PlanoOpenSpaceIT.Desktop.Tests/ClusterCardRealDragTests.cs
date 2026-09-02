@@ -1,17 +1,17 @@
-using System;
-using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Web.WebView2.Wpf;
+using Xunit;
 
-internal static class Program
+namespace PlanoOpenSpaceIT.Desktop.Tests;
+
+public sealed class ClusterCardRealDragTests
 {
-    [STAThread]
-    public static int Main()
+    [Fact]
+    public Task RealDragPreservesCardAndWorkspaceState() => StaTest.RunAsync(() =>
     {
         var application = new Application();
-        var window = new Window { Width = 920, Height = 680, Left = 20, Top = 20, Title = "ClusterCardRealDragHarness" };
+        var window = new Window { Width = 920, Height = 680, Left = 20, Top = 20, Title = "ClusterCardRealDragTests" };
         var browser = new WebView2();
         window.Content = browser;
         var exitCode = 1;
@@ -22,8 +22,8 @@ internal static class Program
             application.Shutdown();
         };
         application.Run(window);
-        return exitCode;
-    }
+        if (exitCode != 0) throw new InvalidOperationException("Cluster-card drag harness returned a failing exit code.");
+    });
 
     private static async Task<int> RunBrowserAsync(WebView2 browser)
     {
@@ -46,24 +46,24 @@ internal static class Program
 
             var before = await ReadSnapshot(browser);
             await Mouse(browser, "mousePressed", before.HandleX, before.HandleY, "left", 1);
-            Assert(await Value<bool>(browser, "window.handle.hasPointerCapture(window.pointerId)"), "Move handle did not capture the real pointer.");
+            Xunit.Assert.True(await Value<bool>(browser, "window.handle.hasPointerCapture(window.pointerId)"), "Move handle did not capture the real pointer.");
             await Mouse(browser, "mouseMoved", before.HandleX + 300, before.HandleY + 100, "left", 1);
             await Task.Delay(80);
             var during = await ReadSnapshot(browser);
-            Assert(await Value<bool>(browser, "window.card === window.originalCard && window.card.isConnected && document.contains(window.card)"), "Card node was replaced during drag.");
-            Assert(Math.Abs(during.Left - before.Left) > 250, $"Expected >250px horizontal movement, got {during.Left - before.Left:0.0}px.");
-            Assert(Math.Abs(during.Top - before.Top) > 70, $"Expected >70px vertical movement, got {during.Top - before.Top:0.0}px.");
-            Assert(await Value<bool>(browser, "window.mapPan === 0 && window.workspaceHash === 'W-1:.1:.2|W-2:.3:.4'"), "Drag mutated map pan or workspace coordinates.");
+            Xunit.Assert.True(await Value<bool>(browser, "window.card === window.originalCard && window.card.isConnected && document.contains(window.card)"), "Card node was replaced during drag.");
+            Xunit.Assert.True(Math.Abs(during.Left - before.Left) > 250, $"Expected >250px horizontal movement, got {during.Left - before.Left:0.0}px.");
+            Xunit.Assert.True(Math.Abs(during.Top - before.Top) > 70, $"Expected >70px vertical movement, got {during.Top - before.Top:0.0}px.");
+            Xunit.Assert.True(await Value<bool>(browser, "window.mapPan === 0 && window.workspaceHash === 'W-1:.1:.2|W-2:.3:.4'"), "Drag mutated map pan or workspace coordinates.");
 
             await Mouse(browser, "mouseReleased", before.HandleX + 300, before.HandleY + 100, "left", 0);
             await Task.Delay(80);
             var after = await ReadSnapshot(browser);
-            Assert(Near(after.Left, during.Left, 2) && Near(after.Top, during.Top, 2), "Card snapped after pointerup.");
+            Xunit.Assert.True(Near(after.Left, during.Left, 2) && Near(after.Top, during.Top, 2), "Card snapped after pointerup.");
 
             await Execute(browser, "window.rebuild();");
             await Task.Delay(80);
             var saved = await ReadSnapshot(browser);
-            Assert(Near(saved.Left, after.Left, 2) && Near(saved.Top, after.Top, 2), "Full rerender did not preserve saved position.");
+            Xunit.Assert.True(Near(saved.Left, after.Left, 2) && Near(saved.Top, after.Top, 2), "Full rerender did not preserve saved position.");
 
             Console.WriteLine($"Cluster card real drag harness: PASS; delta=({during.Left - before.Left:0.0}px, {during.Top - before.Top:0.0}px), saved=({saved.Left:0.0}px, {saved.Top:0.0}px)");
             return 0;
@@ -103,6 +103,6 @@ window.snapshot=()=>{const card=window.card.getBoundingClientRect(), handle=wind
     }
 
     private static bool Near(double left, double right, double tolerance) => Math.Abs(left - right) <= tolerance;
-    private static void Assert(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }
+
     private sealed record Snapshot(double Left, double Top, double HandleX, double HandleY);
 }

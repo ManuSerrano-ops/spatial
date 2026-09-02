@@ -187,7 +187,7 @@ class LightMapTests(unittest.TestCase):
     def test_extraction_contract_has_exact_logical_path_and_harness(self) -> None:
         project = (ROOT / "PlanoOpenSpaceIT.Windows.csproj").read_text(encoding="utf-8")
         self.assertIn("$(RootNamespace).Resources.map-themes/light/%(Filename)%(Extension)", project)
-        self.assertTrue((ROOT / "tests" / "EmbeddedResourceExtractorHarness" / "Program.cs").exists())
+        self.assertTrue((ROOT / "tests" / "PlanoOpenSpaceIT.Desktop.Tests" / "EmbeddedResourceExtractorTests.cs").exists())
         extractor = (ROOT / "src" / "Desktop" / "Resources" / "EmbeddedResourceExtractor.cs").read_text(encoding="utf-8")
         self.assertIn("NormalizeRelativePath(resource.RelativePath)", extractor)
 

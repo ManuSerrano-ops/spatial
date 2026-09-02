@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>PlanoOpenSpaceIT.Windows.Tests</AssemblyName>
+    <StartupObject>PlanoOpenSpaceIT.Desktop.Tests.Program</StartupObject>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\PlanoOpenSpaceIT.Windows.csproj" />
+    <None Update="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\ParcheoCampoTemplate.xlsx" Link="ParcheoCampoTemplate.xlsx" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\Resources\js\features\managed-areas\cluster-card-drag-helpers.js" Link="Resources\js\features\managed-areas\cluster-card-drag-helpers.js" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

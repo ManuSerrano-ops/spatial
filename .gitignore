@@ -29,6 +29,7 @@ qa-runtime-data/logs/
 
 # Local audit material
 Tareas/
+Portable/
 
 # Python and browser caches
 **/__pycache__/
