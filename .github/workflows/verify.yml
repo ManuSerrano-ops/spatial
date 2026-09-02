@@ -43,8 +43,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      - run: dotnet test tests/PlanoOpenSpaceIT.Domain.Tests/PlanoOpenSpaceIT.Domain.Tests.csproj
       - run: find Resources/js -name '*.js' -print0 | xargs -0 -r -n1 node --check
