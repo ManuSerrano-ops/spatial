@@ -109,9 +109,6 @@ def main() -> None:
             page.locator("#move-seat").focus()
             page.keyboard.press("Enter")
             assert not page.locator("#mapwrap").evaluate("element => element.classList.contains('hidden')")
-            # 3.6 makes Enter inside #mapwrap confirm the active grid cursor;
-            # cancel the mode before exercising the independent map→list route.
-            page.keyboard.press("Escape")
             page.locator("#map-to-list").focus()
             page.keyboard.press("Enter")
             page.locator("#list-table tbody tr").first.focus()

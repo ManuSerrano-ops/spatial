@@ -41,7 +41,9 @@ function loadKeyboardHandler(document, ui, options = {}) {
     'search-results': { classList: { add() {} } },
     search: { focus() {} },
     'filter-bar': { querySelector: () => ({ focus() {} }) },
-    'seat-name': { focus() {} }
+    'seat-name': { focus() {} },
+    mapwrap: options.mapwrap ?? null,
+    'grid-cursor': options.gridCursor ?? null
   };
   Function(
     'document', 'HTMLInputElement', 'HTMLTextAreaElement', 'HTMLSelectElement', '$', 'ui', 'appState',
@@ -140,6 +142,7 @@ test('placement arrows take priority over ordinary seat navigation and Enter con
   let adjacent = 0;
   let selected = 0;
   const handler = loadKeyboardHandler(document, ui, {
+    mapwrap: map,
     movePlacementCursor: direction => { moved++; equal(direction, 'ArrowRight', 'wrong placement direction'); return true; },
     confirmPlacementCursor: () => { confirmed++; return true; },
     adjacentSeat: () => { adjacent++; return { id: 'other' }; },
@@ -158,6 +161,22 @@ test('placement arrows take priority over ordinary seat navigation and Enter con
   handler(keyboardEvent(map, 'ArrowRight'));
   equal(adjacent, 1, 'ordinary navigation did not return after placement');
   equal(selected, 1, 'ordinary navigation did not select the adjacent seat');
+});
+
+test('Move ignores Enter from a link inside the map and sends no bridge command', () => {
+  const document = { body: {}, documentElement: {}, querySelector: () => null };
+  const map = { tabIndex: 0, document, closest: selector => selector === '#mapwrap' ? map : null };
+  const mapLink = { document, closest: selector => selector === '#mapwrap' ? map : null };
+  const ui = { singleKeyShortcutsEnabled: true, placementCursor: { kind: 'move', seatId: 'S-1', x: .5, y: .25 } };
+  const bridgeMessages = [];
+  const handler = loadKeyboardHandler(document, ui, {
+    mapwrap: map,
+    confirmPlacementCursor: () => bridgeMessages.push({ action: 'saveSeatPosition' })
+  });
+  const enter = keyboardEvent(mapLink, 'Enter');
+  handler(enter);
+  equal(bridgeMessages.length, 0, 'Enter from #map-to-list emitted saveSeatPosition');
+  assert(!enter.defaultPrevented, 'Enter from #map-to-list prevented its link action');
 });
 
 test('Enter confirms the actual Move and Add commands for the cursor coordinate', () => {
