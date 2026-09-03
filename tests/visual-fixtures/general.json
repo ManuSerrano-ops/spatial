@@ -1,0 +1,4634 @@
+{
+  "loadInitialDataResult": {
+    "activeScenario": null,
+    "assignments": {
+      "assignments": [
+        {
+          "deviceId": "fixture-device-ada",
+          "locationId": "fixture-location-norte",
+          "personId": "fixture-person-ada",
+          "roseta": "R-G-01",
+          "status": "confirmed",
+          "workstationId": "G-01"
+        },
+        {
+          "deviceId": "fixture-device-bea",
+          "locationId": "fixture-location-sur",
+          "personId": "fixture-person-bea",
+          "roseta": "R-S-D01",
+          "status": "confirmed",
+          "workstationId": "S-D01"
+        },
+        {
+          "status": "reserved",
+          "workstationId": "S-D03"
+        }
+      ],
+      "version": 0
+    },
+    "devices": {
+      "devices": [
+        {
+          "id": "fixture-device-ada",
+          "name": "Equipo Ada"
+        },
+        {
+          "id": "fixture-device-bea",
+          "name": "Equipo Bea"
+        }
+      ]
+    },
+    "grid": {
+      "columns": 24,
+      "rows": 18
+    },
+    "locations": {
+      "locations": [
+        {
+          "id": "fixture-location-norte",
+          "name": "Norte"
+        },
+        {
+          "id": "fixture-location-sur",
+          "name": "Sur"
+        }
+      ]
+    },
+    "managedAreas": {
+      "areas": [],
+      "schemaVersion": "1.0",
+      "version": 0
+    },
+    "maps": {
+      "maps": [
+        {
+          "id": "norte",
+          "image": "plano_norte_limpio.svg",
+          "name": "Norte",
+          "seats": [
+            {
+              "completeness": "complete",
+              "displayLocation": "E-05",
+              "id": "G-01",
+              "state": "occupied",
+              "stateMode": "automatic",
+              "x": 0.18,
+              "y": 0.24
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "L-08",
+              "id": "G-02",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.49,
+              "y": 0.43
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-13",
+              "id": "G-03",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.77,
+              "y": 0.68
+            }
+          ]
+        },
+        {
+          "id": "sur",
+          "image": "plano_sur_limpio.svg",
+          "name": "Sur",
+          "seats": [
+            {
+              "completeness": "complete",
+              "displayLocation": "G-06",
+              "id": "S-D01",
+              "state": "occupied",
+              "stateMode": "automatic",
+              "x": 0.26,
+              "y": 0.31
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "N-12",
+              "id": "S-D02",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.58,
+              "y": 0.62
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-08",
+              "id": "S-D03",
+              "state": "reserved",
+              "stateMode": "manual",
+              "x": 0.78,
+              "y": 0.4
+            }
+          ]
+        }
+      ]
+    },
+    "people": {
+      "people": [
+        {
+          "id": "fixture-person-ada",
+          "name": "Ada Fixture"
+        },
+        {
+          "id": "fixture-person-bea",
+          "name": "Bea Fixture"
+        }
+      ]
+    },
+    "readOnly": false,
+    "scenarios": [
+      {
+        "createdAt": null,
+        "createdBy": null,
+        "id": "fixture-general-diff",
+        "name": "Diff visual general"
+      }
+    ],
+    "version": 0
+  },
+  "runValidationResult": {
+    "count": 0,
+    "durationMs": 0,
+    "results": [],
+    "summary": {
+      "critical": 0,
+      "info": 0,
+      "total": 0,
+      "warning": 0
+    }
+  },
+  "runSpatialAnalyticsResult": {
+    "baseline": null,
+    "contextScenarioId": null,
+    "durationMs": 0,
+    "result": {
+      "heatmapPoints": [
+        {
+          "layer": "occupancy",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-01",
+          "sourceId": "G-01",
+          "value": 1,
+          "x": 0.18,
+          "y": 0.24
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-02",
+          "sourceId": "G-02",
+          "value": 1,
+          "x": 0.49,
+          "y": 0.43
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-03",
+          "sourceId": "G-03",
+          "value": 1,
+          "x": 0.77,
+          "y": 0.68
+        },
+        {
+          "layer": "occupancy",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D01",
+          "sourceId": "S-D01",
+          "value": 1,
+          "x": 0.26,
+          "y": 0.31
+        },
+        {
+          "layer": "availability",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D02",
+          "sourceId": "S-D02",
+          "value": 1,
+          "x": 0.58,
+          "y": 0.62
+        }
+      ],
+      "maps": [
+        {
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seats": {
+            "availabilityRate": 66.67,
+            "free": 2,
+            "occupancyRate": 33.33,
+            "occupied": 1,
+            "reserved": 0,
+            "total": 3
+          },
+          "validation": {
+            "critical": 0,
+            "info": 0,
+            "total": 0,
+            "warning": 0
+          }
+        },
+        {
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seats": {
+            "availabilityRate": 33.33,
+            "free": 1,
+            "occupancyRate": 33.33,
+            "occupied": 1,
+            "reserved": 1,
+            "total": 3
+          },
+          "validation": {
+            "critical": 0,
+            "info": 0,
+            "total": 0,
+            "warning": 0
+          }
+        }
+      ],
+      "scenario": null,
+      "totals": {
+        "availabilityRate": 50,
+        "free": 3,
+        "occupancyRate": 33.33,
+        "occupied": 2,
+        "reserved": 1,
+        "total": 6
+      },
+      "validation": {
+        "critical": 0,
+        "info": 0,
+        "total": 0,
+        "warning": 0
+      }
+    }
+  },
+  "loadScenarioDataResult": {
+    "activeScenario": {
+      "id": "fixture-general-diff",
+      "isPrimary": false,
+      "name": "Diff visual general",
+      "undoCount": 0
+    },
+    "assignments": {
+      "assignments": [
+        {
+          "deviceId": "fixture-device-ada",
+          "locationId": "fixture-location-sur",
+          "personId": "fixture-person-ada",
+          "roseta": "R-G-01-MOVIDA",
+          "status": "confirmed",
+          "workstationId": "G-01"
+        },
+        {
+          "status": "reserved",
+          "workstationId": "S-D03"
+        },
+        {
+          "deviceId": "fixture-device-bea",
+          "locationId": "fixture-location-norte",
+          "personId": "fixture-person-bea",
+          "roseta": "R-G-02",
+          "status": "confirmed",
+          "workstationId": "G-02"
+        }
+      ],
+      "version": 0
+    },
+    "devices": {
+      "devices": [
+        {
+          "id": "fixture-device-ada",
+          "name": "Equipo Ada"
+        },
+        {
+          "id": "fixture-device-bea",
+          "name": "Equipo Bea"
+        }
+      ]
+    },
+    "grid": {
+      "columns": 24,
+      "rows": 18
+    },
+    "locations": {
+      "locations": [
+        {
+          "id": "fixture-location-norte",
+          "name": "Norte"
+        },
+        {
+          "id": "fixture-location-sur",
+          "name": "Sur"
+        }
+      ]
+    },
+    "managedAreas": {
+      "areas": [],
+      "schemaVersion": "1.0",
+      "version": 0
+    },
+    "maps": {
+      "maps": [
+        {
+          "id": "norte",
+          "image": "plano_norte_limpio.svg",
+          "name": "Norte",
+          "seats": [
+            {
+              "completeness": "complete",
+              "displayLocation": "E-05",
+              "id": "G-01",
+              "state": "occupied",
+              "stateMode": "automatic",
+              "x": 0.18,
+              "y": 0.24
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "N-08",
+              "id": "G-02",
+              "state": "occupied",
+              "stateMode": "automatic",
+              "x": 0.57,
+              "y": 0.43
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-13",
+              "id": "G-03",
+              "roseta": "R-G-03",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.77,
+              "y": 0.68
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "F-03",
+              "id": "G-DIFF-01",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.22000000000000003,
+              "y": 0.12
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "I-03",
+              "id": "G-DIFF-02",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.36000000000000004,
+              "y": 0.12
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "M-03",
+              "id": "G-DIFF-03",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.5,
+              "y": 0.12
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-03",
+              "id": "G-DIFF-04",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.64,
+              "y": 0.12
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-03",
+              "id": "G-DIFF-05",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.78,
+              "y": 0.12
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "B-03",
+              "id": "G-DIFF-06",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.08,
+              "y": 0.13999999999999999
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "F-03",
+              "id": "G-DIFF-07",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.22000000000000003,
+              "y": 0.13999999999999999
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "I-03",
+              "id": "G-DIFF-08",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.36000000000000004,
+              "y": 0.13999999999999999
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "M-03",
+              "id": "G-DIFF-09",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.5,
+              "y": 0.13999999999999999
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-03",
+              "id": "G-DIFF-10",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.64,
+              "y": 0.13999999999999999
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-03",
+              "id": "G-DIFF-11",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.78,
+              "y": 0.13999999999999999
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "B-03",
+              "id": "G-DIFF-12",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.08,
+              "y": 0.16
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "F-03",
+              "id": "G-DIFF-13",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.22000000000000003,
+              "y": 0.16
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "I-03",
+              "id": "G-DIFF-14",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.36000000000000004,
+              "y": 0.16
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "M-03",
+              "id": "G-DIFF-15",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.5,
+              "y": 0.16
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-03",
+              "id": "G-DIFF-16",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.64,
+              "y": 0.16
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-03",
+              "id": "G-DIFF-17",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.78,
+              "y": 0.16
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "B-04",
+              "id": "G-DIFF-18",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.08,
+              "y": 0.18
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "F-04",
+              "id": "G-DIFF-19",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.22000000000000003,
+              "y": 0.18
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "I-04",
+              "id": "G-DIFF-20",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.36000000000000004,
+              "y": 0.18
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "M-04",
+              "id": "G-DIFF-21",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.5,
+              "y": 0.18
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-04",
+              "id": "G-DIFF-22",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.64,
+              "y": 0.18
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-04",
+              "id": "G-DIFF-23",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.78,
+              "y": 0.18
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "B-04",
+              "id": "G-DIFF-24",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.08,
+              "y": 0.2
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "F-04",
+              "id": "G-DIFF-25",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.22000000000000003,
+              "y": 0.2
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "I-04",
+              "id": "G-DIFF-26",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.36000000000000004,
+              "y": 0.2
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "M-04",
+              "id": "G-DIFF-27",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.5,
+              "y": 0.2
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-04",
+              "id": "G-DIFF-28",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.64,
+              "y": 0.2
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-04",
+              "id": "G-DIFF-29",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.78,
+              "y": 0.2
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "B-04",
+              "id": "G-DIFF-30",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.08,
+              "y": 0.22
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "F-04",
+              "id": "G-DIFF-31",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.22000000000000003,
+              "y": 0.22
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "I-04",
+              "id": "G-DIFF-32",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.36000000000000004,
+              "y": 0.22
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "M-04",
+              "id": "G-DIFF-33",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.5,
+              "y": 0.22
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-04",
+              "id": "G-DIFF-34",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.64,
+              "y": 0.22
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-04",
+              "id": "G-DIFF-35",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.78,
+              "y": 0.22
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "B-05",
+              "id": "G-DIFF-36",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.08,
+              "y": 0.24
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "F-05",
+              "id": "G-DIFF-37",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.22000000000000003,
+              "y": 0.24
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "I-05",
+              "id": "G-DIFF-38",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.36000000000000004,
+              "y": 0.24
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "M-05",
+              "id": "G-DIFF-39",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.5,
+              "y": 0.24
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-05",
+              "id": "G-DIFF-40",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.64,
+              "y": 0.24
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-05",
+              "id": "G-DIFF-41",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.78,
+              "y": 0.24
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "B-05",
+              "id": "G-DIFF-42",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.08,
+              "y": 0.26
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "F-05",
+              "id": "G-DIFF-43",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.22000000000000003,
+              "y": 0.26
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "I-05",
+              "id": "G-DIFF-44",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.36000000000000004,
+              "y": 0.26
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "M-05",
+              "id": "G-DIFF-45",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.5,
+              "y": 0.26
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-05",
+              "id": "G-DIFF-46",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.64,
+              "y": 0.26
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-05",
+              "id": "G-DIFF-47",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.78,
+              "y": 0.26
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "B-06",
+              "id": "G-DIFF-48",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.08,
+              "y": 0.28
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "F-06",
+              "id": "G-DIFF-49",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.22000000000000003,
+              "y": 0.28
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "I-06",
+              "id": "G-DIFF-50",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.36000000000000004,
+              "y": 0.28
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "M-06",
+              "id": "G-DIFF-51",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.5,
+              "y": 0.28
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-06",
+              "id": "G-DIFF-52",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.64,
+              "y": 0.28
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-06",
+              "id": "G-DIFF-53",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.78,
+              "y": 0.28
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "B-06",
+              "id": "G-DIFF-54",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.08,
+              "y": 0.3
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "F-06",
+              "id": "G-DIFF-55",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.22000000000000003,
+              "y": 0.3
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "I-06",
+              "id": "G-DIFF-56",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.36000000000000004,
+              "y": 0.3
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "M-06",
+              "id": "G-DIFF-57",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.5,
+              "y": 0.3
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-06",
+              "id": "G-DIFF-58",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.64,
+              "y": 0.3
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-06",
+              "id": "G-DIFF-59",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.78,
+              "y": 0.3
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "B-06",
+              "id": "G-DIFF-60",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.08,
+              "y": 0.32
+            }
+          ]
+        },
+        {
+          "id": "sur",
+          "image": "plano_sur_limpio.svg",
+          "name": "Sur",
+          "seats": [
+            {
+              "completeness": "complete",
+              "displayLocation": "G-06",
+              "id": "S-D01",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.26,
+              "y": 0.31
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "S-08",
+              "id": "S-D03",
+              "state": "reserved",
+              "stateMode": "manual",
+              "x": 0.78,
+              "y": 0.4
+            }
+          ]
+        }
+      ]
+    },
+    "people": {
+      "people": [
+        {
+          "id": "fixture-person-ada",
+          "name": "Ada Fixture"
+        },
+        {
+          "id": "fixture-person-bea",
+          "name": "Bea Fixture"
+        }
+      ]
+    },
+    "readOnly": false,
+    "scenarios": [
+      {
+        "createdAt": null,
+        "createdBy": null,
+        "id": "fixture-general-diff",
+        "name": "Diff visual general"
+      }
+    ],
+    "version": 0
+  },
+  "runScenarioValidationResult": {
+    "count": 0,
+    "durationMs": 0,
+    "results": [],
+    "summary": {
+      "critical": 0,
+      "info": 0,
+      "total": 0,
+      "warning": 0
+    }
+  },
+  "runScenarioSpatialAnalyticsResult": {
+    "baseline": {
+      "heatmapPoints": [
+        {
+          "layer": "occupancy",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-01",
+          "sourceId": "G-01",
+          "value": 1,
+          "x": 0.18,
+          "y": 0.24
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-02",
+          "sourceId": "G-02",
+          "value": 1,
+          "x": 0.49,
+          "y": 0.43
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-03",
+          "sourceId": "G-03",
+          "value": 1,
+          "x": 0.77,
+          "y": 0.68
+        },
+        {
+          "layer": "occupancy",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D01",
+          "sourceId": "S-D01",
+          "value": 1,
+          "x": 0.26,
+          "y": 0.31
+        },
+        {
+          "layer": "availability",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D02",
+          "sourceId": "S-D02",
+          "value": 1,
+          "x": 0.58,
+          "y": 0.62
+        }
+      ],
+      "maps": [
+        {
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seats": {
+            "availabilityRate": 66.67,
+            "free": 2,
+            "occupancyRate": 33.33,
+            "occupied": 1,
+            "reserved": 0,
+            "total": 3
+          },
+          "validation": {
+            "critical": 0,
+            "info": 0,
+            "total": 0,
+            "warning": 0
+          }
+        },
+        {
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seats": {
+            "availabilityRate": 33.33,
+            "free": 1,
+            "occupancyRate": 33.33,
+            "occupied": 1,
+            "reserved": 1,
+            "total": 3
+          },
+          "validation": {
+            "critical": 0,
+            "info": 0,
+            "total": 0,
+            "warning": 0
+          }
+        }
+      ],
+      "scenario": null,
+      "totals": {
+        "availabilityRate": 50,
+        "free": 3,
+        "occupancyRate": 33.33,
+        "occupied": 2,
+        "reserved": 1,
+        "total": 6
+      },
+      "validation": {
+        "critical": 0,
+        "info": 0,
+        "total": 0,
+        "warning": 0
+      }
+    },
+    "contextScenarioId": "fixture-general-diff",
+    "durationMs": 0,
+    "result": {
+      "heatmapPoints": [
+        {
+          "layer": "occupancy",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-01",
+          "sourceId": "G-01",
+          "value": 1,
+          "x": 0.18,
+          "y": 0.24
+        },
+        {
+          "layer": "occupancy",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-02",
+          "sourceId": "G-02",
+          "value": 1,
+          "x": 0.57,
+          "y": 0.43
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-03",
+          "sourceId": "G-03",
+          "value": 1,
+          "x": 0.77,
+          "y": 0.68
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-01",
+          "sourceId": "G-DIFF-01",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.12
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-02",
+          "sourceId": "G-DIFF-02",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.12
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-03",
+          "sourceId": "G-DIFF-03",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.12
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-04",
+          "sourceId": "G-DIFF-04",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.12
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-05",
+          "sourceId": "G-DIFF-05",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.12
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-06",
+          "sourceId": "G-DIFF-06",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.14
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-07",
+          "sourceId": "G-DIFF-07",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.14
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-08",
+          "sourceId": "G-DIFF-08",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.14
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-09",
+          "sourceId": "G-DIFF-09",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.14
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-10",
+          "sourceId": "G-DIFF-10",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.14
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-11",
+          "sourceId": "G-DIFF-11",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.14
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-12",
+          "sourceId": "G-DIFF-12",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.16
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-13",
+          "sourceId": "G-DIFF-13",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.16
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-14",
+          "sourceId": "G-DIFF-14",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.16
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-15",
+          "sourceId": "G-DIFF-15",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.16
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-16",
+          "sourceId": "G-DIFF-16",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.16
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-17",
+          "sourceId": "G-DIFF-17",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.16
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-18",
+          "sourceId": "G-DIFF-18",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.18
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-19",
+          "sourceId": "G-DIFF-19",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.18
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-20",
+          "sourceId": "G-DIFF-20",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.18
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-21",
+          "sourceId": "G-DIFF-21",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.18
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-22",
+          "sourceId": "G-DIFF-22",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.18
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-23",
+          "sourceId": "G-DIFF-23",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.18
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-24",
+          "sourceId": "G-DIFF-24",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.2
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-25",
+          "sourceId": "G-DIFF-25",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.2
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-26",
+          "sourceId": "G-DIFF-26",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.2
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-27",
+          "sourceId": "G-DIFF-27",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.2
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-28",
+          "sourceId": "G-DIFF-28",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.2
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-29",
+          "sourceId": "G-DIFF-29",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.2
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-30",
+          "sourceId": "G-DIFF-30",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.22
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-31",
+          "sourceId": "G-DIFF-31",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.22
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-32",
+          "sourceId": "G-DIFF-32",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.22
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-33",
+          "sourceId": "G-DIFF-33",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.22
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-34",
+          "sourceId": "G-DIFF-34",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.22
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-35",
+          "sourceId": "G-DIFF-35",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.22
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-36",
+          "sourceId": "G-DIFF-36",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.24
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-37",
+          "sourceId": "G-DIFF-37",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.24
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-38",
+          "sourceId": "G-DIFF-38",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.24
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-39",
+          "sourceId": "G-DIFF-39",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.24
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-40",
+          "sourceId": "G-DIFF-40",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.24
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-41",
+          "sourceId": "G-DIFF-41",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.24
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-42",
+          "sourceId": "G-DIFF-42",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.26
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-43",
+          "sourceId": "G-DIFF-43",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.26
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-44",
+          "sourceId": "G-DIFF-44",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.26
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-45",
+          "sourceId": "G-DIFF-45",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.26
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-46",
+          "sourceId": "G-DIFF-46",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.26
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-47",
+          "sourceId": "G-DIFF-47",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.26
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-48",
+          "sourceId": "G-DIFF-48",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.28
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-49",
+          "sourceId": "G-DIFF-49",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.28
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-50",
+          "sourceId": "G-DIFF-50",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.28
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-51",
+          "sourceId": "G-DIFF-51",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.28
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-52",
+          "sourceId": "G-DIFF-52",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.28
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-53",
+          "sourceId": "G-DIFF-53",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.28
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-54",
+          "sourceId": "G-DIFF-54",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.3
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-55",
+          "sourceId": "G-DIFF-55",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.3
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-56",
+          "sourceId": "G-DIFF-56",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.3
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-57",
+          "sourceId": "G-DIFF-57",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.3
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-58",
+          "sourceId": "G-DIFF-58",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.3
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-59",
+          "sourceId": "G-DIFF-59",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.3
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-60",
+          "sourceId": "G-DIFF-60",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.32
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-01",
+          "sourceId": "assignment|G-01",
+          "value": 1,
+          "x": 0.18,
+          "y": 0.24
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-02",
+          "sourceId": "assignment|G-02",
+          "value": 1,
+          "x": 0.57,
+          "y": 0.43
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-02",
+          "sourceId": "seat|norte|G-02",
+          "value": 1,
+          "x": 0.57,
+          "y": 0.43
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-03",
+          "sourceId": "seat|norte|G-03",
+          "value": 1,
+          "x": 0.77,
+          "y": 0.68
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-01",
+          "sourceId": "seat|norte|G-DIFF-01",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.12
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-02",
+          "sourceId": "seat|norte|G-DIFF-02",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.12
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-03",
+          "sourceId": "seat|norte|G-DIFF-03",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.12
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-04",
+          "sourceId": "seat|norte|G-DIFF-04",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.12
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-05",
+          "sourceId": "seat|norte|G-DIFF-05",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.12
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-06",
+          "sourceId": "seat|norte|G-DIFF-06",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.14
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-07",
+          "sourceId": "seat|norte|G-DIFF-07",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.14
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-08",
+          "sourceId": "seat|norte|G-DIFF-08",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.14
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-09",
+          "sourceId": "seat|norte|G-DIFF-09",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.14
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-10",
+          "sourceId": "seat|norte|G-DIFF-10",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.14
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-11",
+          "sourceId": "seat|norte|G-DIFF-11",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.14
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-12",
+          "sourceId": "seat|norte|G-DIFF-12",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.16
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-13",
+          "sourceId": "seat|norte|G-DIFF-13",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.16
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-14",
+          "sourceId": "seat|norte|G-DIFF-14",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.16
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-15",
+          "sourceId": "seat|norte|G-DIFF-15",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.16
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-16",
+          "sourceId": "seat|norte|G-DIFF-16",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.16
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-17",
+          "sourceId": "seat|norte|G-DIFF-17",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.16
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-18",
+          "sourceId": "seat|norte|G-DIFF-18",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.18
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-19",
+          "sourceId": "seat|norte|G-DIFF-19",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.18
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-20",
+          "sourceId": "seat|norte|G-DIFF-20",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.18
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-21",
+          "sourceId": "seat|norte|G-DIFF-21",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.18
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-22",
+          "sourceId": "seat|norte|G-DIFF-22",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.18
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-23",
+          "sourceId": "seat|norte|G-DIFF-23",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.18
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-24",
+          "sourceId": "seat|norte|G-DIFF-24",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.2
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-25",
+          "sourceId": "seat|norte|G-DIFF-25",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.2
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-26",
+          "sourceId": "seat|norte|G-DIFF-26",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.2
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-27",
+          "sourceId": "seat|norte|G-DIFF-27",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.2
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-28",
+          "sourceId": "seat|norte|G-DIFF-28",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.2
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-29",
+          "sourceId": "seat|norte|G-DIFF-29",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.2
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-30",
+          "sourceId": "seat|norte|G-DIFF-30",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.22
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-31",
+          "sourceId": "seat|norte|G-DIFF-31",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.22
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-32",
+          "sourceId": "seat|norte|G-DIFF-32",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.22
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-33",
+          "sourceId": "seat|norte|G-DIFF-33",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.22
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-34",
+          "sourceId": "seat|norte|G-DIFF-34",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.22
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-35",
+          "sourceId": "seat|norte|G-DIFF-35",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.22
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-36",
+          "sourceId": "seat|norte|G-DIFF-36",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.24
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-37",
+          "sourceId": "seat|norte|G-DIFF-37",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.24
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-38",
+          "sourceId": "seat|norte|G-DIFF-38",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.24
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-39",
+          "sourceId": "seat|norte|G-DIFF-39",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.24
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-40",
+          "sourceId": "seat|norte|G-DIFF-40",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.24
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-41",
+          "sourceId": "seat|norte|G-DIFF-41",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.24
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-42",
+          "sourceId": "seat|norte|G-DIFF-42",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.26
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-43",
+          "sourceId": "seat|norte|G-DIFF-43",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.26
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-44",
+          "sourceId": "seat|norte|G-DIFF-44",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.26
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-45",
+          "sourceId": "seat|norte|G-DIFF-45",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.26
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-46",
+          "sourceId": "seat|norte|G-DIFF-46",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.26
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-47",
+          "sourceId": "seat|norte|G-DIFF-47",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.26
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-48",
+          "sourceId": "seat|norte|G-DIFF-48",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.28
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-49",
+          "sourceId": "seat|norte|G-DIFF-49",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.28
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-50",
+          "sourceId": "seat|norte|G-DIFF-50",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.28
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-51",
+          "sourceId": "seat|norte|G-DIFF-51",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.28
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-52",
+          "sourceId": "seat|norte|G-DIFF-52",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.28
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-53",
+          "sourceId": "seat|norte|G-DIFF-53",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.28
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-54",
+          "sourceId": "seat|norte|G-DIFF-54",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.3
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-55",
+          "sourceId": "seat|norte|G-DIFF-55",
+          "value": 1,
+          "x": 0.22,
+          "y": 0.3
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-56",
+          "sourceId": "seat|norte|G-DIFF-56",
+          "value": 1,
+          "x": 0.36,
+          "y": 0.3
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-57",
+          "sourceId": "seat|norte|G-DIFF-57",
+          "value": 1,
+          "x": 0.5,
+          "y": 0.3
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-58",
+          "sourceId": "seat|norte|G-DIFF-58",
+          "value": 1,
+          "x": 0.64,
+          "y": 0.3
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-59",
+          "sourceId": "seat|norte|G-DIFF-59",
+          "value": 1,
+          "x": 0.78,
+          "y": 0.3
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-DIFF-60",
+          "sourceId": "seat|norte|G-DIFF-60",
+          "value": 1,
+          "x": 0.08,
+          "y": 0.32
+        },
+        {
+          "layer": "availability",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D01",
+          "sourceId": "S-D01",
+          "value": 1,
+          "x": 0.26,
+          "y": 0.31
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D01",
+          "sourceId": "assignment|S-D01",
+          "value": 1,
+          "x": 0.26,
+          "y": 0.31
+        },
+        {
+          "layer": "scenario-changes",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D02",
+          "sourceId": "seat|sur|S-D02",
+          "value": 1,
+          "x": 0.58,
+          "y": 0.62
+        }
+      ],
+      "maps": [
+        {
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seats": {
+            "availabilityRate": 96.83,
+            "free": 61,
+            "occupancyRate": 3.17,
+            "occupied": 2,
+            "reserved": 0,
+            "total": 63
+          },
+          "validation": {
+            "critical": 0,
+            "info": 0,
+            "total": 0,
+            "warning": 0
+          }
+        },
+        {
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seats": {
+            "availabilityRate": 50,
+            "free": 1,
+            "occupancyRate": 0,
+            "occupied": 0,
+            "reserved": 1,
+            "total": 2
+          },
+          "validation": {
+            "critical": 0,
+            "info": 0,
+            "total": 0,
+            "warning": 0
+          }
+        }
+      ],
+      "scenario": {
+        "mappedChanges": 66,
+        "totalChanges": 66
+      },
+      "totals": {
+        "availabilityRate": 95.38,
+        "free": 62,
+        "occupancyRate": 3.08,
+        "occupied": 2,
+        "reserved": 1,
+        "total": 65
+      },
+      "validation": {
+        "critical": 0,
+        "info": 0,
+        "total": 0,
+        "warning": 0
+      }
+    }
+  },
+  "getScenarioDiffResult": {
+    "changes": [
+      {
+        "after": {
+          "deviceId": "fixture-device-bea",
+          "locationId": "fixture-location-norte",
+          "personId": "fixture-person-bea",
+          "roseta": "R-G-02",
+          "status": "confirmed",
+          "workstationId": "G-02"
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": "fixture-device-bea",
+            "before": null,
+            "field": "deviceId"
+          },
+          {
+            "after": "fixture-location-norte",
+            "before": null,
+            "field": "locationId"
+          },
+          {
+            "after": "fixture-person-bea",
+            "before": null,
+            "field": "personId"
+          },
+          {
+            "after": "R-G-02",
+            "before": null,
+            "field": "roseta"
+          },
+          {
+            "after": "confirmed",
+            "before": null,
+            "field": "status"
+          }
+        ],
+        "entityId": "G-02",
+        "entityType": "assignment",
+        "fromCell": null,
+        "id": "assignment|G-02",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-02",
+        "toCell": null,
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-01",
+          "x": 0.22000000000000003,
+          "y": 0.12
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.22000000000000003,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.12,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-01",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-01",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-01",
+        "toCell": "F-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-02",
+          "x": 0.36000000000000004,
+          "y": 0.12
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.36000000000000004,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.12,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-02",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-02",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-02",
+        "toCell": "I-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-03",
+          "x": 0.5,
+          "y": 0.12
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.5,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.12,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-03",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-03",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-03",
+        "toCell": "M-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-04",
+          "x": 0.64,
+          "y": 0.12
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.64,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.12,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-04",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-04",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-04",
+        "toCell": "P-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-05",
+          "x": 0.78,
+          "y": 0.12
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.78,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.12,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-05",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-05",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-05",
+        "toCell": "S-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-06",
+          "x": 0.08,
+          "y": 0.13999999999999999
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.08,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.13999999999999999,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-06",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-06",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-06",
+        "toCell": "B-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-07",
+          "x": 0.22000000000000003,
+          "y": 0.13999999999999999
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.22000000000000003,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.13999999999999999,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-07",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-07",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-07",
+        "toCell": "F-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-08",
+          "x": 0.36000000000000004,
+          "y": 0.13999999999999999
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.36000000000000004,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.13999999999999999,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-08",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-08",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-08",
+        "toCell": "I-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-09",
+          "x": 0.5,
+          "y": 0.13999999999999999
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.5,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.13999999999999999,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-09",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-09",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-09",
+        "toCell": "M-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-10",
+          "x": 0.64,
+          "y": 0.13999999999999999
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.64,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.13999999999999999,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-10",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-10",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-10",
+        "toCell": "P-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-11",
+          "x": 0.78,
+          "y": 0.13999999999999999
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.78,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.13999999999999999,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-11",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-11",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-11",
+        "toCell": "S-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-12",
+          "x": 0.08,
+          "y": 0.16
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.08,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.16,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-12",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-12",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-12",
+        "toCell": "B-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-13",
+          "x": 0.22000000000000003,
+          "y": 0.16
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.22000000000000003,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.16,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-13",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-13",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-13",
+        "toCell": "F-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-14",
+          "x": 0.36000000000000004,
+          "y": 0.16
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.36000000000000004,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.16,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-14",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-14",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-14",
+        "toCell": "I-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-15",
+          "x": 0.5,
+          "y": 0.16
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.5,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.16,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-15",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-15",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-15",
+        "toCell": "M-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-16",
+          "x": 0.64,
+          "y": 0.16
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.64,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.16,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-16",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-16",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-16",
+        "toCell": "P-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-17",
+          "x": 0.78,
+          "y": 0.16
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.78,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.16,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-17",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-17",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-17",
+        "toCell": "S-03",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-18",
+          "x": 0.08,
+          "y": 0.18
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.08,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.18,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-18",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-18",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-18",
+        "toCell": "B-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-19",
+          "x": 0.22000000000000003,
+          "y": 0.18
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.22000000000000003,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.18,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-19",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-19",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-19",
+        "toCell": "F-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-20",
+          "x": 0.36000000000000004,
+          "y": 0.18
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.36000000000000004,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.18,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-20",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-20",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-20",
+        "toCell": "I-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-21",
+          "x": 0.5,
+          "y": 0.18
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.5,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.18,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-21",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-21",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-21",
+        "toCell": "M-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-22",
+          "x": 0.64,
+          "y": 0.18
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.64,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.18,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-22",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-22",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-22",
+        "toCell": "P-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-23",
+          "x": 0.78,
+          "y": 0.18
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.78,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.18,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-23",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-23",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-23",
+        "toCell": "S-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-24",
+          "x": 0.08,
+          "y": 0.2
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.08,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.2,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-24",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-24",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-24",
+        "toCell": "B-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-25",
+          "x": 0.22000000000000003,
+          "y": 0.2
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.22000000000000003,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.2,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-25",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-25",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-25",
+        "toCell": "F-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-26",
+          "x": 0.36000000000000004,
+          "y": 0.2
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.36000000000000004,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.2,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-26",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-26",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-26",
+        "toCell": "I-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-27",
+          "x": 0.5,
+          "y": 0.2
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.5,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.2,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-27",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-27",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-27",
+        "toCell": "M-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-28",
+          "x": 0.64,
+          "y": 0.2
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.64,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.2,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-28",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-28",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-28",
+        "toCell": "P-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-29",
+          "x": 0.78,
+          "y": 0.2
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.78,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.2,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-29",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-29",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-29",
+        "toCell": "S-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-30",
+          "x": 0.08,
+          "y": 0.22
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.08,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.22,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-30",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-30",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-30",
+        "toCell": "B-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-31",
+          "x": 0.22000000000000003,
+          "y": 0.22
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.22000000000000003,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.22,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-31",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-31",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-31",
+        "toCell": "F-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-32",
+          "x": 0.36000000000000004,
+          "y": 0.22
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.36000000000000004,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.22,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-32",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-32",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-32",
+        "toCell": "I-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-33",
+          "x": 0.5,
+          "y": 0.22
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.5,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.22,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-33",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-33",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-33",
+        "toCell": "M-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-34",
+          "x": 0.64,
+          "y": 0.22
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.64,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.22,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-34",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-34",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-34",
+        "toCell": "P-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-35",
+          "x": 0.78,
+          "y": 0.22
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.78,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.22,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-35",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-35",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-35",
+        "toCell": "S-04",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-36",
+          "x": 0.08,
+          "y": 0.24
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.08,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.24,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-36",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-36",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-36",
+        "toCell": "B-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-37",
+          "x": 0.22000000000000003,
+          "y": 0.24
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.22000000000000003,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.24,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-37",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-37",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-37",
+        "toCell": "F-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-38",
+          "x": 0.36000000000000004,
+          "y": 0.24
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.36000000000000004,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.24,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-38",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-38",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-38",
+        "toCell": "I-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-39",
+          "x": 0.5,
+          "y": 0.24
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.5,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.24,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-39",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-39",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-39",
+        "toCell": "M-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-40",
+          "x": 0.64,
+          "y": 0.24
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.64,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.24,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-40",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-40",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-40",
+        "toCell": "P-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-41",
+          "x": 0.78,
+          "y": 0.24
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.78,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.24,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-41",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-41",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-41",
+        "toCell": "S-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-42",
+          "x": 0.08,
+          "y": 0.26
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.08,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.26,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-42",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-42",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-42",
+        "toCell": "B-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-43",
+          "x": 0.22000000000000003,
+          "y": 0.26
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.22000000000000003,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.26,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-43",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-43",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-43",
+        "toCell": "F-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-44",
+          "x": 0.36000000000000004,
+          "y": 0.26
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.36000000000000004,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.26,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-44",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-44",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-44",
+        "toCell": "I-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-45",
+          "x": 0.5,
+          "y": 0.26
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.5,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.26,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-45",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-45",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-45",
+        "toCell": "M-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-46",
+          "x": 0.64,
+          "y": 0.26
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.64,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.26,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-46",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-46",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-46",
+        "toCell": "P-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-47",
+          "x": 0.78,
+          "y": 0.26
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.78,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.26,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-47",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-47",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-47",
+        "toCell": "S-05",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-48",
+          "x": 0.08,
+          "y": 0.28
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.08,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.28,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-48",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-48",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-48",
+        "toCell": "B-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-49",
+          "x": 0.22000000000000003,
+          "y": 0.28
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.22000000000000003,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.28,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-49",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-49",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-49",
+        "toCell": "F-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-50",
+          "x": 0.36000000000000004,
+          "y": 0.28
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.36000000000000004,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.28,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-50",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-50",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-50",
+        "toCell": "I-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-51",
+          "x": 0.5,
+          "y": 0.28
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.5,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.28,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-51",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-51",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-51",
+        "toCell": "M-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-52",
+          "x": 0.64,
+          "y": 0.28
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.64,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.28,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-52",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-52",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-52",
+        "toCell": "P-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-53",
+          "x": 0.78,
+          "y": 0.28
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.78,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.28,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-53",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-53",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-53",
+        "toCell": "S-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-54",
+          "x": 0.08,
+          "y": 0.3
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.08,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.3,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-54",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-54",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-54",
+        "toCell": "B-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-55",
+          "x": 0.22000000000000003,
+          "y": 0.3
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.22000000000000003,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.3,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-55",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-55",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-55",
+        "toCell": "F-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-56",
+          "x": 0.36000000000000004,
+          "y": 0.3
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.36000000000000004,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.3,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-56",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-56",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-56",
+        "toCell": "I-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-57",
+          "x": 0.5,
+          "y": 0.3
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.5,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.3,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-57",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-57",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-57",
+        "toCell": "M-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-58",
+          "x": 0.64,
+          "y": 0.3
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.64,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.3,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-58",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-58",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-58",
+        "toCell": "P-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-59",
+          "x": 0.78,
+          "y": 0.3
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.78,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.3,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-59",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-59",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-59",
+        "toCell": "S-06",
+        "type": "ADDED"
+      },
+      {
+        "after": {
+          "id": "G-DIFF-60",
+          "x": 0.08,
+          "y": 0.32
+        },
+        "atomic": false,
+        "before": null,
+        "changedFields": [
+          {
+            "after": 0.08,
+            "before": null,
+            "field": "x"
+          },
+          {
+            "after": 0.32,
+            "before": null,
+            "field": "y"
+          }
+        ],
+        "entityId": "G-DIFF-60",
+        "entityType": "workspace",
+        "fromCell": "",
+        "id": "seat|norte|G-DIFF-60",
+        "kind": "ADDED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-DIFF-60",
+        "toCell": "B-06",
+        "type": "ADDED"
+      },
+      {
+        "after": null,
+        "atomic": false,
+        "before": {
+          "deviceId": "fixture-device-bea",
+          "locationId": "fixture-location-sur",
+          "personId": "fixture-person-bea",
+          "roseta": "R-S-D01",
+          "status": "confirmed",
+          "workstationId": "S-D01"
+        },
+        "changedFields": [
+          {
+            "after": null,
+            "before": "fixture-device-bea",
+            "field": "deviceId"
+          },
+          {
+            "after": null,
+            "before": "fixture-location-sur",
+            "field": "locationId"
+          },
+          {
+            "after": null,
+            "before": "fixture-person-bea",
+            "field": "personId"
+          },
+          {
+            "after": null,
+            "before": "R-S-D01",
+            "field": "roseta"
+          },
+          {
+            "after": null,
+            "before": "confirmed",
+            "field": "status"
+          }
+        ],
+        "entityId": "S-D01",
+        "entityType": "assignment",
+        "fromCell": null,
+        "id": "assignment|S-D01",
+        "kind": "REMOVED",
+        "mapId": "sur",
+        "mapName": "Sur",
+        "operationId": null,
+        "seatId": "S-D01",
+        "toCell": null,
+        "type": "REMOVED"
+      },
+      {
+        "after": null,
+        "atomic": false,
+        "before": {
+          "id": "S-D02",
+          "x": 0.58,
+          "y": 0.62
+        },
+        "changedFields": [
+          {
+            "after": null,
+            "before": 0.58,
+            "field": "x"
+          },
+          {
+            "after": null,
+            "before": 0.62,
+            "field": "y"
+          }
+        ],
+        "entityId": "S-D02",
+        "entityType": "workspace",
+        "fromCell": "N-12",
+        "id": "seat|sur|S-D02",
+        "kind": "REMOVED",
+        "mapId": "sur",
+        "mapName": "Sur",
+        "operationId": null,
+        "seatId": "S-D02",
+        "toCell": "",
+        "type": "REMOVED"
+      },
+      {
+        "after": {
+          "id": "G-02",
+          "x": 0.57,
+          "y": 0.43
+        },
+        "atomic": false,
+        "before": {
+          "id": "G-02",
+          "x": 0.49,
+          "y": 0.43
+        },
+        "changedFields": [
+          {
+            "after": 0.57,
+            "before": 0.49,
+            "field": "x"
+          }
+        ],
+        "entityId": "G-02",
+        "entityType": "workspace",
+        "fromCell": "L-08",
+        "id": "seat|norte|G-02",
+        "kind": "MOVED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-02",
+        "toCell": "N-08",
+        "type": "MOVED"
+      },
+      {
+        "after": {
+          "deviceId": "fixture-device-ada",
+          "locationId": "fixture-location-sur",
+          "personId": "fixture-person-ada",
+          "roseta": "R-G-01-MOVIDA",
+          "status": "confirmed",
+          "workstationId": "G-01"
+        },
+        "atomic": false,
+        "before": {
+          "deviceId": "fixture-device-ada",
+          "locationId": "fixture-location-norte",
+          "personId": "fixture-person-ada",
+          "roseta": "R-G-01",
+          "status": "confirmed",
+          "workstationId": "G-01"
+        },
+        "changedFields": [
+          {
+            "after": "fixture-location-sur",
+            "before": "fixture-location-norte",
+            "field": "locationId"
+          },
+          {
+            "after": "R-G-01-MOVIDA",
+            "before": "R-G-01",
+            "field": "roseta"
+          }
+        ],
+        "entityId": "G-01",
+        "entityType": "assignment",
+        "fromCell": null,
+        "id": "assignment|G-01",
+        "kind": "MODIFIED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-01",
+        "toCell": null,
+        "type": "MODIFIED"
+      },
+      {
+        "after": {
+          "id": "G-03",
+          "roseta": "R-G-03",
+          "x": 0.77,
+          "y": 0.68
+        },
+        "atomic": false,
+        "before": {
+          "id": "G-03",
+          "x": 0.77,
+          "y": 0.68
+        },
+        "changedFields": [
+          {
+            "after": "R-G-03",
+            "before": null,
+            "field": "roseta"
+          }
+        ],
+        "entityId": "G-03",
+        "entityType": "workspace",
+        "fromCell": "S-13",
+        "id": "seat|norte|G-03",
+        "kind": "MODIFIED",
+        "mapId": "norte",
+        "mapName": "Norte",
+        "operationId": null,
+        "seatId": "G-03",
+        "toCell": "S-13",
+        "type": "MODIFIED"
+      }
+    ],
+    "impactSummary": {
+      "added": 61,
+      "assignments": 3,
+      "byMap": {
+        "norte": 64,
+        "sur": 2
+      },
+      "changedFields": 136,
+      "modified": 2,
+      "moved": 1,
+      "removed": 2,
+      "total": 66,
+      "workspaces": 63
+    },
+    "validationImpact": {
+      "introduced": [],
+      "persistent": [],
+      "resolved": []
+    }
+  }
+}

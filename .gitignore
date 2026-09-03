@@ -35,3 +35,4 @@ Portable/
 **/__pycache__/
 *.py[cod]
 chrome-profile/
+tests/visual-artifacts/

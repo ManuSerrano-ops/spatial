@@ -1,0 +1,311 @@
+{
+  "loadInitialDataResult": {
+    "activeScenario": null,
+    "assignments": {
+      "assignments": [
+        {
+          "deviceId": "fixture-device-ada",
+          "locationId": "fixture-location-norte",
+          "personId": "fixture-person-ada",
+          "roseta": "R-G-01",
+          "status": "confirmed",
+          "workstationId": "G-01"
+        },
+        {
+          "deviceId": "fixture-device-bea",
+          "locationId": "fixture-location-sur",
+          "personId": "fixture-person-bea",
+          "roseta": "R-S-D01",
+          "status": "confirmed",
+          "workstationId": "S-D01"
+        },
+        {
+          "status": "reserved",
+          "workstationId": "S-D03"
+        }
+      ],
+      "version": 0
+    },
+    "devices": {
+      "devices": [
+        {
+          "id": "fixture-device-ada",
+          "name": "Equipo Ada"
+        },
+        {
+          "id": "fixture-device-bea",
+          "name": "Equipo Bea"
+        }
+      ]
+    },
+    "grid": {
+      "columns": 24,
+      "rows": 18
+    },
+    "locations": {
+      "locations": [
+        {
+          "id": "fixture-location-norte",
+          "name": "Norte"
+        },
+        {
+          "id": "fixture-location-sur",
+          "name": "Sur"
+        }
+      ]
+    },
+    "managedAreas": {
+      "areas": [],
+      "schemaVersion": "1.0",
+      "version": 0
+    },
+    "maps": {
+      "maps": [
+        {
+          "id": "sur",
+          "image": "plano_sur_limpio.svg",
+          "name": "Sur",
+          "seats": [
+            {
+              "completeness": "complete",
+              "displayLocation": "H-08",
+              "id": "S-D01",
+              "state": "occupied",
+              "stateMode": "automatic",
+              "x": 0.32,
+              "y": 0.41
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "H-08",
+              "id": "S-D02",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.32658254137225234,
+              "y": 0.41
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "L-10",
+              "id": "S-D03",
+              "state": "reserved",
+              "stateMode": "manual",
+              "x": 0.47,
+              "y": 0.52
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "L-10",
+              "id": "S-D04",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.47,
+              "y": 0.5293151263243945
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-07",
+              "id": "S-D05",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.625,
+              "y": 0.355
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "P-07",
+              "id": "S-D06",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.6315825413722523,
+              "y": 0.36431512632439444
+            }
+          ]
+        },
+        {
+          "id": "norte",
+          "image": "plano_norte_limpio.svg",
+          "name": "Norte",
+          "seats": [
+            {
+              "completeness": "complete",
+              "displayLocation": "D-04",
+              "id": "G-01",
+              "state": "occupied",
+              "stateMode": "automatic",
+              "x": 0.15,
+              "y": 0.21
+            },
+            {
+              "completeness": "complete",
+              "displayLocation": "R-14",
+              "id": "G-02",
+              "state": "free",
+              "stateMode": "automatic",
+              "x": 0.72,
+              "y": 0.73
+            }
+          ]
+        }
+      ]
+    },
+    "people": {
+      "people": [
+        {
+          "id": "fixture-person-ada",
+          "name": "Ada Fixture"
+        },
+        {
+          "id": "fixture-person-bea",
+          "name": "Bea Fixture"
+        }
+      ]
+    },
+    "readOnly": false,
+    "scenarios": [],
+    "version": 0
+  },
+  "runValidationResult": {
+    "count": 0,
+    "durationMs": 0,
+    "results": [],
+    "summary": {
+      "critical": 0,
+      "info": 0,
+      "total": 0,
+      "warning": 0
+    }
+  },
+  "runSpatialAnalyticsResult": {
+    "baseline": null,
+    "contextScenarioId": null,
+    "durationMs": 0,
+    "result": {
+      "heatmapPoints": [
+        {
+          "layer": "occupancy",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-01",
+          "sourceId": "G-01",
+          "value": 1,
+          "x": 0.15,
+          "y": 0.21
+        },
+        {
+          "layer": "availability",
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seatId": "G-02",
+          "sourceId": "G-02",
+          "value": 1,
+          "x": 0.72,
+          "y": 0.73
+        },
+        {
+          "layer": "occupancy",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D01",
+          "sourceId": "S-D01",
+          "value": 1,
+          "x": 0.32,
+          "y": 0.41
+        },
+        {
+          "layer": "availability",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D02",
+          "sourceId": "S-D02",
+          "value": 1,
+          "x": 0.326582541372252,
+          "y": 0.41
+        },
+        {
+          "layer": "availability",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D04",
+          "sourceId": "S-D04",
+          "value": 1,
+          "x": 0.47,
+          "y": 0.529315126324394
+        },
+        {
+          "layer": "availability",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D05",
+          "sourceId": "S-D05",
+          "value": 1,
+          "x": 0.625,
+          "y": 0.355
+        },
+        {
+          "layer": "availability",
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seatId": "S-D06",
+          "sourceId": "S-D06",
+          "value": 1,
+          "x": 0.631582541372252,
+          "y": 0.364315126324394
+        }
+      ],
+      "maps": [
+        {
+          "mapId": "norte",
+          "mapName": "Norte",
+          "seats": {
+            "availabilityRate": 50,
+            "free": 1,
+            "occupancyRate": 50,
+            "occupied": 1,
+            "reserved": 0,
+            "total": 2
+          },
+          "validation": {
+            "critical": 0,
+            "info": 0,
+            "total": 0,
+            "warning": 0
+          }
+        },
+        {
+          "mapId": "sur",
+          "mapName": "Sur",
+          "seats": {
+            "availabilityRate": 66.67,
+            "free": 4,
+            "occupancyRate": 16.67,
+            "occupied": 1,
+            "reserved": 1,
+            "total": 6
+          },
+          "validation": {
+            "critical": 0,
+            "info": 0,
+            "total": 0,
+            "warning": 0
+          }
+        }
+      ],
+      "scenario": null,
+      "totals": {
+        "availabilityRate": 62.5,
+        "free": 5,
+        "occupancyRate": 25,
+        "occupied": 2,
+        "reserved": 1,
+        "total": 8
+      },
+      "validation": {
+        "critical": 0,
+        "info": 0,
+        "total": 0,
+        "warning": 0
+      }
+    }
+  }
+}

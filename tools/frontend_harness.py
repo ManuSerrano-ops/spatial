@@ -71,11 +71,20 @@ def runtime_initial_data(active_scenario: bool | None = None) -> dict[str, Any]:
     return result
 
 
-def readonly_bridge_script(initial_data: dict[str, Any], scenario_changes: list[dict[str, Any]] | None = None) -> str:
-    """Return an init script that emulates only the native WebView bridge contract."""
+def readonly_bridge_script(
+    initial_data: dict[str, Any],
+    scenario_changes: list[dict[str, Any]] | None = None,
+    bridge_results: dict[str, Any] | None = None,
+) -> str:
+    """Return an init script that emulates only the native WebView bridge contract.
+
+    ``bridge_results`` contains actual DataStore/WebViewBridge outputs for visual
+    fixtures. Existing measurement harnesses keep their focused synthetic data.
+    """
     return """
     const initialData = %s;
     const scenarioChanges = %s;
+    const bridgeResults = %s;
     window.chrome = window.chrome || {};
     window.chrome.webview = {
       addEventListener() {},
@@ -84,6 +93,8 @@ def readonly_bridge_script(initial_data: dict[str, Any], scenario_changes: list[
         if (message.action === 'getUserPreferences') {
           response = { action: 'getUserPreferencesResult', success: true,
             data: { theme: 'professional-light', singleKeyShortcutsEnabled: true } };
+        } else if (Object.hasOwn(bridgeResults, message.action)) {
+          response = { action: `${message.action}Result`, success: true, data: bridgeResults[message.action] };
         } else if (message.action === 'loadInitialData' || message.action === 'reloadData') {
           response = { action: message.action === 'loadInitialData' ? 'loadInitialDataResult' : 'reloadDataResult', success: true, data: initialData };
         } else if (message.action === 'getScenarioDiff') {
@@ -98,7 +109,11 @@ def readonly_bridge_script(initial_data: dict[str, Any], scenario_changes: list[
         if (response) setTimeout(() => window.receiveFromNative?.(response), 0);
       }
     };
-    """ % (json.dumps(initial_data, ensure_ascii=False), json.dumps(scenario_changes or [], ensure_ascii=False))
+    """ % (
+        json.dumps(initial_data, ensure_ascii=False),
+        json.dumps(scenario_changes or [], ensure_ascii=False),
+        json.dumps(bridge_results or {}, ensure_ascii=False),
+    )
 
 
 def launch_chromium(playwright: Playwright) -> Browser:
@@ -121,12 +136,13 @@ def open_frontend_page(
     initial_data: dict[str, Any],
     *,
     scenario_changes: list[dict[str, Any]] | None = None,
+    bridge_results: dict[str, Any] | None = None,
     theme: str | None = None,
     ready_selector: str = ".pin",
 ) -> Page:
     """Inject the bridge before the frontend loads and wait for its real UI."""
     page = context.new_page()
-    page.add_init_script(readonly_bridge_script(initial_data, scenario_changes))
+    page.add_init_script(readonly_bridge_script(initial_data, scenario_changes, bridge_results))
     page.goto(f"http://127.0.0.1:{port}/index.html", wait_until="networkidle")
     page.locator(ready_selector).first.wait_for()
     if theme is not None:
