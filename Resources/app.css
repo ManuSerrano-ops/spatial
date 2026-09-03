@@ -103,6 +103,7 @@ main { min-height: 0; position: relative; overflow: hidden; }
 #grid-labels { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: #fff; font-size: 10px; font-weight: 800; text-shadow: 0 1px 2px #000; }
 .grid-column-label, .grid-row-label { position: absolute; display: grid; min-width: 18px; height: 16px; place-items: center; padding: 0 3px; border: 1px solid #8d8d8d88; border-radius: 3px; background: #313131cc; line-height: 1; }
 .grid-column-label { top: 4px; transform: translateX(-50%); }.grid-row-label { left: 4px; transform: translateY(-50%); }
+.grid-cursor { position: absolute; z-index: 4; width: 28px; height: 28px; border: 3px solid var(--focus); border-radius: 50%; background: color-mix(in srgb, var(--focus) 22%, transparent); box-shadow: 0 0 0 3px var(--surface); pointer-events: none; transform: translate(-50%, -50%); }
 #pins { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 /* Pin state system: business fill, quality badge, contextual badges and interaction rings are separate layers. */
 .pin { --pin-fill: var(--pin-free); --pin-ring: transparent; --pin-z: 10; position: absolute; z-index: var(--pin-z); width: 20px; min-width: 0; height: 20px; min-height: 0; padding: 0; border: 2px solid var(--pin-border); border-radius: 50%; background: var(--pin-fill); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--pin-ring); color: var(--pin-border); pointer-events: auto; touch-action: none; transform: translate(-50%, -50%); transition: transform 120ms ease, box-shadow 120ms ease; }
@@ -519,6 +520,8 @@ main.app-shell > .workspace-region { overflow: hidden; }
     border-radius: 4px;
     color: CanvasText;
   }
+
+  .grid-cursor { border-color: Highlight; background: Canvas; box-shadow: 0 0 0 3px CanvasText; forced-color-adjust: auto; }
 
   .pin:focus-visible {
     outline: 3px solid Highlight;
