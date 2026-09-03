@@ -8,45 +8,19 @@ rows before opening ``#bulk-dialog``.
 
 from __future__ import annotations
 
-import json
-import os
-import threading
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
 from typing import Any
 
 from playwright.sync_api import Browser, Page, sync_playwright
 
-ROOT = Path(__file__).resolve().parents[1]
-RESOURCES = ROOT / "Resources"
-DATA = ROOT / "runtime-data" / "data"
+from frontend_harness import (
+    launch_chromium,
+    new_frontend_context,
+    open_frontend_page,
+    resource_server,
+    runtime_initial_data,
+)
+
 VIEWPORT = {"width": 900, "height": 460}
-
-
-class QuietResourceHandler(SimpleHTTPRequestHandler):
-    def log_message(self, format: str, *args: object) -> None:
-        pass
-
-
-def load_json(name: str, default: object) -> object:
-    path = DATA / name
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
-
-
-def initial_data(active_scenario: bool = False) -> dict[str, Any]:
-    scenario = {"id": "viewport-scenario", "name": "Medición de viewport", "undoCount": 0}
-    return {
-        "maps": load_json("maps.json", {"maps": []}),
-        "assignments": load_json("assignments.json", {"assignments": []}),
-        "people": load_json("people.json", {"people": []}),
-        "devices": load_json("devices.json", {"devices": []}),
-        "locations": load_json("locations.json", {"locations": []}),
-        "managedAreas": load_json("managed-areas.json", {"areas": []}),
-        "grid": {"columns": 24, "rows": 18},
-        "scenarios": [scenario] if active_scenario else [],
-        "activeScenario": scenario if active_scenario else None,
-        "readOnly": False,
-    }
 
 
 def bulk_data(excluded_count: int) -> dict[str, Any]:
@@ -121,34 +95,6 @@ def diff_changes(count: int) -> list[dict[str, Any]]:
         for index in range(count)
     ]
 
-
-def bridge_script(data: dict[str, Any], changes: list[dict[str, Any]] | None = None) -> str:
-    return """
-    const initialData = %s;
-    const scenarioChanges = %s;
-    window.chrome = window.chrome || {};
-    window.chrome.webview = {
-      addEventListener() {},
-      postMessage(message) {
-        let response = null;
-        if (message.action === 'getUserPreferences') {
-          response = { action: 'getUserPreferencesResult', success: true,
-            data: { theme: 'professional-light', singleKeyShortcutsEnabled: true } };
-        } else if (message.action === 'loadInitialData' || message.action === 'reloadData') {
-          response = { action: message.action === 'loadInitialData' ? 'loadInitialDataResult' : 'reloadDataResult', success: true, data: initialData };
-        } else if (message.action === 'getScenarioDiff') {
-          response = { action: 'getScenarioDiffResult', success: true,
-            data: { changes: scenarioChanges } };
-        } else if (message.action === 'runValidation') {
-          response = { action: 'runValidationResult', success: true,
-            data: { results: [], summary: { total: 0, critical: 0, warning: 0, info: 0 } } };
-        } else if (message.action === 'runSpatialAnalytics') {
-          response = { action: 'runSpatialAnalyticsResult', success: true, data: { result: {} } };
-        }
-        if (response) setTimeout(() => window.receiveFromNative?.(response), 0);
-      }
-    };
-    """ % (json.dumps(data, ensure_ascii=False), json.dumps(changes or [], ensure_ascii=False))
 
 
 def geometry_script() -> str:
@@ -236,13 +182,8 @@ def open_page(
     viewport: dict[str, int] = VIEWPORT,
     theme: str = "high-contrast",
 ) -> Page:
-    page = browser.new_page(viewport=viewport, device_scale_factor=1)
-    page.add_init_script(bridge_script(data, changes))
-    page.goto(f"http://127.0.0.1:{port}/index.html", wait_until="networkidle")
-    page.locator(".pin").first.wait_for()
-    page.evaluate("theme => document.documentElement.dataset.theme = theme", theme)
-    page.wait_for_timeout(50)
-    return page
+    context = new_frontend_context(browser, viewport)
+    return open_frontend_page(context, port, data, scenario_changes=changes, theme=theme)
 
 
 def keyboard_reaches(page: Page, origin: str, target: str, tab_count: int, key: str = "Tab") -> bool:
@@ -253,7 +194,7 @@ def keyboard_reaches(page: Page, origin: str, target: str, tab_count: int, key: 
 
 
 def measure_diff(browser: Browser, port: int, count: int) -> dict[str, Any]:
-    page = open_page(browser, port, initial_data(active_scenario=True), diff_changes(count))
+    page = open_page(browser, port, runtime_initial_data(active_scenario=True), diff_changes(count))
     try:
         # At 900 px the responsive header puts Diff in the real "Más acciones" menu.
         page.locator("#more").click()
@@ -347,19 +288,10 @@ def validate_dynamic_measurements(diff: dict[int, dict[str, Any]], bulk: dict[in
 
 
 def main() -> None:
-    server = ThreadingHTTPServer(("127.0.0.1", 0), QuietResourceHandler)
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    original_directory = Path.cwd()
-    os.chdir(RESOURCES)
-    thread.start()
-
-    try:
+    with resource_server() as server:
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(
-                headless=True,
-                executable_path=r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-            )
-            normal_page = open_page(browser, server.server_port, initial_data())
+            browser = launch_chromium(playwright)
+            normal_page = open_page(browser, server.server_port, runtime_initial_data(active_scenario=False))
             try:
                 initial = normal_page.evaluate(geometry_script())
                 assert_geometry(initial)
@@ -392,10 +324,6 @@ def main() -> None:
                 for theme in ("professional-light", "high-contrast")
             }
             browser.close()
-    finally:
-        server.shutdown()
-        server.server_close()
-        os.chdir(original_directory)
 
     failures = validate_dynamic_measurements(diff, bulk)
     print(f"Viewport comprobado: {VIEWPORT['width']}×{VIEWPORT['height']} CSS px; tema high-contrast.")

@@ -8,44 +8,21 @@ rather than inferring behavior from CSS declarations.
 from __future__ import annotations
 
 import json
-import os
 import re
-import threading
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
 from typing import Any
 
 from playwright.sync_api import sync_playwright
 
-ROOT = Path(__file__).resolve().parents[1]
-RESOURCES = ROOT / "Resources"
-DATA = ROOT / "runtime-data" / "data"
+from frontend_harness import (
+    launch_chromium,
+    new_frontend_context,
+    open_frontend_page,
+    resource_server,
+    runtime_initial_data,
+)
+
 THEMES = ("professional-light", "penpot-dark", "high-contrast", "projector")
 MAP_APPEARANCES = ("dark", "light")
-
-
-class QuietResourceHandler(SimpleHTTPRequestHandler):
-    def log_message(self, format: str, *args: object) -> None:
-        pass
-
-
-def load_json(name: str, default: object) -> object:
-    path = DATA / name
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
-
-
-def initial_data() -> dict[str, Any]:
-    return {
-        "maps": load_json("maps.json", {"maps": []}),
-        "assignments": load_json("assignments.json", {"assignments": []}),
-        "people": load_json("people.json", {"people": []}),
-        "devices": load_json("devices.json", {"devices": []}),
-        "locations": load_json("locations.json", {"locations": []}),
-        "managedAreas": load_json("managed-areas.json", {"areas": []}),
-        "grid": {"columns": 24, "rows": 18},
-        "scenarios": [],
-        "readOnly": False,
-    }
 
 
 def pin_style_script() -> str:
@@ -199,51 +176,13 @@ def compact(style: dict[str, str]) -> str:
 
 
 def main() -> None:
-    server = ThreadingHTTPServer(("127.0.0.1", 0), QuietResourceHandler)
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    original_directory = Path.cwd()
-    os.chdir(RESOURCES)
-    thread.start()
-
-    try:
+    with resource_server() as server:
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(
-                headless=True,
-                executable_path=r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+            browser = launch_chromium(playwright)
+            context = new_frontend_context(
+                browser, {"width": 1400, "height": 900}, forced_colors="active"
             )
-            context = browser.new_context(
-                viewport={"width": 1400, "height": 900},
-                device_scale_factor=1,
-                forced_colors="active",
-            )
-            page = context.new_page()
-            payload = json.dumps(initial_data(), ensure_ascii=False)
-            page.add_init_script(
-                """
-                const initialData = %s;
-                window.chrome = window.chrome || {};
-                window.chrome.webview = {
-                  addEventListener() {},
-                  postMessage(message) {
-                    let response = null;
-                    if (message.action === 'getUserPreferences') {
-                      response = { action: 'getUserPreferencesResult', success: true,
-                        data: { theme: 'professional-light', singleKeyShortcutsEnabled: true } };
-                    } else if (message.action === 'loadInitialData') {
-                      response = { action: 'loadInitialDataResult', success: true, data: initialData };
-                    } else if (message.action === 'runValidation') {
-                      response = { action: 'runValidationResult', success: true,
-                        data: { results: [], summary: { total: 0, critical: 0, warning: 0, info: 0 } } };
-                    } else if (message.action === 'runSpatialAnalytics') {
-                      response = { action: 'runSpatialAnalyticsResult', success: true, data: { result: {} } };
-                    }
-                    if (response) setTimeout(() => window.receiveFromNative?.(response), 0);
-                  }
-                };
-                """ % payload
-            )
-            page.goto(f"http://127.0.0.1:{server.server_port}/index.html", wait_until="networkidle")
-            page.locator(".pin").first.wait_for()
+            page = open_frontend_page(context, server.server_port, runtime_initial_data())
             if page.locator(".pin").count() < 3:
                 raise AssertionError("Se necesitan tres pines reales para comprobar los tres estados.")
 
@@ -258,10 +197,6 @@ def main() -> None:
                     results.append((theme, appearance, result))
             assert_combination_equivalence(results)
             browser.close()
-    finally:
-        server.shutdown()
-        server.server_close()
-        os.chdir(original_directory)
 
     print("forced-colors=active en Chromium; 4 temas × 2 apariencias de plano.")
     print("| Tema | Plano | Libre | Ocupado | Reservado | Foco en ocupado |")

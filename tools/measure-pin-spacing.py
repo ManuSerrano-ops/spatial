@@ -6,46 +6,21 @@ This script is read-only: it serves Resources/ locally and reads runtime-data/da
 
 from __future__ import annotations
 
-import json
 import math
-import os
-import threading
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
 from statistics import median
-from typing import Any
 
 from playwright.sync_api import sync_playwright
 
-ROOT = Path(__file__).resolve().parents[1]
-RESOURCES = ROOT / "Resources"
-DATA = ROOT / "runtime-data" / "data"
+from frontend_harness import (
+    launch_chromium,
+    new_frontend_context,
+    open_frontend_page,
+    resource_server,
+    runtime_initial_data,
+)
+
 WINDOW_WIDTH = 1400
 WINDOW_HEIGHT = 900
-
-
-class QuietResourceHandler(SimpleHTTPRequestHandler):
-    def log_message(self, format: str, *args: object) -> None:
-        pass
-
-
-def load_json(name: str, default: object) -> object:
-    path = DATA / name
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
-
-
-def initial_data() -> dict[str, Any]:
-    return {
-        "maps": load_json("maps.json", {"maps": []}),
-        "assignments": load_json("assignments.json", {"assignments": []}),
-        "people": load_json("people.json", {"people": []}),
-        "devices": load_json("devices.json", {"devices": []}),
-        "locations": load_json("locations.json", {"locations": []}),
-        "managedAreas": load_json("managed-areas.json", {"areas": []}),
-        "grid": {"columns": 24, "rows": 18},
-        "scenarios": [],
-        "readOnly": False,
-    }
 
 
 def percent5(values: list[float]) -> float | None:
@@ -61,47 +36,14 @@ def format_distance(value: float | None) -> str:
 
 
 def main() -> None:
-    maps = initial_data()["maps"]["maps"]
-    server = ThreadingHTTPServer(("127.0.0.1", 0), QuietResourceHandler)
-    server_thread = threading.Thread(target=server.serve_forever, daemon=True)
-    original_directory = Path.cwd()
-    os.chdir(RESOURCES)
-    server_thread.start()
-
-    try:
+    initial_data = runtime_initial_data()
+    maps = initial_data["maps"]["maps"]
+    with resource_server() as server:
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(
-                headless=True,
-                executable_path=r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-            )
-            page = browser.new_page(viewport={"width": WINDOW_WIDTH, "height": WINDOW_HEIGHT}, device_scale_factor=1)
-            data = json.dumps(initial_data(), ensure_ascii=False)
-            page.add_init_script(
-                """
-                const initialData = %s;
-                window.chrome = window.chrome || {};
-                window.chrome.webview = {
-                  addEventListener() {},
-                  postMessage(message) {
-                    let response = null;
-                    if (message.action === 'getUserPreferences') {
-                      response = { action: 'getUserPreferencesResult', success: true,
-                        data: { theme: 'professional-light', singleKeyShortcutsEnabled: true } };
-                    } else if (message.action === 'loadInitialData') {
-                      response = { action: 'loadInitialDataResult', success: true, data: initialData };
-                    } else if (message.action === 'runValidation') {
-                      response = { action: 'runValidationResult', success: true,
-                        data: { results: [], summary: { total: 0, critical: 0, warning: 0, info: 0 } } };
-                    } else if (message.action === 'runSpatialAnalytics') {
-                      response = { action: 'runSpatialAnalyticsResult', success: true, data: { result: {} } };
-                    }
-                    if (response) setTimeout(() => window.receiveFromNative?.(response), 0);
-                  }
-                };
-                """ % data
-            )
-            page.goto(f"http://127.0.0.1:{server.server_port}/index.html", wait_until="networkidle")
-            page.wait_for_function("document.querySelectorAll('#map-select option').length === 5")
+            browser = launch_chromium(playwright)
+            context = new_frontend_context(browser, {"width": WINDOW_WIDTH, "height": WINDOW_HEIGHT})
+            page = open_frontend_page(context, server.server_port, initial_data)
+            page.wait_for_function("() => document.querySelectorAll('#map-select option').length === 5")
 
             measurements = []
             for map_data in maps:
@@ -160,27 +102,27 @@ def main() -> None:
             )
             page.locator("#list-table tbody tr").first.focus()
             page.keyboard.press("Enter")
-            page.wait_for_function("!document.querySelector('#detail-panel').classList.contains('hidden')")
+            page.wait_for_function("() => !document.querySelector('#detail-panel').classList.contains('hidden')")
             page.locator("#edit-seat").focus()
             page.keyboard.press("Enter")
             assert page.evaluate("document.activeElement?.id") == "seat-name"
             page.locator("#move-seat").focus()
             page.keyboard.press("Enter")
             assert not page.locator("#mapwrap").evaluate("element => element.classList.contains('hidden')")
+            # 3.6 makes Enter inside #mapwrap confirm the active grid cursor;
+            # cancel the mode before exercising the independent map→list route.
+            page.keyboard.press("Escape")
             page.locator("#map-to-list").focus()
             page.keyboard.press("Enter")
             page.locator("#list-table tbody tr").first.focus()
             page.keyboard.press("Enter")
-            page.locator("#panel-history").focus()
+            history = page.locator("#panel-history")
+            history.focus()
             page.keyboard.press("Enter")
-            page.wait_for_function("document.querySelector('#history-dialog').open")
+            page.locator("#history-dialog[open]").wait_for()
             page.locator("#history-dialog").evaluate("dialog => dialog.close()")
             keyboard_equivalence_verified = True
             browser.close()
-    finally:
-        server.shutdown()
-        server.server_close()
-        os.chdir(original_directory)
 
     print(f"Viewport de medición: {WINDOW_WIDTH}×{WINDOW_HEIGHT} CSS px (escala de dispositivo 1).")
     print("P5 = percentil 5 de la distancia al vecino más próximo de cada pin.")
