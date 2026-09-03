@@ -56,6 +56,21 @@ tres elementos revisables en `tests/visual-artifacts/`:
 El artefacto de CI conserva la misma estructura junto con el nombre del caso;
 ese nombre codifica fixture, viewport, tema y estado.
 
+## Árbol de accesibilidad
+
+El mismo job visual ejecuta `tools/verify-accessibility-tree.py`. Usa CDP para
+correlacionar, nodo a nodo, el selector DOM con su `backendNodeId` y el nodo AX
+parcial correspondiente; no hace recuentos globales ni recorre subárboles de
+modales.
+
+Comprueba tres categorías:
+
+1. controles expuestos al cargar (`#map-select`, `#add-seat`);
+2. controles expuestos tras enfocar y activar su abridor real (el cierre de
+   Historial), incluyendo el retorno de foco al abridor;
+3. controles declarados pero inalcanzables (`#cluster-shape-dialog`), que deben
+   permanecer ignorados sin retirar `hidden` ni abrirlos artificialmente.
+
 ## Actualizar un baseline legítimo
 
 Nunca se actualizan baselines en CI. Cuando un cambio visual sea intencional:
