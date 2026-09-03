@@ -45,13 +45,6 @@ test('toggle off preserves selected workspaces and Clear remains distinct', () =
   assert(app.includes("$('bulk-clear').onclick = () => clearWorkspaceSelection()"), 'Clear is not explicit');
 });
 
-test('Escape exits selection mode before it clears a multi-selection', () => {
-  const keyboard = app.match(/document\.addEventListener\('keydown',[\s\S]*?\n\s*window\.receiveFromNative/)[0];
-  const modeIndex = keyboard.indexOf('else if (ui.selectionMode) { setSelectionMode(false);');
-  const clearIndex = keyboard.indexOf('else if (appState.selectedWorkspaces.size > 1) { clearBulkSelection(); }');
-  assert(modeIndex >= 0 && clearIndex > modeIndex, 'Escape does not deactivate mode before clearing selection');
-  assert(keyboard.includes('Los puestos ya seleccionados se conservan.'), 'Escape preservation feedback missing');
-});
 
 test('selection and card editing are incompatible without clearing selected workspaces', () => {
   const beginEdit = app.match(/function beginClusterCardEdit[\s\S]*?\n  function updateClusterCardEditDraft/)[0];

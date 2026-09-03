@@ -38,8 +38,9 @@ function focusable(document, tabIndex = 0) {
   };
 }
 
-function loadKeyboardHandler(document, ui) {
+function loadKeyboardHandler(document, ui, options = {}) {
   let handler = null;
+  document.querySelector ??= () => null;
   document.addEventListener = (type, listener) => {
     if (type === 'keydown') handler = listener;
   };
@@ -49,7 +50,11 @@ function loadKeyboardHandler(document, ui) {
   const controls = {
     search: focusable(document),
     'filter-bar': { querySelector: () => focusable(document) },
-    'seat-name': focusable(document)
+    'seat-name': focusable(document),
+    tooltip: { classList: { contains: () => false } },
+    'context-menu': { classList: { contains: () => false } },
+    'search-results': { classList: { add() {} } },
+    ...options.controls
   };
   Function(
     'document',
@@ -60,12 +65,14 @@ function loadKeyboardHandler(document, ui) {
     'ui',
     'appState',
     'hideContextMenu',
+    'hidePreview',
     'closeMoreMenu',
     'renderProblems',
     'setSelectionMode',
     'setStatus',
     'clearBulkSelection',
     'closePlannerPanel',
+    'plannerState',
     'closeDetailPanel',
     'render',
     'saveClusterCardShapes',
@@ -82,11 +89,33 @@ function loadKeyboardHandler(document, ui) {
     FakeSelect,
     id => controls[id],
     ui,
-    { viewMode: 'map', selectedProblemId: null, selectedWorkspaces: { size: 0 } },
-    () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {}, () => {},
-    () => {}, () => {}, () => {}, () => {}, () => {}, () => null, () => {}, () => {}
+    options.appState ?? { viewMode: 'map', selectedProblemId: null, selectedWorkspaces: { size: 0 } },
+    options.hideContextMenu ?? (() => {}),
+    options.hidePreview ?? (() => {}),
+    options.closeMoreMenu ?? (() => {}),
+    options.renderProblems ?? (() => {}),
+    options.setSelectionMode ?? (() => {}),
+    options.setStatus ?? (() => {}),
+    options.clearBulkSelection ?? (() => {}),
+    options.closePlannerPanel ?? (() => {}),
+    options.plannerState ?? (() => ({ status: 'idle' })),
+    options.closeDetailPanel ?? (() => {}),
+    options.render ?? (() => {}),
+    options.saveClusterCardShapes ?? (() => {}),
+    options.refreshManagedAreaCard ?? (() => {}),
+    options.showMessage ?? (() => {}),
+    options.adjacentSeat ?? (() => null),
+    options.selectSeat ?? (() => {}),
+    options.centerSelectedSeat ?? (() => {})
   );
   return { handler, controls };
+}
+
+function loadHideContextMenu(ui, controls) {
+  const source = app
+    .match(/  function hideContextMenu[\s\S]*?\n  function closeMoreMenu/)[0]
+    .replace(/\n  function closeMoreMenu$/, '');
+  return Function('ui', '$', `${source}\nreturn hideContextMenu;`)(ui, id => controls[id]);
 }
 
 function keyboardEvent(target, key, path = [target]) {
@@ -190,6 +219,91 @@ test('editable detection stops at the first focusable path element', () => {
 
 test('global Ctrl+Z reuses central undo button', () => {
   assert(app.includes("event.ctrlKey && event.key.toLowerCase() === 'z'") && app.includes("$('undo').click()"), 'central undo missing');
+});
+
+test('Escape closes an open dialog before lower-priority transient UI', () => {
+  const document = { activeElement: null, body: {}, documentElement: {} };
+  let closed = 0;
+  document.querySelector = selector => selector === 'dialog[open]' ? { close() { closed++; } } : null;
+  let previewHidden = 0;
+  let menuHidden = 0;
+  const ui = { singleKeyShortcutsEnabled: true, seatId: 'W-1' };
+  const { handler } = loadKeyboardHandler(document, ui, {
+    controls: {
+      tooltip: { classList: { contains: value => value === 'show' } },
+      'context-menu': { classList: { contains: value => value === 'show' } }
+    },
+    hidePreview: () => { previewHidden++; },
+    hideContextMenu: () => { menuHidden++; }
+  });
+  const event = keyboardEvent(new FakeInput(), 'Escape', [new FakeInput(), document.body]);
+  handler(event);
+  equal(closed, 1, 'Escape did not close the dialog');
+  equal(previewHidden, 0, 'dialog Escape reached the preview');
+  equal(menuHidden, 0, 'dialog Escape reached the context menu');
+  assert(event.defaultPrevented, 'dialog Escape did not prevent the native duplicate close');
+});
+
+test('Escape restores focus to the cluster card through the global cascade', () => {
+  const document = { activeElement: null, body: {}, documentElement: {} };
+  const opener = focusable(document);
+  const menu = {
+    classList: {
+      contains: value => value === 'show',
+      remove() { menu.hidden = true; }
+    },
+    removeAttribute() {}
+  };
+  const ui = { singleKeyShortcutsEnabled: true, seatId: 'W-1', contextMenuRestoreFocus: () => opener.focus() };
+  let hideContextMenu;
+  let moreMenuClosed = 0;
+  const { handler, controls } = loadKeyboardHandler(document, ui, {
+    controls: { 'context-menu': menu },
+    hideContextMenu: () => hideContextMenu(),
+    closeMoreMenu: () => { moreMenuClosed++; }
+  });
+  hideContextMenu = loadHideContextMenu(ui, controls);
+  document.activeElement = menu;
+  const event = keyboardEvent(menu, 'Escape', [menu, document.body]);
+  handler(event);
+  assert(menu.hidden, 'Escape did not hide the context menu');
+  assert(document.activeElement === opener, 'Escape did not restore focus to the cluster card');
+  equal(moreMenuClosed, 1, 'Escape did not close the secondary transient menu');
+  assert(event.defaultPrevented, 'context-menu Escape was not consumed by the global cascade');
+});
+
+test('Escape reaches the detail panel only after higher-priority UI is absent', () => {
+  const document = { activeElement: null, body: {}, documentElement: {} };
+  const map = focusable(document);
+  let detailPanelsClosed = 0;
+  const ui = { singleKeyShortcutsEnabled: true, seatId: 'W-1', selectionMode: false };
+  const { handler } = loadKeyboardHandler(document, ui, {
+    closeDetailPanel: () => { detailPanelsClosed++; }
+  });
+  const event = keyboardEvent(map, 'Escape', [map, document.body]);
+  handler(event);
+  equal(detailPanelsClosed, 1, 'Escape did not reach the detail panel at the end of the cascade');
+  assert(event.defaultPrevented === false, 'detail-panel Escape unexpectedly prevented its native behavior');
+});
+
+test('Escape exits selection mode before clearing a multi-selection', () => {
+  const document = { activeElement: null, body: {}, documentElement: {} };
+  const map = focusable(document);
+  const appState = { viewMode: 'map', selectedProblemId: null, selectedWorkspaces: { size: 2 } };
+  const ui = { singleKeyShortcutsEnabled: true, seatId: 'W-1', selectionMode: true };
+  let selectionMode = null;
+  let bulkCleared = 0;
+  let status = '';
+  const { handler } = loadKeyboardHandler(document, ui, {
+    appState,
+    setSelectionMode: active => { selectionMode = active; },
+    setStatus: value => { status = value; },
+    clearBulkSelection: () => { bulkCleared++; }
+  });
+  handler(keyboardEvent(map, 'Escape', [map, document.body]));
+  equal(selectionMode, false, 'Escape did not leave selection mode');
+  equal(bulkCleared, 0, 'Escape cleared the multi-selection too early');
+  assert(status.includes('Los puestos ya seleccionados se conservan.'), 'Escape did not preserve selection feedback');
 });
 
 test('non-character keyboard navigation remains outside the preference', () => {

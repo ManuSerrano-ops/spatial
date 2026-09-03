@@ -49,7 +49,7 @@ test('compact navigation has distinguishable visible abbreviations', () => {
 test('compact map controls remain reachable and search is viewport-positioned', () => {
   assert(!css.includes('@media (max-width: 700px) { .layers-menu, #selection-mode { display: none; }'), 'compact layout hides map controls');
   assert(app.includes('function positionSearchResults()'), 'search results are not positioned from the search control');
-  assert(app.includes("hideContextMenu(); closeMoreMenu();"), 'Escape does not close transient menus');
+
 });
 
 test('accessibility focus covers map and disclosure controls', () => {

@@ -943,11 +943,49 @@
   wrap.addEventListener('pointerup', event => { if (ui.selectionRect) { bulkSelectionChanged(); const end = rectangleSelectionHelpers.clientToNormalized(event, $('plan').getBoundingClientRect()); rectangleSelectionHelpers.selectByCenter(seats(currentMap()), ui.selectionRect, end, seat => workspaceFilterFeature.matches({ ...seat, _mapId: ui.mapId })).forEach(seat => appState.selectedWorkspaces.add(seat.id)); ui.seatId = [...appState.selectedWorkspaces].at(-1) || null; ui.selectionRect = null; $('selection-rect').classList.add('hidden'); renderBulkBar(); render(); return; } const pan = ui.pan; if (pan && wrap.hasPointerCapture(event.pointerId)) wrap.releasePointerCapture(event.pointerId); ui.pan = null; if (event.button === 0 && pan && !pan.moved) handleMapBackgroundClick(); });
   wrap.addEventListener('contextmenu', event => { if (event.target.closest('.map-layers-control')) return; hidePreview(); event.preventDefault(); showContextMenu(event); });
   document.addEventListener('pointerdown', event => { if (!event.target.closest('#context-menu')) hideContextMenu({ restoreFocus: false }); if (!event.target.closest('#more-menu')) closeMoreMenu(); if (!event.target.closest('.global-search-control, #search-results')) $('search-results').classList.add('hidden'); });
-  $('context-menu').addEventListener('keydown', event => { const items = [...$('context-menu').querySelectorAll('button:not(.hidden)')]; const index = items.indexOf(document.activeElement); if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); hideContextMenu(); } else if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && items.length) { event.preventDefault(); items[(index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus(); } else if (event.key === 'Enter' && document.activeElement?.click) { event.preventDefault(); document.activeElement.click(); } });
+  $('context-menu').addEventListener('keydown', event => { const items = [...$('context-menu').querySelectorAll('button:not(.hidden)')]; const index = items.indexOf(document.activeElement); if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && items.length) { event.preventDefault(); items[(index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus(); } else if (event.key === 'Enter' && document.activeElement?.click) { event.preventDefault(); document.activeElement.click(); } });
   window.addEventListener('resize', () => { if (!$('search-results').classList.contains('hidden')) positionSearchResults(); });
   function adjacentSeat(direction) { const origin = currentSeat() || seats(currentMap())[0]; if (!origin) return null; const vector = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[direction]; if (!vector) return null; return seats(currentMap()).filter(seat => seat.id !== origin.id).map(seat => { const dx = seat.x - origin.x, dy = seat.y - origin.y; const forward = dx * vector[0] + dy * vector[1]; const distance = Math.hypot(dx, dy); const sideways = Math.abs(dx * vector[1] - dy * vector[0]); return { seat, score: forward > 0 ? sideways * 2 + distance : Infinity }; }).filter(candidate => Number.isFinite(candidate.score)).sort((a, b) => a.score - b.score)[0]?.seat || null; }
   function isEditableKeyboardEvent(event) { for (const target of event.composedPath?.() || [event.target]) { if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target?.isContentEditable || target?.getAttribute?.('role') === 'textbox') return true; if (target === document.body || target === document.documentElement || target?.tabIndex >= 0) break; } return false; }
-  document.addEventListener('keydown', event => { const editable = isEditableKeyboardEvent(event); const singleKeyShortcut = !editable && ui.singleKeyShortcutsEnabled && !event.ctrlKey && !event.altKey && !event.metaKey; if (singleKeyShortcut && event.key === '/') { event.preventDefault(); $('search').focus(); } if (singleKeyShortcut && event.key.toLowerCase() === 'f') { event.preventDefault(); $('filter-bar').querySelector('button')?.focus(); } if (!editable && event.key === 'Escape') { if ($('tooltip').classList.contains('show')) { event.preventDefault(); hidePreview(); return; } hideContextMenu(); closeMoreMenu(); if (appState.viewMode === 'problems' && appState.selectedProblemId) { appState.selectedProblemId = null; renderProblems(); } else if (ui.selectionMode) { setSelectionMode(false); setStatus('Modo selección rectangular desactivado. Los puestos ya seleccionados se conservan.'); } else if (appState.selectedWorkspaces.size > 1) { clearBulkSelection(); } else if (plannerState().status !== 'idle') closePlannerPanel(); else closeDetailPanel(); $('search-results').classList.add('hidden'); render(); } if (singleKeyShortcut && event.key.toLowerCase() === 'e' && ui.seatId) $('seat-name').focus(); if (!editable && event.ctrlKey && event.key.toLowerCase() === 'z') { event.preventDefault(); if (ui.cardSizeUndo) { const { areaId, before } = ui.cardSizeUndo; const shapes = { ...appState.clusterCardShapes }; if (before === undefined) delete shapes[areaId]; else shapes[areaId] = before; appState.clusterCardShapes = shapes; ui.cardSizeUndo = null; saveClusterCardShapes(); refreshManagedAreaCard(areaId); } else $('undo').click(); } if (!editable && event.ctrlKey && event.key.toLowerCase() === 'y') showMessage('Rehacer todavía no está disponible.', 0); if (!editable && event.target.closest?.('#mapwrap') && /^Arrow/.test(event.key)) { const next = adjacentSeat(event.key); if (next) { event.preventDefault(); selectSeat(next.id); centerSelectedSeat(); } } });
+  function handleEscape(event, editable) {
+    const dialog = document.querySelector('dialog[open]');
+    if (dialog) {
+      event.preventDefault();
+      dialog.close();
+      return true;
+    }
+    if (editable) return false;
+    if ($('tooltip').classList.contains('show')) {
+      event.preventDefault();
+      hidePreview();
+      return true;
+    }
+    if ($('context-menu').classList.contains('show')) {
+      event.preventDefault();
+      hideContextMenu();
+      closeMoreMenu();
+      return true;
+    }
+    hideContextMenu();
+    closeMoreMenu();
+    if (appState.viewMode === 'problems' && appState.selectedProblemId) {
+      appState.selectedProblemId = null;
+      renderProblems();
+    } else if (ui.selectionMode) {
+      setSelectionMode(false);
+      setStatus('Modo selección rectangular desactivado. Los puestos ya seleccionados se conservan.');
+    } else if (appState.selectedWorkspaces.size > 1) {
+      clearBulkSelection();
+    } else if (plannerState().status !== 'idle') {
+      closePlannerPanel();
+    } else {
+      closeDetailPanel();
+    }
+    $('search-results').classList.add('hidden');
+    render();
+    return true;
+  }
+  document.addEventListener('keydown', event => { const editable = isEditableKeyboardEvent(event); const singleKeyShortcut = !editable && ui.singleKeyShortcutsEnabled && !event.ctrlKey && !event.altKey && !event.metaKey; if (singleKeyShortcut && event.key === '/') { event.preventDefault(); $('search').focus(); } if (singleKeyShortcut && event.key.toLowerCase() === 'f') { event.preventDefault(); $('filter-bar').querySelector('button')?.focus(); } if (event.key === 'Escape' && handleEscape(event, editable)) return; if (singleKeyShortcut && event.key.toLowerCase() === 'e' && ui.seatId) $('seat-name').focus(); if (!editable && event.ctrlKey && event.key.toLowerCase() === 'z') { event.preventDefault(); if (ui.cardSizeUndo) { const { areaId, before } = ui.cardSizeUndo; const shapes = { ...appState.clusterCardShapes }; if (before === undefined) delete shapes[areaId]; else shapes[areaId] = before; appState.clusterCardShapes = shapes; ui.cardSizeUndo = null; saveClusterCardShapes(); refreshManagedAreaCard(areaId); } else $('undo').click(); } if (!editable && event.ctrlKey && event.key.toLowerCase() === 'y') showMessage('Rehacer todavía no está disponible.', 0); if (!editable && event.target.closest?.('#mapwrap') && /^Arrow/.test(event.key)) { const next = adjacentSeat(event.key); if (next) { event.preventDefault(); selectSeat(next.id); centerSelectedSeat(); } } });
 
   window.receiveFromNative = response => {
     if (!response?.success) { if (response?.action === 'bulkUpdateAssignmentsResult') appState.bulk.inFlight = null; if (response?.action === 'runValidationResult') failValidation(response?.error); else if (response?.action === 'runSpatialAnalyticsResult') failSpatialAnalytics(response?.error); else if (response?.action === 'runMovementPlannerResult' || response?.action === 'createScenarioFromMovementPlanResult') { appState.planner.status = 'error'; appState.planner.error = response?.error || 'No se pudo completar el planificador.'; renderPlanner(); finishRequest(false, response?.error); } else if (response?.action === 'saveUserPreferencesResult') showMessage(response?.error || 'No se pudo guardar la apariencia.', 0); else finishRequest(false, response?.error); return; }
