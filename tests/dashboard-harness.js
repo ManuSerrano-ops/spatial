@@ -1,9 +1,8 @@
 'use strict';
 
 const { buildDashboardModel, formatNumber, formatPercent } = require('../Resources/js/features/dashboard/dashboard-helpers.js');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}; expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`);
 };
@@ -155,11 +154,3 @@ test('formatting and invalid numbers never expose NaN or Infinity', () => {
   assert(!serialized.includes('NaN') && !serialized.includes('Infinity'), 'serialized model contains only finite display data');
   equal([card(model, 'total').value, card(model, 'occupancy').value, card(model, 'availability').value, model.problems.total], [0, 0, 0, 0], 'invalid values normalize safely');
 });
-
-let passed = 0;
-for (const { name, fn } of tests) {
-  try { fn(); passed++; }
-  catch (error) { console.error(`FAIL: ${name}: ${error.message}`); }
-}
-console.log(`Dashboard frontend harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

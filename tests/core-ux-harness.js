@@ -1,7 +1,9 @@
 'use strict';
 
-let passed = 0;
-function assert(condition, message) { if (!condition) throw new Error(message); passed++; }
+const test = require('node:test');
+const assert = require('node:assert/strict');
+
+test('core UX behaviors', () => {
 function normalize(value) { return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, ' '); }
 function score(query, primary, secondary = '') { const q = normalize(query), p = normalize(primary), s = normalize(secondary); if (p === q) return 1000; if (p.startsWith(q)) return 800; if (p.split(' ').includes(q)) return 600; if (p.includes(q)) return 400; return s.includes(q) ? 200 : 0; }
 function semantic(zoom, previous = 'GLOBAL') { if (previous === 'DETAIL') return zoom < 1.8 ? 'OPERATIVE' : 'DETAIL'; if (previous === 'OPERATIVE') return zoom >= 2 ? 'DETAIL' : zoom < 1.15 ? 'GLOBAL' : 'OPERATIVE'; return zoom >= 1.25 ? 'OPERATIVE' : 'GLOBAL'; }
@@ -20,4 +22,4 @@ const visible = (layers, level, field) => Boolean(layers[field] && (field === 'p
 const valid = rosetas => ({ valid: !rosetas.includes('R1'), errors: rosetas.includes('R1') ? { roseta: 'duplicada' } : {} }); assert(valid([]).valid && !valid(['R1']).valid && valid(['R1']).errors.roseta === 'duplicada', 'validación inline');
 const persistence = ['idle', 'dirty', 'saving', 'saved', 'saving', 'error', 'saving', 'conflict']; assert(persistence.join('>') === 'idle>dirty>saving>saved>saving>error>saving>conflict', 'transiciones persistencia');
 const groups = ['PERSONAS', 'PUESTOS', 'EQUIPOS', 'RED'].filter(group => group !== 'RED' || false); assert(!groups.includes('RED') && groups.length === 3, 'grupos vacíos omitidos');
-console.log(`core-ux-harness: ${passed}/14 passed, 0 failed`);
+});

@@ -6,9 +6,8 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'Resources', 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'Resources', 'app.css'), 'utf8');
 const app = fs.readFileSync(path.join(root, 'Resources', 'js', 'core', 'app.js'), 'utf8');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 
 test('cluster cards move rename and adjustment actions to the contextual menu', () => {
   assert(!app.includes('data-cluster-card-action="rename"'), 'rename action remains rendered on the card');
@@ -31,10 +30,3 @@ test('map appearance switch has only selectable appearance options', () => {
   assert(control.includes('>Oscuro<') && control.includes('>Claro<'), 'appearance options are missing');
   assert(!control.includes('>Plano<'), 'redundant Plano label remains in appearance control');
 });
-
-let passed = 0;
-for (const item of tests) {
-  try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Cluster map controls harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

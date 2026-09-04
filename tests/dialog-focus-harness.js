@@ -10,9 +10,8 @@ const app = fs.readFileSync(
 const html = fs.readFileSync(
   path.join(__dirname, '..', 'Resources', 'index.html'), 'utf8'
 );
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => {
   if (actual !== expected) throw new Error(`${message}: ${actual} !== ${expected}`);
 };
@@ -135,15 +134,3 @@ test('the cluster context menu shares the focus restoration utility', () => {
   assert(context.includes('captureFocusRestorer(opener ?? document.activeElement)'), 'menu does not capture the shared restorer');
   assert(context.includes('if (restoreFocus) restore?.()'), 'menu does not invoke the shared restorer');
 });
-
-let passed = 0;
-for (const item of tests) {
-  try {
-    item.fn();
-    passed++;
-  } catch (error) {
-    console.error(`FAIL: ${item.name}: ${error.message}`);
-  }
-}
-console.log(`Dialog focus harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

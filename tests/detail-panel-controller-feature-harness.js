@@ -1,6 +1,7 @@
 'use strict';
 
-const assert = require('assert');
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const { createDetailPanelControllerFeature } = require('../Resources/js/shared/ui/detail-panel-controller-feature.js');
 
 function createElement() {
@@ -36,8 +37,6 @@ function createHarness() {
   return { elements, feature, renders: () => renders, state, ui };
 }
 
-const tests = [];
-const test = (name, run) => tests.push({ name, run });
 
 test('writes the detail header through the normalized panel contract', () => {
   const { feature, elements } = createHarness();
@@ -93,10 +92,3 @@ test('preserves Area Focus and skips render for a silent close', () => {
 test('exposes only common panel behavior', () => {
   assert.deepStrictEqual(Object.keys(createHarness().feature).sort(), ['close', 'setHeader', 'show']);
 });
-
-let passed = 0;
-for (const item of tests) {
-  try { item.run(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Detail panel controller feature harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

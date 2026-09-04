@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const helpers = require('../Resources/js/features/map/map-density-helpers.js');
-const tests = []; const test = (name, fn) => tests.push({ name, fn }); const assert = (value, message) => { if (!value) throw new Error(message); }; const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
+const test = require('node:test'); const assert = require('node:assert/strict'); const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 const seats = Array.from({ length: 10 }, (_, index) => ({ id: `W${index + 1}`, x: .40 + index * .0002, y: .40 + index * .0002, effectiveState: index < 3 ? 'free' : index === 3 ? 'reserved' : 'occupied' }));
 const build = context => helpers.buildMapDensityPresentation({ mapId: 'sur', workspaces: seats, grid: { columns: 24, rows: 18 }, semanticZoom: 'GLOBAL', viewport: { width: 1000, height: 700 }, stateFor: seat => seat.effectiveState, problemsFor: seat => seat.id === 'W5' ? 1 : 0, functionalContext: context });
 
@@ -27,5 +27,3 @@ test('frontend uses managed area cards only', () => {
   assert(!app.includes('buildMapDensityPresentation({'), 'automatic density renderer remains');
   assert(!app.includes('density.clusters.forEach'), 'automatic cluster card renderer remains');
 });
-let passed = 0; for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } }
-console.log(`Cluster functional harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`); process.exitCode = passed === tests.length ? 0 : 1;

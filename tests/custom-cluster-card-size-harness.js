@@ -4,9 +4,8 @@ const path = require('path');
 const edit = require('../Resources/js/features/managed-areas/cluster-card-edit-helpers.js');
 const app = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'js', 'core', 'app.js'), 'utf8');
 const css = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'app.css'), 'utf8');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 const normalizeShape = value => ['automatic', 'compact', 'square', 'vertical'].includes(value) ? value : 'automatic';
 
@@ -102,10 +101,3 @@ test('resize and commit preserve viewport and operational cluster data', () => {
   const renderBody = app.match(/function renderManagedAreaCards[\s\S]*?\n  function render\(/)[0];
   assert(!renderBody.includes('moveWorkspace(') && !renderBody.includes('sendManagedArea('), 'card rendering mutates operational data');
 });
-
-let passed = 0;
-for (const item of tests) {
-  try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Custom cluster card size harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;
