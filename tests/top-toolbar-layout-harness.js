@@ -11,9 +11,8 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'Resources', 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'Resources', 'app.css'), 'utf8');
 const app = fs.readFileSync(path.join(root, 'Resources', 'js', 'core', 'app.js'), 'utf8');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 
 const toolbarItems = [
   ['Vista', 112], ['Estados', 356], ['Resultados', 104], ['Heatmap', 174],
@@ -123,10 +122,3 @@ test('map remains the explicit remaining grid row', () => {
   assert(css.includes('.workspace-region { position: relative; display: grid;') && css.includes('grid-template-rows: auto minmax(0, 1fr)'), 'workspace grid');
   assert(css.includes('.workspace-region #mapwrap { grid-row: 2; min-width: 0; min-height: 0; height: auto; }'), 'map row');
 });
-
-let passed = 0;
-for (const item of tests) {
-  try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Top toolbar layout harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

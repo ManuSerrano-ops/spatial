@@ -6,9 +6,8 @@ const app = fs.readFileSync(path.join(resources, 'js', 'core', 'app.js'), 'utf8'
 const controller = fs.readFileSync(path.join(resources, 'js', 'features', 'selection', 'selection-controller-feature.js'), 'utf8');
 const html = fs.readFileSync(path.join(resources, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(resources, 'app.css'), 'utf8');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 
 function toolbarBeforeBulk() { return html.indexOf('id="selection-mode"') < html.indexOf('id="bulk-bar"'); }
 
@@ -57,8 +56,3 @@ test('responsive 1280, 1366 and 1920 keep the control in normal-flow wrapping to
   assert(!css.includes('#selection-mode { display: none'), 'responsive CSS hides selection control');
   [1280, 1366, 1920].forEach(width => assert(width >= 1280 && toolbarBeforeBulk(), `selection control not represented at ${width}px`));
 });
-
-let passed = 0;
-for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } }
-console.log(`Selection mode visibility harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

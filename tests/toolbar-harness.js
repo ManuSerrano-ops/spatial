@@ -5,9 +5,8 @@ const resources = path.join(__dirname, '..', 'Resources');
 const html = fs.readFileSync(path.join(resources, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(resources, 'app.css'), 'utf8');
 const app = fs.readFileSync(path.join(resources, 'js', 'core', 'app.js'), 'utf8');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 
 test('zero and one selection hide bulk toolbar', () => assert(app.includes("$('bulk-bar').classList.toggle('hidden', !workspaceSurface || count < 2)"), 'visibility threshold'));
 test('two plus selection keeps business actions in toolbar and cluster action in panel', () => assert(!html.includes('id="bulk-create-area"') && html.includes('id="selection-review-create-cluster"'), 'cluster action ownership'));
@@ -27,10 +26,3 @@ test('bulk bar participates in layout rather than overlaying the map', () => {
 });
 test('client chain uses min-height zero', () => ['main.app-shell', 'main.app-shell > .workspace-region', '.workspace-region > .workspace-header', '.workspace-region > #mapwrap'].forEach(selector => assert(css.includes(selector), selector)));
 test('workspace grid reserves an auto header and remaining map content', () => assert(css.includes('grid-template-rows: auto minmax(0, 1fr)') && css.includes('.workspace-region #mapwrap { grid-row: 2'), 'grid contract'));
-
-let passed = 0;
-for (const item of tests) {
-  try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Toolbar harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

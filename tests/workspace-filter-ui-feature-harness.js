@@ -1,6 +1,7 @@
 'use strict';
 
-const assert = require('assert');
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const { createWorkspaceFilterUiFeature } = require('../Resources/js/features/filters/workspace-filter-ui-feature.js');
 
 function createButton() {
@@ -32,8 +33,7 @@ function createHarness({ filters = {}, loaded = true, workspaces = [] } = {}) {
   return { elements, feature, state, renders: () => renders };
 }
 
-const tests = [];
-const test = (name, run) => tests.push({ name, run });
+
 
 test('updates the visible workspace count', () => {
   const { feature, elements } = createHarness({ workspaces: [{ visible: true }, { visible: false }, { visible: true }] });
@@ -79,10 +79,3 @@ test('binds the only-matches checkbox without changing its boolean value', () =>
 test('exposes only filter UI responsibilities', () => {
   assert.deepStrictEqual(Object.keys(createHarness().feature).sort(), ['bindControls', 'renderChips', 'updateCount']);
 });
-
-let passed = 0;
-for (const item of tests) {
-  try { item.run(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Workspace filter UI feature harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

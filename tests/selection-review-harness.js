@@ -4,9 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const helpers = require('../Resources/js/features/selection/selection-review-helpers.js');
 const bulkHelpers = require('../Resources/js/features/selection/bulk-selection-helpers.js');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 const selected = ['W-1', 'W-2', 'W-3', 'W-4', 'W-5'];
 const workspaces = Object.fromEntries(selected.map((id, index) => [id, { mapId: 'norte', displayLocation: `G-${10 + index}`, person: index ? '' : 'jgomez', effectiveStateLabel: index === 2 ? 'Reservado' : index === 3 ? 'Ocupado' : 'Libre', device: index ? '' : 'pcs-lpt-941', roseta: index ? '' : '3-253', reference: index ? '' : 'REF-1', location: index ? '' : 'Norte' }]));
@@ -39,8 +38,3 @@ test('deterministic output', () => equal(build(), build(), 'determinism'));
 test('inputs are not mutated and outputs are frozen', () => { const ids = [...selected]; const values = structuredClone(workspaces); const before = snapshot({ ids, values }); const result = helpers.buildSelectionReviewItems(ids, values); assert(Object.isFrozen(result) && Object.isFrozen(result[0]), 'frozen output'); equal(snapshot({ ids, values }), before, 'input immutability'); });
 test('frontend uses central selection and delegated panel events', () => { const app = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'js', 'core', 'app.js'), 'utf8'); assert(app.includes('appState.selectedWorkspaces'), 'central selection missing'); assert(app.includes("$('selection-review-list').onclick"), 'delegated review event missing'); assert(app.includes('deselectSelectedWorkspace'), 'central deselect action missing'); });
 test('responsive panel is viewport-contained and scrollable', () => { const css = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'app.css'), 'utf8'); assert(css.includes('.selection-review-list') && css.includes('overflow: auto') && css.includes('min-height: 0'), 'review scrolling contract missing'); assert(!css.includes('height: 100vh'), 'viewport clipping regression introduced'); });
-
-let passed = 0;
-for (const { name, fn } of tests) { try { fn(); passed++; } catch (error) { console.error(`FAIL: ${name}: ${error.message}`); } }
-console.log(`Selection review harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

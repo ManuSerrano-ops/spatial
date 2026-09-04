@@ -1,9 +1,8 @@
 'use strict';
 
 const helpers = require('../Resources/js/features/analytics/spatial-analytics-helpers.js');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}; expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`);
 };
@@ -95,11 +94,3 @@ test('calculates percentage-points deltas', () => {
   equal(helpers.percentagePointsDelta(0.3, 0.1), 0.2, 'delta has deterministic decimal rounding');
   equal(helpers.percentagePointsDelta('bad', 10), -10, 'invalid current values safely normalize to zero');
 });
-
-let passed = 0;
-for (const { name, fn } of tests) {
-  try { fn(); passed++; }
-  catch (error) { console.error(`FAIL: ${name}: ${error.message}`); }
-}
-console.log(`SpatialAnalytics frontend harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

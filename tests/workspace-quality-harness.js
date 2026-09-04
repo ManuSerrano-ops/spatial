@@ -1,7 +1,7 @@
 'use strict';
 const quality = require('../Resources/js/shared/workspace/workspace-quality-helpers.js');
-let passed = 0;
-const test = (name, fn) => { try { fn(); passed++; } catch (error) { console.error(`FAIL: ${name}: ${error.message}`); } };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}; expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`); };
 const derive = input => quality.deriveWorkspaceQuality(input);
 test('free empty is valid', () => equal(derive({ effectiveState: 'free' }).qualityState, 'valid', 'free empty'));
@@ -15,5 +15,3 @@ test('incomplete filter is quality-only', () => equal([derive({ effectiveState: 
 test('reserved is valid without occupied requirements', () => equal(derive({ effectiveState: 'reserved', assignment: { status: 'reserved' } }).qualityState, 'valid', 'reserved contract'));
 test('deterministic', () => { const input = { effectiveState: 'occupied', assignment: { personId: 'p' } }; equal(derive(input), derive(input), 'same result'); });
 test('no mutation', () => { const input = { effectiveState: 'occupied', assignment: { personId: 'p' } }; const before = JSON.stringify(input); derive(input); equal(JSON.stringify(input), before, 'input changed'); });
-console.log(`workspace-quality-harness: ${passed}/11 passed, ${11 - passed} failed`);
-process.exitCode = passed === 11 ? 0 : 1;

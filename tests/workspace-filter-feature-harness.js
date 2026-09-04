@@ -1,6 +1,7 @@
 'use strict';
 
-const assert = require('assert');
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const { createWorkspaceFilterFeature } = require('../Resources/js/features/filters/workspace-filter-feature.js');
 
 function createFeature(filters = {}) {
@@ -21,8 +22,7 @@ const workspace = {
   values: { personId: 'P1', deviceId: 'D1', roseta: 'R-09' }
 };
 
-const tests = [];
-const test = (name, run) => tests.push({ name, run });
+
 
 test('accepts a workspace when no filters are active', () => {
   assert.strictEqual(createFeature().matches(workspace), true);
@@ -59,10 +59,3 @@ test('filters by network outlet and combines criteria with AND', () => {
 test('exposes only the deterministic matching contract', () => {
   assert.deepStrictEqual(Object.keys(createFeature()), ['matches']);
 });
-
-let passed = 0;
-for (const item of tests) {
-  try { item.run(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Workspace filter feature harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

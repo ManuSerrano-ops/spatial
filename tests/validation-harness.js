@@ -1,8 +1,7 @@
 'use strict';
 const helpers = require('../Resources/js/shared/validation/validation-helpers.js');
-let passed = 0;
-function test(name, fn) { try { fn(); passed++; } catch (error) { throw new Error(`${name}: ${error.message}`); } }
-function assert(value, message) { if (!value) throw new Error(message); }
+const test = require('node:test');
+const assert = require('node:assert/strict');
 function equal(actual, expected, message) { assert(JSON.stringify(actual) === JSON.stringify(expected), `${message}; expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`); }
 
 function run(maps, assignments) {
@@ -57,4 +56,3 @@ test('operational policy excludes historical diagnostics from every helper proje
   equal(helpers.getProblemsForMap([historical, active], 'norte').map(item => item.id), ['active'], 'by-map problems exclude historical diagnostics');
   assert(!helpers.problemMatches(historical, {}), 'Problems Center matching excludes historical diagnostics');
 });
-console.log(`validation-harness: ${passed}/18 passed, 0 failed`);

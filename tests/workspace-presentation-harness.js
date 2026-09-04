@@ -4,9 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { buildWorkspacePresentation } = require('../Resources/js/shared/workspace/workspace-presentation-helpers.js');
 
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const present = input => buildWorkspacePresentation({ displayLocation: 'G-05', ...input });
 
 test('assigned user and reference are separate', () => { const value = present({ seat: { name: 'Referencia histórica' }, assignment: { personId: 'ana' }, personName: 'Ana Pérez' }); assert(value.currentPerson === 'Ana Pérez' && value.workstationReference === 'Referencia histórica', 'user and reference conflated'); });
@@ -26,11 +25,3 @@ test('display location is not a primary key', () => { const app = fs.readFileSyn
 test('aria begins with display location', () => { const value = present({ displayLocation: 'A-01', seat: { name: 'Ref A' }, assignment: { personId: 'ana' }, personName: 'Ana' }); assert(value.ariaLabel.startsWith('Puesto A-01, Ocupado, Ana'), 'aria primary identity invalid'); });
 test('output is deterministic', () => { const input = { seat: { name: 'Ref A' }, assignment: { personId: 'ana' }, personName: 'Ana', displayLocation: 'B-04' }; assert(JSON.stringify(buildWorkspacePresentation(input)) === JSON.stringify(buildWorkspacePresentation(input)), 'output is nondeterministic'); });
 test('input is not mutated', () => { const input = { seat: { name: 'Ref A', nested: { keep: true } }, assignment: { personId: 'ana' } }; const before = JSON.stringify(input); buildWorkspacePresentation(input); assert(JSON.stringify(input) === before, 'input was mutated'); });
-
-let passed = 0;
-for (const { name, fn } of tests) {
-  try { fn(); passed++; }
-  catch (error) { console.error(`FAIL: ${name}: ${error.message}`); }
-}
-console.log(`workspace-presentation-harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

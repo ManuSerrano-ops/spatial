@@ -4,9 +4,8 @@ const state = require('../Resources/js/shared/workspace/workspace-state-helpers.
 const presentation = require('../Resources/js/shared/workspace/workspace-presentation-helpers.js');
 const pins = require('../Resources/js/features/map/pin-state-helpers.js');
 
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}; expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
 };
@@ -41,11 +40,3 @@ test('heatmap uses effective occupancy and availability', () => { const rows = e
 test('reality and scenario use the same policy', () => { const reality = derive({ type: 'occupied' }, {}); const scenario = derive({ type: 'occupied' }, { personId: 'scenario-person' }); equal([reality.state, scenario.state], ['free', 'occupied'], 'only effective assignment changes the scenario state'); });
 test('output is deterministic', () => { const input = { seat: { personId: 'p' }, assignment: {} }; equal(derive(input.seat, input.assignment), derive(input.seat, input.assignment), 'same input has same derived state'); });
 test('input is not mutated', () => { const input = { seat: { personId: 'p', type: 'occupied' }, assignment: { status: 'confirmed' } }; const before = JSON.stringify(input); derive(input.seat, input.assignment); equal(JSON.stringify(input), before, 'derivation is pure'); });
-
-let passed = 0;
-for (const { name, fn } of tests) {
-  try { fn(); passed++; }
-  catch (error) { console.error(`FAIL: ${name}: ${error.message}`); }
-}
-console.log(`workspace-state-harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;
