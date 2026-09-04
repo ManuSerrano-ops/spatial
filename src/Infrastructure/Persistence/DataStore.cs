@@ -35,6 +35,9 @@ internal sealed class DataStore
     private readonly Func<JsonObject, string, XlsxExportResult> _xlsxWriter;
     private readonly BackupService _backups;
     private readonly TransactionCoordinator _transactions;
+    private readonly AssignmentService _assignments;
+    private readonly ManagedAreaService _managedAreas;
+    private readonly ReportService _reports;
 
     private DataStore(AppConfig config, Func<JsonObject, string, XlsxExportResult>? xlsxWriter = null)
     {
@@ -45,6 +48,9 @@ internal sealed class DataStore
         _xlsxWriter = xlsxWriter ?? XlsxExporter.Write;
         _backups = CreateBackupService();
         _transactions = CreateTransactionCoordinator();
+        _assignments = CreateAssignmentService();
+        _managedAreas = CreateManagedAreaService();
+        _reports = CreateReportService();
     }
 
     private BackupService CreateBackupService() => new(new(
@@ -58,6 +64,17 @@ internal sealed class DataStore
         File.WriteAllText, (source, destination) => File.Move(source, destination, true), File.Delete, File.Exists, Directory.Exists,
         _backups.Create, _backups.ResolvePath, _backups.Exists, _backups.ContainsFiles, _backups.LoadDocuments, BackupService.IsId,
         LogTransactionInfo, LogTransactionError));
+
+    private AssignmentService CreateAssignmentService() => new(new(RealStateUnlocked, FindScenarioUnlocked, MutateScenarioUnlocked, CommitRealUnlocked));
+
+    private ManagedAreaService CreateManagedAreaService() => new(new(
+        () => ReadRequired("maps.json"), () => ReadOptional(ManagedAreas.FileName), RealDocuments, RealFiles,
+        (documents, files, backupDescription, eventTitle, eventDescription, seatId) => _transactions.Execute(documents, files, backupDescription, eventTitle, eventDescription, CurrentRevisionUnlocked(), seatId: seatId)));
+
+    private ReportService CreateReportService() => new(new(
+        LoadUnlocked, FindScenarioUnlocked, ReadRequired, LogsRoot, path => { Directory.CreateDirectory(path); }, File.WriteAllText, CurrentRevisionUnlocked,
+        audit => _logger.Info(audit.Action, scenarioId: audit.ScenarioId, count: audit.Count, durationMs: audit.DurationMs, details: audit.Details, currentRevision: audit.CurrentRevision, reportPath: audit.ReportPath),
+        (action, exception) => _logger.Error(action, exception)));
 
     private void LogTransactionInfo(TransactionCoordinator.TransactionAudit audit) => _logger.Info(audit.Action, seatId: audit.SeatId, sourceRevision: audit.SourceRevision, destinationRevision: audit.DestinationRevision, backupId: audit.BackupId, transactionId: audit.TransactionId, files: audit.Files, backupOutcome: audit.BackupOutcome, bridgeAction: BridgeAction.Value);
 
@@ -109,65 +126,9 @@ internal sealed class DataStore
 
     public JsonObject Load(string? scenarioId = null) => WithLock("load", () => LoadUnlocked(scenarioId));
 
-    public JsonObject RunValidation(string? scenarioId = null) => WithLock("validation.run", () =>
-    {
-        _logger.Info("validation.started", scenarioId: scenarioId);
-        var effective = LoadUnlocked(scenarioId);
-        var stopwatch = Stopwatch.StartNew();
-        var maps = effective["maps"]?.AsObject() ?? throw new InvalidDataException("Faltan planos."); var assignments = effective["assignments"]?.AsObject() ?? throw new InvalidDataException("Faltan asignaciones."); var results = ValidationEngine.OperationalResults(ValidationEngine.Run(maps, assignments));
-        var counts = results.GroupBy(result => result.Severity).ToDictionary(group => group.Key.ToString().ToLowerInvariant(), group => group.Count());
-        var summary = new JsonObject { ["total"] = results.Count, ["critical"] = counts.GetValueOrDefault("critical"), ["warning"] = counts.GetValueOrDefault("warning"), ["info"] = counts.GetValueOrDefault("info") };
-        _logger.Info("validation.finished", scenarioId: scenarioId, count: results.Count, durationMs: stopwatch.ElapsedMilliseconds, details: new Dictionary<string, object?> { ["critical"] = counts.GetValueOrDefault("critical"), ["warning"] = counts.GetValueOrDefault("warning"), ["info"] = counts.GetValueOrDefault("info") });
-        return new JsonObject { ["results"] = new JsonArray(results.Select(ValidationJson).ToArray()), ["summary"] = summary, ["count"] = results.Count, ["durationMs"] = stopwatch.ElapsedMilliseconds };
-    });
+    public JsonObject RunValidation(string? scenarioId = null) => WithLock("validation.run", () => _reports.RunValidation(scenarioId));
 
-    private static JsonObject ValidationJson(ValidationResult result) => new()
-    {
-        ["id"] = result.Id, ["ruleId"] = result.RuleId, ["severity"] = result.Severity.ToString(), ["classification"] = result.Classification.ToString(), ["operational"] = result.IsOperational,
-        ["entityType"] = result.EntityType, ["entityId"] = result.EntityId, ["mapId"] = result.MapId,
-        ["field"] = result.Field, ["title"] = result.Title, ["message"] = result.Message,
-        ["details"] = result.Details, ["relatedEntities"] = new JsonArray(result.RelatedEntityIds.Select(id => (JsonNode?)id).ToArray()),
-        ["suggestedAction"] = result.SuggestedAction
-    };
-
-    public JsonObject RunSpatialAnalytics(string? scenarioId = null) => WithLock("analytics.run", () =>
-    {
-        var normalizedScenarioId = NormalizeScenarioId(scenarioId);
-        var effective = LoadUnlocked(normalizedScenarioId);
-        var maps = effective["maps"]?.AsObject() ?? throw new InvalidDataException("Faltan planos.");
-        var assignments = effective["assignments"]?.AsObject() ?? throw new InvalidDataException("Faltan asignaciones.");
-        var stopwatch = Stopwatch.StartNew();
-        var validation = ValidationEngine.OperationalResults(ValidationEngine.Run(maps, assignments));
-        IReadOnlyList<ScenarioDiffChange>? changes = null;
-        SpatialAnalyticsReport? baseline = null;
-        if (normalizedScenarioId is not null)
-        {
-            var scenario = FindScenarioUnlocked(normalizedScenarioId);
-            var baseState = scenario["base"]?.AsObject() ?? throw new InvalidDataException("Escenario corrupto.");
-            var draftState = scenario["draft"]?.AsObject() ?? throw new InvalidDataException("Escenario corrupto.");
-            var baseMaps = baseState["maps"]?.AsObject() ?? throw new InvalidDataException("Escenario corrupto.");
-            var baseAssignments = baseState["assignments"]?.AsObject() ?? throw new InvalidDataException("Escenario corrupto.");
-            var baseValidation = ValidationEngine.OperationalResults(ValidationEngine.Run(baseMaps, baseAssignments));
-            changes = ScenarioDiffEngine.Compare(baseState, draftState, baseValidation, validation).Changes;
-            baseline = SpatialAnalyticsEngine.Analyze(baseMaps, baseAssignments, baseValidation);
-        }
-        var report = SpatialAnalyticsEngine.Analyze(maps, assignments, validation, changes);
-        var durationMs = stopwatch.ElapsedMilliseconds;
-        _logger.Info("analytics.finished", scenarioId: normalizedScenarioId, count: report.Totals.Total, durationMs: durationMs, details: new Dictionary<string, object?> { ["occupied"] = report.Totals.Occupied, ["free"] = report.Totals.Free, ["reserved"] = report.Totals.Reserved, ["problems"] = report.Validation.Total, ["scenarioChanges"] = report.Scenario?.TotalChanges ?? 0 });
-        return new JsonObject { ["contextScenarioId"] = normalizedScenarioId, ["result"] = SpatialAnalyticsJson(report), ["baseline"] = baseline is null ? null : SpatialAnalyticsJson(baseline), ["durationMs"] = durationMs };
-    });
-
-    private static JsonObject SpatialAnalyticsJson(SpatialAnalyticsReport report) => new()
-    {
-        ["totals"] = SeatMetricsJson(report.Totals),
-        ["validation"] = ValidationTotalsJson(report.Validation),
-        ["maps"] = new JsonArray(report.Maps.Select(map => new JsonObject { ["mapId"] = map.MapId, ["mapName"] = map.MapName, ["seats"] = SeatMetricsJson(map.Seats), ["validation"] = ValidationTotalsJson(map.Validation) }).ToArray()),
-        ["heatmapPoints"] = new JsonArray(report.HeatmapPoints.Select(point => new JsonObject { ["mapId"] = point.MapId, ["mapName"] = point.MapName, ["seatId"] = point.SeatId, ["x"] = point.X, ["y"] = point.Y, ["layer"] = point.Layer, ["value"] = point.Value, ["sourceId"] = point.SourceId }).ToArray()),
-        ["scenario"] = report.Scenario is null ? null : new JsonObject { ["totalChanges"] = report.Scenario.TotalChanges, ["mappedChanges"] = report.Scenario.MappedChanges }
-    };
-
-    private static JsonObject SeatMetricsJson(SpatialSeatMetrics metrics) => new() { ["total"] = metrics.Total, ["occupied"] = metrics.Occupied, ["free"] = metrics.Free, ["reserved"] = metrics.Reserved, ["occupancyRate"] = metrics.OccupancyRate, ["availabilityRate"] = metrics.AvailabilityRate };
-    private static JsonObject ValidationTotalsJson(SpatialValidationTotals metrics) => new() { ["total"] = metrics.Total, ["critical"] = metrics.Critical, ["warning"] = metrics.Warning, ["info"] = metrics.Info };
+    public JsonObject RunSpatialAnalytics(string? scenarioId = null) => WithLock("analytics.run", () => _reports.RunSpatialAnalytics(scenarioId));
 
     public JsonObject RunMovementPlanner(JsonObject payload) => WithLock("planner.run", () =>
     {
@@ -196,7 +157,7 @@ internal sealed class DataStore
         ["proposals"] = new JsonArray(plan.Proposals.Select(proposal => new JsonObject
         {
             ["id"] = proposal.Id, ["source"] = MovementEndpointJson(proposal.Source), ["destination"] = MovementEndpointJson(proposal.Destination),
-            ["relatedProblems"] = new JsonArray(proposal.RelatedProblems.Select(ValidationJson).ToArray()),
+            ["relatedProblems"] = new JsonArray(proposal.RelatedProblems.Select(ReportService.ValidationJson).ToArray()),
             ["relatedScenarioChanges"] = new JsonArray(proposal.RelatedScenarioChanges.Select(ScenarioDiffJson).ToArray())
         }).ToArray()),
         ["issues"] = new JsonArray(plan.Issues.Select(issue => new JsonObject { ["id"] = issue.Id, ["code"] = issue.Code, ["message"] = issue.Message, ["sourceWorkspaceId"] = issue.SourceWorkspaceId, ["destinationWorkspaceId"] = issue.DestinationWorkspaceId }).ToArray())
@@ -300,241 +261,79 @@ internal sealed class DataStore
     public JsonObject SaveAssignment(JsonObject payload, bool delete) => WithLock(delete ? "assignment.delete" : "assignment.save", () =>
     {
         EnsureWritable();
-        if (delete)
-        {
-            var request = DeleteAssignmentRequest.From(payload);
-            if (request.ScenarioId is not null) return MutateScenarioUnlocked(request.ScenarioId, draft => DeleteAssignment(draft, request));
-            var state = RealStateUnlocked();
-            DeleteAssignment(state, request);
-            CommitRealUnlocked(state, "Asignación eliminada", request.WorkstationId!);
-            return new JsonObject { ["ok"] = true };
-        }
-
-        var save = SaveAssignmentRequest.From(payload);
-        if (save.ScenarioId is not null)
-        {
-            var draft = FindScenarioUnlocked(save.ScenarioId)["draft"]?.AsObject() ?? throw new InvalidDataException("Escenario corrupto.");
-            var warnings = ValidateAssignment(draft, save);
-            var result = MutateScenarioUnlocked(save.ScenarioId, state => SetAssignment(state, save));
-            result["warnings"] = WarningArray(warnings);
-            return result;
-        }
-        var real = RealStateUnlocked();
-        var realWarnings = ValidateAssignment(real, save);
-        SetAssignment(real, save);
-        CommitRealUnlocked(real, "Asignación guardada", save.WorkstationId!);
-        return new JsonObject { ["ok"] = true, ["warnings"] = WarningArray(realWarnings) };
+        return _assignments.SaveAssignment(payload, delete);
     });
 
     public JsonObject BulkUpdateAssignments(JsonObject payload) => WithLock("workspace.bulk", () =>
     {
         EnsureWritable();
-        var request = BulkAssignmentRequest.From(payload);
-        if (request.WorkstationIds!.Count == 0) return BulkAssignmentResult(request, 0);
-
-        int Apply(JsonObject state)
-        {
-            var seats = state["maps"]?["maps"]?.AsArray().OfType<JsonObject>().SelectMany(map => map["seats"]?.AsArray().OfType<JsonObject>() ?? []).ToDictionary(seat => Text(seat["id"]), StringComparer.Ordinal) ?? [];
-            var assignments = state["assignments"]?["assignments"]?.AsArray().OfType<JsonObject>().Where(item => Text(item["workstationId"]).Length > 0).GroupBy(item => Text(item["workstationId"]), StringComparer.Ordinal).ToDictionary(group => group.Key, group => group.Last(), StringComparer.Ordinal) ?? [];
-            var updates = new List<string>();
-            foreach (var workstationId in request.WorkstationIds)
-            {
-                if (!seats.TryGetValue(workstationId, out var seat)) throw new InvalidDataException($"El puesto {workstationId} ya no existe.");
-                var effectiveState = SeatStates.DeriveEffectiveWorkspaceState(seat, assignments.GetValueOrDefault(workstationId)).State;
-                if (request.Status == "reserved")
-                {
-                    if (effectiveState == SeatState.Occupied) throw new InvalidDataException($"El puesto {workstationId} está ocupado y no se puede reservar.");
-                    if (effectiveState == SeatState.Free) updates.Add(workstationId);
-                }
-                else if (effectiveState == SeatState.Reserved)
-                {
-                    updates.Add(workstationId);
-                }
-            }
-            foreach (var workstationId in updates)
-            {
-                var update = new SaveAssignmentRequest(workstationId, null, null, null, null, request.Status, null, null, request.ScenarioId, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "status" });
-                SetAssignment(state, update);
-            }
-            return updates.Count;
-        }
-
-        if (request.ScenarioId is not null)
-        {
-            var scenario = FindScenarioUnlocked(request.ScenarioId);
-            var draft = scenario["draft"]?.AsObject() ?? throw new InvalidDataException("Escenario corrupto.");
-            var preview = (JsonObject)draft.DeepClone();
-            var updated = Apply(preview);
-            if (updated == 0) return BulkAssignmentResult(request, 0);
-            MutateScenarioUnlocked(request.ScenarioId, state => Apply(state));
-            return BulkAssignmentResult(request, updated);
-        }
-
-        var real = RealStateUnlocked();
-        var realUpdated = Apply(real);
-        if (realUpdated == 0) return BulkAssignmentResult(request, 0);
-        var title = request.Status == "reserved" ? "Puestos reservados" : "Reservas retiradas";
-        CommitRealUnlocked(real, title, $"{realUpdated} puestos");
-        return BulkAssignmentResult(request, realUpdated);
+        return _assignments.BulkUpdateAssignments(payload);
     });
-
-    private static JsonObject BulkAssignmentResult(BulkAssignmentRequest request, int updated) => new()
-    {
-        ["ok"] = true,
-        ["updated"] = updated,
-        ["requested"] = request.WorkstationIds?.Count ?? 0,
-        ["status"] = request.Status,
-        ["action"] = request.Status == "reserved" ? "reserve" : "removeReservation",
-        ["noOp"] = updated == 0
-    };
 
     public JsonObject CreateManagedArea(JsonObject payload) => WithLock("managed-area.create", () =>
     {
         EnsureWritable();
-        ValidatePayloadFields(payload, "createManagedArea", ["id", "areaId", "mapId", "name", "workspaceIds", "moveWorkspaceIds"]);
-        var id = FirstText(payload, "id", "areaId");
-        if (id.Length == 0) id = $"managed-area-{Guid.NewGuid():N}";
-        var mapId = Required(payload, "mapId", "La Managed Area necesita un plano.");
-        var name = Required(payload, "name", "La Managed Area necesita un nombre.");
-        var workspaceIds = PayloadIds(payload, "workspaceIds", required: false);
-        var moveWorkspaceIds = PayloadIds(payload, "moveWorkspaceIds", required: false);
-        return MutateManagedAreasUnlocked(source => moveWorkspaceIds.Length == 0
-            ? ManagedAreas.Create(source.Document, source.Maps, id, mapId, name, workspaceIds)
-            : ManagedAreas.CreateWithMoves(source.Document, source.Maps, id, mapId, name, workspaceIds, moveWorkspaceIds), "Cluster creado", name);
+        return _managedAreas.Create(payload);
     });
 
     public JsonObject RenameManagedArea(JsonObject payload) => WithLock("managed-area.rename", () =>
     {
         EnsureWritable();
-        ValidatePayloadFields(payload, "renameManagedArea", ["areaId", "id", "name"]);
-        var areaId = RequiredFirst(payload, "Selecciona una Managed Area.", "areaId", "id");
-        var name = Required(payload, "name", "La Managed Area necesita un nombre.");
-        return MutateManagedAreasUnlocked(source => ManagedAreas.Rename(source.Document, source.Maps, areaId, name), "Managed Area renombrada", name);
+        return _managedAreas.Rename(payload);
     });
 
     public JsonObject AddManagedAreaWorkspaces(JsonObject payload) => WithLock("managed-area.workspace.add", () =>
     {
         EnsureWritable();
-        ValidatePayloadFields(payload, "addManagedAreaWorkspaces", ["areaId", "id", "workspaceIds"]);
-        var areaId = RequiredFirst(payload, "Selecciona una Managed Area.", "areaId", "id");
-        var workspaceIds = PayloadIds(payload, "workspaceIds", required: true);
-        return MutateManagedAreasUnlocked(source => ManagedAreas.AddWorkspaces(source.Document, source.Maps, areaId, workspaceIds), "Puestos añadidos al cluster", $"{workspaceIds.Length} puestos");
+        return _managedAreas.AddWorkspaces(payload);
     });
 
     public JsonObject RemoveManagedAreaWorkspaces(JsonObject payload) => WithLock("managed-area.workspace.remove", () =>
     {
         EnsureWritable();
-        ValidatePayloadFields(payload, "removeManagedAreaWorkspaces", ["areaId", "id", "workspaceIds"]);
-        var areaId = RequiredFirst(payload, "Selecciona una Managed Area.", "areaId", "id");
-        var workspaceIds = PayloadIds(payload, "workspaceIds", required: true);
-        return MutateManagedAreasUnlocked(source => ManagedAreas.RemoveWorkspaces(source.Document, source.Maps, areaId, workspaceIds), "Puestos retirados del cluster", $"{workspaceIds.Length} puestos");
+        return _managedAreas.RemoveWorkspaces(payload);
     });
 
     public JsonObject MoveManagedAreaWorkspaces(JsonObject payload) => WithLock("managed-area.workspace.move", () =>
     {
         EnsureWritable();
-        ValidatePayloadFields(payload, "moveManagedAreaWorkspaces", ["fromAreaId", "sourceAreaId", "toAreaId", "targetAreaId", "workspaceIds"]);
-        var fromAreaId = RequiredFirst(payload, "Selecciona la Managed Area de origen.", "fromAreaId", "sourceAreaId");
-        var toAreaId = RequiredFirst(payload, "Selecciona la Managed Area de destino.", "toAreaId", "targetAreaId");
-        var workspaceIds = PayloadIds(payload, "workspaceIds", required: true);
-        return MutateManagedAreasUnlocked(source => ManagedAreas.MoveWorkspaces(source.Document, source.Maps, fromAreaId, toAreaId, workspaceIds), "Puestos movidos entre Managed Areas", $"{workspaceIds.Length} puestos");
+        return _managedAreas.MoveWorkspaces(payload);
     });
 
     public JsonObject MergeManagedAreas(JsonObject payload) => WithLock("managed-area.merge", () =>
     {
         EnsureWritable();
-        ValidatePayloadFields(payload, "mergeManagedAreas", ["targetAreaId", "areaId", "sourceAreaIds"]);
-        var targetAreaId = RequiredFirst(payload, "Selecciona la Managed Area de destino.", "targetAreaId", "areaId");
-        var sourceAreaIds = PayloadIds(payload, "sourceAreaIds", required: true);
-        return MutateManagedAreasUnlocked(source => ManagedAreas.Merge(source.Document, source.Maps, targetAreaId, sourceAreaIds), "Clusters fusionados", $"{sourceAreaIds.Length} clusters en {targetAreaId}");
+        return _managedAreas.Merge(payload);
     });
 
     public JsonObject DissolveManagedArea(JsonObject payload) => WithLock("managed-area.dissolve", () =>
     {
         EnsureWritable();
-        ValidatePayloadFields(payload, "dissolveManagedArea", ["areaId", "id"]);
-        var areaId = RequiredFirst(payload, "Selecciona una Managed Area.", "areaId", "id");
-        var maps = ReadRequired("maps.json");
-        var current = ManagedAreas.Normalize(ReadOptional(ManagedAreas.FileName), maps);
-        var area = current["areas"]!.AsArray().OfType<JsonObject>().FirstOrDefault(item => Text(item["id"]) == areaId) ?? throw new InvalidDataException($"La Managed Area {areaId} no existe.");
-        var name = Text(area["name"]);
-        var count = area["workspaceIds"]?.AsArray().Count ?? 0;
-        return MutateManagedAreasUnlocked(source => ManagedAreas.Dissolve(source.Document, source.Maps, areaId), "Cluster disuelto", $"{name} · {count} puestos conservados");
+        return _managedAreas.Dissolve(payload);
     });
 
     public JsonObject DeleteManagedAreaAndMoveWorkspaces(JsonObject payload) => WithLock("managed-area.delete-and-move", () =>
     {
         EnsureWritable();
-        ValidatePayloadFields(payload, "deleteManagedAreaAndMoveWorkspaces", ["areaId", "sourceAreaId", "targetAreaId", "toAreaId"]);
-        var sourceAreaId = RequiredFirst(payload, "Selecciona la Managed Area que se eliminará.", "sourceAreaId", "areaId");
-        var targetAreaId = RequiredFirst(payload, "Selecciona la Managed Area de destino.", "targetAreaId", "toAreaId");
-        return MutateManagedAreasUnlocked(source => ManagedAreas.DeleteAndMove(source.Document, source.Maps, sourceAreaId, targetAreaId), "Managed Area eliminada y puestos movidos", $"{sourceAreaId} → {targetAreaId}");
+        return _managedAreas.DeleteAndMove(payload);
     });
 
     public JsonObject SavePosition(JsonObject payload) => WithLock("seat.move", () =>
     {
         EnsureWritable();
-        var request = SavePositionRequest.From(payload);
-        if (request.ScenarioId is not null) return MutateScenarioUnlocked(request.ScenarioId, draft => SetPosition(draft, request));
-        var state = RealStateUnlocked();
-        SetPosition(state, request);
-        CommitRealUnlocked(state, "Puesto movido", request.SeatId!);
-        return new JsonObject { ["ok"] = true };
+        return _assignments.SavePosition(payload);
     });
 
     public JsonObject CreateSeat(JsonObject payload) => WithLock("seat.create", () =>
     {
         EnsureWritable();
-        var request = CreateSeatRequest.From(payload);
-        string id = "";
-        if (request.ScenarioId is not null)
-        {
-            if (request.TargetManagedAreaId is not null) throw new InvalidOperationException("No se puede crear un puesto dentro de una zona gestionada desde un escenario: la pertenencia debe confirmarse en la realidad.");
-            MutateScenarioUnlocked(request.ScenarioId, draft => id = AddSeat(draft, request));
-            return new JsonObject { ["id"] = id, ["mapId"] = request.MapId };
-        }
-
-        var state = RealStateUnlocked();
-        if (request.TargetManagedAreaId is null)
-        {
-            id = AddSeat(state, request);
-            CommitRealUnlocked(state, "Puesto creado", id);
-            return new JsonObject { ["id"] = id, ["mapId"] = request.MapId };
-        }
-
-        var managedAreas = ManagedAreas.Normalize(ReadOptional(ManagedAreas.FileName), state["maps"]!.AsObject());
-        var targetArea = managedAreas["areas"]!.AsArray().OfType<JsonObject>().FirstOrDefault(area => Text(area["id"]) == request.TargetManagedAreaId)
-            ?? throw new InvalidDataException("La zona gestionada ya no existe.");
-        if (Text(targetArea["mapId"]) != request.MapId) throw new InvalidDataException("La zona gestionada pertenece a otro plano.");
-
-        var targetName = Text(targetArea["name"]);
-        id = AddSeat(state, request);
-        var membership = ManagedAreas.AddWorkspaces(managedAreas, state["maps"]!.AsObject(), request.TargetManagedAreaId, [id]);
-        Bump(state["assignments"]!.AsObject());
-        Bump(membership.Document);
-        var documents = RealDocuments(state);
-        documents[ManagedAreas.FileName] = membership.Document;
-        _transactions.Execute(
-            documents,
-            RealFiles.Append(ManagedAreas.FileName),
-            "Antes de puesto creado en zona",
-            "Puesto creado en zona",
-            $"{id} creado en {targetName}",
-            CurrentRevisionUnlocked(),
-            seatId: id);
-        return new JsonObject { ["id"] = id, ["mapId"] = request.MapId, ["targetManagedAreaId"] = request.TargetManagedAreaId };
+        return _assignments.CreateSeat(payload, _managedAreas.CreateSeatInArea);
     });
 
     public JsonObject DeleteSeat(JsonObject payload) => WithLock("seat.delete", () =>
     {
         EnsureWritable();
-        var request = DeleteSeatRequest.From(payload);
-        if (request.ScenarioId is not null) return MutateScenarioUnlocked(request.ScenarioId, draft => RemoveSeat(draft, request));
-        var state = RealStateUnlocked();
-        EnsureWorkspaceIsNotManagedUnlocked(state["maps"]!.AsObject(), request.MapId!, request.SeatId!);
-        RemoveSeat(state, request);
-        CommitRealUnlocked(state, "Puesto eliminado", request.SeatId!);
-        return new JsonObject { ["ok"] = true };
+        return _assignments.DeleteSeat(payload, _managedAreas.EnsureWorkspaceIsNotManaged);
     });
 
     public JsonObject GetScenarioDiff(JsonObject payload) => WithLock("scenario.diff", () =>
@@ -588,7 +387,7 @@ internal sealed class DataStore
         scenario["baseRevision"] = destinationRevision;
         scenario["updatedAt"] = DateTimeOffset.UtcNow.ToString("O");
         scenario["updatedBy"] = Environment.UserName;
-        ValidateManagedAreasAgainstMapsUnlocked(real["maps"]!.AsObject());
+        _managedAreas.ValidateAgainstMaps(real["maps"]!.AsObject());
         var documents = RealDocuments(real);
         documents["scenarios.json"] = scenarios;
         var scenarioName = Text(scenario["name"]);
@@ -619,15 +418,7 @@ internal sealed class DataStore
         return document;
     });
 
-    public JsonObject GetIntegrityReport() => WithLock("integrity.report", () =>
-    {
-        var document = IntegrityReport.Build(
-            ReadRequired("maps.json"),
-            ReadRequired("assignments.json"),
-            ReadRequired("positions.json"));
-        WriteIntegrityReport(document);
-        return document;
-    });
+    public JsonObject GetIntegrityReport() => WithLock("integrity.report", _reports.GetIntegrityReport);
 
     public JsonObject RestoreBackup(JsonObject payload) => WithLock("backup.restore", () =>
     {
@@ -782,45 +573,6 @@ internal sealed class DataStore
         _transactions.Execute(RealDocuments(state), RealFiles, "Antes de " + action, action, description, CurrentRevisionUnlocked(), seatId: description);
     }
 
-    private JsonObject MutateManagedAreasUnlocked(Func<(JsonObject Document, JsonObject Maps), ManagedAreaMutation> mutation, string eventTitle, string eventDescription)
-    {
-        var maps = ReadRequired("maps.json");
-        var current = ManagedAreas.Normalize(ReadOptional(ManagedAreas.FileName), maps);
-        var result = mutation((current, maps));
-        if (!result.Changed) return ManagedAreaResult(result, noOp: true);
-
-        Bump(result.Document);
-        _transactions.Execute(
-            new Dictionary<string, JsonObject>(StringComparer.OrdinalIgnoreCase) { [ManagedAreas.FileName] = result.Document },
-            [ManagedAreas.FileName],
-            "Antes de " + eventTitle,
-            eventTitle,
-            eventDescription,
-            CurrentRevisionUnlocked());
-        return ManagedAreaResult(result, noOp: false);
-    }
-
-    private static JsonObject ManagedAreaResult(ManagedAreaMutation mutation, bool noOp) => new()
-    {
-        ["ok"] = true,
-        ["noOp"] = noOp,
-        ["areaIds"] = new JsonArray(mutation.AreaIds.Select(id => (JsonNode?)id).ToArray()),
-        ["workspaceIds"] = new JsonArray(mutation.WorkspaceIds.Select(id => (JsonNode?)id).ToArray()),
-        ["managedAreas"] = mutation.Document.DeepClone()
-    };
-
-    private void EnsureWorkspaceIsNotManagedUnlocked(JsonObject maps, string mapId, string workspaceId)
-    {
-        var document = ReadOptional(ManagedAreas.FileName);
-        if (document is not null && ManagedAreas.ContainsWorkspace(document, maps, mapId, workspaceId))
-            throw new InvalidOperationException($"El puesto {workspaceId} pertenece a una Managed Area. Retíralo o disuelve el área antes de eliminarlo.");
-    }
-
-    private void ValidateManagedAreasAgainstMapsUnlocked(JsonObject maps)
-    {
-        var document = ReadOptional(ManagedAreas.FileName);
-        if (document is not null) ManagedAreas.Normalize(document, maps);
-    }
 
     private Dictionary<string, JsonObject> RealDocuments(JsonObject state)
     {
@@ -833,25 +585,6 @@ internal sealed class DataStore
             ["assignments.json"] = state["assignments"]!.AsObject(),
             ["positions.json"] = positions
         };
-    }
-
-
-    private void WriteIntegrityReport(JsonObject document)
-    {
-        try
-        {
-            Directory.CreateDirectory(LogsRoot);
-            var path = Path.Combine(LogsRoot, $"integrity-report-{DateTimeOffset.UtcNow:yyyyMMddTHHmmssfffffffZ}.json");
-            document["reportPath"] = path;
-            File.WriteAllText(path, document.ToJsonString(JsonOptions));
-            var count = document["counts"]?.AsObject()?.Select(item => item.Value?.GetValue<int>() ?? 0).Sum() ?? 0;
-            _logger.Info("integrity.report", count: count, currentRevision: CurrentRevisionUnlocked(), reportPath: path);
-        }
-        catch (Exception exception)
-        {
-            document.Remove("reportPath");
-            _logger.Error("integrity.report.failed", exception);
-        }
     }
 
 
@@ -987,72 +720,6 @@ internal sealed class DataStore
         };
     }
 
-    private string[] ValidateAssignment(JsonObject state, SaveAssignmentRequest request)
-    {
-        var values = state["assignments"]?["assignments"]?.AsArray().OfType<JsonObject>() ?? [];
-        var duplicateRoseta = request.Has("roseta") && !string.IsNullOrWhiteSpace(request.Roseta)
-            ? values.FirstOrDefault(item => Text(item["workstationId"]) != request.WorkstationId && string.Equals(Text(item["roseta"]).Trim(), request.Roseta.Trim(), StringComparison.OrdinalIgnoreCase))
-            : null;
-        if (duplicateRoseta is not null) throw new InvalidDataException(DuplicateRosetaMessage(state, duplicateRoseta));
-        if (request.Has("deviceId") && !string.IsNullOrWhiteSpace(request.DeviceId) && values.Any(item => Text(item["workstationId"]) != request.WorkstationId && string.Equals(Text(item["deviceId"]), request.DeviceId, StringComparison.Ordinal))) throw new InvalidDataException("El dispositivo ya está asignado a otro puesto.");
-        var warnings = new List<string>();
-        if (request.Has("personId") && !string.IsNullOrWhiteSpace(request.PersonId) && values.Any(item => Text(item["workstationId"]) != request.WorkstationId && string.Equals(Text(item["personId"]), request.PersonId, StringComparison.Ordinal))) warnings.Add("La persona ya tiene otra asignación; se ha guardado igualmente.");
-        return warnings.ToArray();
-    }
-
-    private static string DuplicateRosetaMessage(JsonObject state, JsonObject assignment)
-    {
-        var workstationId = Text(assignment["workstationId"]);
-        var seat = Seats(state).Values.FirstOrDefault(item => Text(item["id"]) == workstationId);
-        var seatName = Text(seat?["name"]);
-        if (seatName.Length == 0) seatName = workstationId.Length == 0 ? "No disponible" : workstationId;
-        var mapName = Text(seat?["mapName"]);
-        var cell = GridCell(seat);
-        var position = string.Join(", ", new[] { mapName, cell }.Where(value => value.Length > 0));
-        if (position.Length == 0) position = "No disponible";
-
-        return $"La roseta «{Text(assignment["roseta"]).Trim()}» ya está asignada. Puesto: {seatName}. Posición: {position}. Persona: {ValueOrUnassigned(assignment["personId"])}. Equipo: {ValueOrUnassigned(assignment["deviceId"])}. Ubicación: {ValueOrUnassigned(assignment["locationId"])}.";
-    }
-
-    private static string ValueOrUnassigned(JsonNode? value) => Text(value) is { Length: > 0 } text ? text : "Sin asignar";
-
-    private static JsonArray WarningArray(IEnumerable<string> warnings) => new(warnings.Select(value => JsonValue.Create(value)).ToArray());
-
-    private void SetAssignment(JsonObject state, SaveAssignmentRequest request)
-    {
-        var list = state["assignments"]?["assignments"]?.AsArray() ?? new JsonArray();
-        var item = list.OfType<JsonObject>().FirstOrDefault(value => Text(value["workstationId"]) == request.WorkstationId!) is { } existing ? (JsonObject)existing.DeepClone() : new JsonObject();
-        Remove(list, value => Text(value?["workstationId"]) == request.WorkstationId!);
-        item["workstationId"] = request.WorkstationId!;
-        SetReceived(item, "personId", request.PersonId, request.Has("personId")); SetReceived(item, "deviceId", request.DeviceId, request.Has("deviceId")); SetReceived(item, "locationId", request.LocationId, request.Has("locationId")); SetReceived(item, "roseta", request.Roseta, request.Has("roseta")); SetReceived(item, "status", request.Status, request.Has("status")); SetReceived(item, "notes", request.Notes, request.Has("notes"));
-        item.Remove("scenarioId"); item.Remove("seatName"); item["updatedAt"] = DateTimeOffset.UtcNow.ToString("O"); item["updatedBy"] = Environment.UserName;
-        list.Add(item); UpdateSeatName(state, request.WorkstationId!, request.SeatName, request.Has("seatName"));
-        state["assignments"] ??= New("assignments"); state["assignments"]!["assignments"] = list;
-    }
-
-    private void DeleteAssignment(JsonObject state, DeleteAssignmentRequest request)
-    {
-        var list = state["assignments"]?["assignments"]?.AsArray() ?? new JsonArray();
-        Remove(list, value => Text(value?["workstationId"]) == request.WorkstationId!); UpdateSeatName(state, request.WorkstationId!, request.SeatName, request.Has("seatName"));
-        state["assignments"] ??= New("assignments"); state["assignments"]!["assignments"] = list;
-    }
-
-    private static void SetReceived(JsonObject item, string name, string? value, bool received) { if (received) item[name] = value; }
-    private static void UpdateSeatName(JsonObject state, string workstationId, string? seatName, bool received)
-    {
-        if (!received) return;
-        var editableSeat = state["maps"]?["maps"]?.AsArray().OfType<JsonObject>().SelectMany(map => map["seats"]?.AsArray().OfType<JsonObject>() ?? []).FirstOrDefault(item => Text(item["id"]) == workstationId);
-        if (editableSeat is not null) editableSeat["name"] = seatName ?? "";
-    }
-    private static void SetPosition(JsonObject state, SavePositionRequest request) { var seat = Seat(state, request.MapId!, request.SeatId!); var x = Coordinate(request.X); var y = Coordinate(request.Y); seat["x"] = x; seat["y"] = y; seat["gridCell"] = Cell(x, y); seat["updatedAt"] = DateTimeOffset.UtcNow.ToString("O"); seat["updatedBy"] = Environment.UserName; }
-    private static string AddSeat(JsonObject state, CreateSeatRequest request)
-    {
-        var map = Map(state, request.MapId!); var seats = map["seats"]?.AsArray() ?? new JsonArray(); var x = Coordinate(request.X); var y = Coordinate(request.Y);
-        var id = "custom-" + Guid.NewGuid().ToString("N"); var cell = Cell(x, y); var name = $"{MapPrefix(Text(map["id"]))}-{cell}";
-        seats.Add(new JsonObject { ["id"] = id, ["name"] = name, ["type"] = "free", ["x"] = x, ["y"] = y, ["gridCell"] = cell, ["updatedBy"] = Environment.UserName }); map["seats"] = seats;
-        return id;
-    }
-    private static void RemoveSeat(JsonObject state, DeleteSeatRequest request) { var map = Map(state, request.MapId!); Remove(map["seats"]?.AsArray() ?? new JsonArray(), s => Text(s?["id"]) == request.SeatId!); Remove(state["assignments"]?["assignments"]?.AsArray() ?? new JsonArray(), s => Text(s?["workstationId"]) == request.SeatId!); }
 
     private JsonArray Diff(JsonObject before, JsonObject after, IReadOnlyList<ScenarioOperation>? operations = null) => new(ScenarioDiffEngine.Compare(before, after, operations: operations).Changes.Select(ScenarioDiffJson).ToArray());
 
@@ -1076,9 +743,9 @@ internal sealed class DataStore
         },
         ["validationImpact"] = new JsonObject
         {
-            ["introduced"] = new JsonArray(comparison.ValidationImpact.Introduced.Select(ValidationJson).ToArray()),
-            ["resolved"] = new JsonArray(comparison.ValidationImpact.Resolved.Select(ValidationJson).ToArray()),
-            ["persistent"] = new JsonArray(comparison.ValidationImpact.Persistent.Select(ValidationJson).ToArray())
+            ["introduced"] = new JsonArray(comparison.ValidationImpact.Introduced.Select(ReportService.ValidationJson).ToArray()),
+            ["resolved"] = new JsonArray(comparison.ValidationImpact.Resolved.Select(ReportService.ValidationJson).ToArray()),
+            ["persistent"] = new JsonArray(comparison.ValidationImpact.Persistent.Select(ReportService.ValidationJson).ToArray())
         }
     };
 
@@ -1166,77 +833,13 @@ internal sealed class DataStore
         return copy;
     }
     private static string GridCell(JsonNode? item) => item is JsonObject value && Coordinate(value["x"], out var x) && Coordinate(value["y"], out var y) ? Cell(x, y) : "";
-    private static string Cell(double x, double y) { var column = Math.Clamp((int)Math.Floor(x * GridColumns), 0, GridColumns - 1); var row = Math.Clamp((int)Math.Floor(y * GridRows), 0, GridRows - 1); return $"{ColumnName(column)}-{row + 1:D2}"; }
-    private static string MapPrefix(string mapId) => mapId.ToLowerInvariant() switch { "norte" => "NOR", "nivel3" => "N3", "sur" => "SUR", "id" => "ID", "qc" => "QC", _ => mapId.ToUpperInvariant() };
-    private static string ColumnName(int column) { var result = ""; for (column++; column > 0; column = (column - 1) / 26) result = (char)('A' + (column - 1) % 26) + result; return result; }
+    private static string Cell(double x, double y) => AssignmentService.Cell(x, y);
     private static bool Coordinate(JsonNode? node, out double value) { value = 0; return node is JsonValue json && json.TryGetValue<double>(out value); }
 
     private JsonObject ScenariosUnlocked() => ReadOptional("scenarios.json") ?? New("scenarios");
     private JsonObject FindScenarioUnlocked(string id) => ScenariosUnlocked()["scenarios"]?.AsArray().OfType<JsonObject>().FirstOrDefault(s => Text(s["id"]) == id) ?? throw new InvalidDataException("Escenario inexistente.");
     private string ScenariosPath => DataPath("scenarios.json");
 
-    private sealed record SaveAssignmentRequest(string? WorkstationId, string? PersonId, string? DeviceId, string? LocationId, string? Roseta, string? Status, string? Notes, string? SeatName, string? ScenarioId, IReadOnlySet<string>? ReceivedFields = null)
-    {
-        public bool Has(string field) => ReceivedFields?.Contains(field) == true;
-        public static SaveAssignmentRequest From(JsonObject payload) { var request = Bind<SaveAssignmentRequest>(payload, "saveAssignment", new[] { "workstationId", "personId", "deviceId", "locationId", "roseta", "status", "notes", "seatName", "scenarioId" }, out var fields); return request with { WorkstationId = Required(request.WorkstationId, "Puesto inválido."), ScenarioId = NormalizeScenarioId(request.ScenarioId), ReceivedFields = fields }; }
-    }
-    private sealed record DeleteAssignmentRequest(string? WorkstationId, string? SeatName, string? ScenarioId, IReadOnlySet<string>? ReceivedFields = null)
-    {
-        public bool Has(string field) => ReceivedFields?.Contains(field) == true;
-        public static DeleteAssignmentRequest From(JsonObject payload) { var request = Bind<DeleteAssignmentRequest>(payload, "deleteAssignment", new[] { "workstationId", "seatName", "scenarioId" }, out var fields); return request with { WorkstationId = Required(request.WorkstationId, "Puesto inválido."), ScenarioId = NormalizeScenarioId(request.ScenarioId), ReceivedFields = fields }; }
-    }
-    private sealed record BulkAssignmentRequest(List<string>? WorkstationIds, string? Status, string? ScenarioId)
-    {
-        public static BulkAssignmentRequest From(JsonObject payload)
-        {
-            var request = Bind<BulkAssignmentRequest>(payload, "bulkUpdateAssignments", new[] { "workstationIds", "status", "scenarioId" }, out _);
-            var ids = request.WorkstationIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList() ?? [];
-            var status = request.Status?.Trim().ToLowerInvariant();
-            if (status is not ("reserved" or "confirmed")) throw new InvalidDataException("El estado masivo debe ser reservado o automático.");
-            return request with { WorkstationIds = ids, Status = status, ScenarioId = NormalizeScenarioId(request.ScenarioId) };
-        }
-    }
-
-    private sealed record SavePositionRequest(string? MapId, string? SeatId, double? X, double? Y, string? ScenarioId)
-    {
-        public static SavePositionRequest From(JsonObject payload) { var request = Bind<SavePositionRequest>(payload, "savePosition", new[] { "mapId", "seatId", "x", "y", "scenarioId" }, out _); return request with { MapId = Required(request.MapId, "Plano inválido."), SeatId = Required(request.SeatId, "Puesto inválido."), ScenarioId = NormalizeScenarioId(request.ScenarioId) }; }
-    }
-    private sealed record CreateSeatRequest(string? MapId, double? X, double? Y, string? ScenarioId, string? TargetManagedAreaId)
-    {
-        public static CreateSeatRequest From(JsonObject payload) { var request = Bind<CreateSeatRequest>(payload, "createSeat", new[] { "mapId", "x", "y", "scenarioId", "targetManagedAreaId" }, out _); return request with { MapId = Required(request.MapId, "Plano inválido."), ScenarioId = NormalizeScenarioId(request.ScenarioId), TargetManagedAreaId = string.IsNullOrWhiteSpace(request.TargetManagedAreaId) ? null : request.TargetManagedAreaId.Trim() }; }
-    }
-    private sealed record DeleteSeatRequest(string? MapId, string? SeatId, string? ScenarioId)
-    {
-        public static DeleteSeatRequest From(JsonObject payload) { var request = Bind<DeleteSeatRequest>(payload, "deleteSeat", new[] { "mapId", "seatId", "scenarioId" }, out _); return request with { MapId = Required(request.MapId, "Plano inválido."), SeatId = Required(request.SeatId, "Puesto inválido."), ScenarioId = NormalizeScenarioId(request.ScenarioId) }; }
-    }
-
-    private static void ValidatePayloadFields(JsonObject payload, string action, IEnumerable<string> allowed)
-    {
-        var allowedFields = allowed.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        foreach (var (name, _) in payload)
-            if (!allowedFields.Contains(name)) throw new InvalidDataException($"Campo no reconocido: '{name}' en {action}");
-    }
-
-    private static string[] PayloadIds(JsonObject payload, string key, bool required)
-    {
-        if (payload[key] is null)
-        {
-            if (required) throw new InvalidDataException($"Falta la lista {key}.");
-            return [];
-        }
-        if (payload[key] is not JsonArray values) throw new InvalidDataException($"{key} debe ser una lista.");
-        return values.Select(Text).Select(value => value.Trim()).Where(value => value.Length > 0).Distinct(StringComparer.Ordinal).OrderBy(value => value, StringComparer.Ordinal).ToArray();
-    }
-
-    private static string FirstText(JsonObject payload, params string[] keys) => keys.Select(key => Text(payload[key]).Trim()).FirstOrDefault(value => value.Length > 0) ?? "";
-    private static string RequiredFirst(JsonObject payload, string error, params string[] keys) => FirstText(payload, keys) is { Length: > 0 } value ? value : throw new InvalidDataException(error);
-
-    private static T Bind<T>(JsonObject payload, string action, IEnumerable<string> allowed, out HashSet<string> fields)
-    {
-        var allowedFields = allowed.ToHashSet(StringComparer.OrdinalIgnoreCase); fields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var (name, _) in payload) { if (!allowedFields.Contains(name)) throw new InvalidDataException($"Campo no reconocido: '{name}' en {action}"); fields.Add(name); }
-        return JsonSerializer.Deserialize<T>(payload.ToJsonString(), JsonOptions) ?? throw new InvalidDataException($"Payload inválido en {action}.");
-    }
 
     private JsonObject ReadRequired(string name) => ReadOptional(name) ?? throw new FileNotFoundException($"Falta {name}.");
     private JsonObject? ReadOptional(string name) => ReadJson(DataPath(name));
