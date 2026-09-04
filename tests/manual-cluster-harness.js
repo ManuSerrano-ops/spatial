@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const app = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'js', 'core', 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'index.html'), 'utf8');
-const tests = []; const test = (name, fn) => tests.push({ name, fn }); const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test'); const assert = require('node:assert/strict');
 
 test('right-click menu is scoped to the map and only offers creation for two same-map workspaces', () => {
   assert(app.includes("wrap.addEventListener('contextmenu', event => { if (event.target.closest('.map-layers-control')) return; hidePreview(); event.preventDefault(); showContextMenu(event); });"), 'map intercept missing');
@@ -43,5 +43,3 @@ test('manual cards use persistent managed areas and ignore legacy offsets', () =
   assert(app.includes('presentation: { offsetX: 0, offsetY: 0 }'), 'legacy offsets are not ignored');
   assert(app.includes('clusterCardDragHelpers.attachClusterCardMoveHandle({'), 'manual card move handle is not attached only in edit mode');
 });
-let passed = 0; for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } }
-console.log(`Manual cluster harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`); process.exitCode = passed === tests.length ? 0 : 1;

@@ -1,8 +1,8 @@
 'use strict';
 
 const helpers = require('../Resources/js/features/managed-areas/managed-area-helpers.js');
-const tests = []; const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 const fails = (fn, text) => { try { fn(); } catch (error) { if (!text || error.message.includes(text)) return; throw error; } throw new Error(`Expected error containing: ${text}`); };
 const area = (id, mapId, name, workspaceIds = [], presentation = { offsetX: 0, offsetY: 0 }) => ({ id, mapId, name, workspaceIds, presentation });
@@ -39,8 +39,3 @@ test('snapshot is JSON serializable for Undo transport', () => { const output = 
 test('snapshot identifies operation and affected entities', () => { const snapshot = helpers.moveWorkspaces(initial, 'north-a', 'north-b', ['W-2']).snapshot; equal([snapshot.kind, snapshot.affectedAreaIds, snapshot.affectedWorkspaceIds], ['move', ['north-a', 'north-b'], ['W-2']], 'snapshot identity'); });
 test('Undo restores exact canonical before state', () => { const output = helpers.mergeAreas(initial, 'north-a', ['north-b']); equal(helpers.restoreSnapshot(output.snapshot, 'before'), helpers.normalizeState(initial), 'undo restore'); });
 test('Redo restores exact canonical after state', () => { const output = helpers.dissolveArea(initial, 'north-a'); equal(helpers.restoreSnapshot(output.snapshot, 'after'), output.state, 'redo restore'); });
-
-let passed = 0;
-for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } }
-console.log(`Managed area harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

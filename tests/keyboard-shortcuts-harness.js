@@ -20,9 +20,8 @@ const preferences = fs.readFileSync(
     'ExportFolderPreferences.cs'
   ), 'utf8'
 );
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => {
   if (actual !== expected) throw new Error(`${message}: ${actual} !== ${expected}`);
 };
@@ -314,15 +313,3 @@ test('non-character keyboard navigation remains outside the preference', () => {
   assert(global.includes("/^Arrow/.test(event.key)"), 'arrow navigation missing');
   assert(global.includes("event.ctrlKey && event.key.toLowerCase() === 'y'"), 'modified redo missing');
 });
-
-let passed = 0;
-for (const item of tests) {
-  try {
-    item.fn();
-    passed++;
-  } catch (error) {
-    console.error(`FAIL: ${item.name}: ${error.message}`);
-  }
-}
-console.log(`Keyboard shortcuts harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

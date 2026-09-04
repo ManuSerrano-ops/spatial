@@ -1,6 +1,7 @@
 'use strict';
 
-const assert = require('assert');
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const appearanceHelpers = require('../Resources/js/features/map/map-appearance-helpers.js');
 const { createMapAppearanceFeature } = require('../Resources/js/features/map/map-appearance-feature.js');
 
@@ -43,8 +44,6 @@ function createStorage(values = {}, options = {}) {
   };
 }
 
-const tests = [];
-const test = (name, run) => tests.push({ name, run });
 
 test('loads and normalizes the local preference', () => {
   const feature = createMapAppearanceFeature({
@@ -116,15 +115,3 @@ test('uses only injected presentation dependencies', () => {
   });
   assert.deepStrictEqual(Object.keys(feature).sort(), ['apply', 'loadPreference', 'savePreference']);
 });
-
-let passed = 0;
-for (const item of tests) {
-  try {
-    item.run();
-    passed++;
-  } catch (error) {
-    console.error(`FAIL: ${item.name}: ${error.message}`);
-  }
-}
-console.log(`Map appearance feature harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

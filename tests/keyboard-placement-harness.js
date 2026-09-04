@@ -6,9 +6,8 @@ const app = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'js', 'core'
 const html = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'app.css'), 'utf8');
 const gridCursorHelpers = require(path.join(__dirname, '..', 'Resources', 'js', 'features', 'map', 'grid-cursor-helpers.js'));
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => { if (actual !== expected) throw new Error(`${message}: ${actual} !== ${expected}`); };
 
 class FakeInput {}
@@ -222,10 +221,3 @@ test('Move has no dependency on adjacentSeat and Add uses the shared grid cursor
   assert(app.includes("ui.placementCursor && event.key === 'Enter'"), 'keyboard confirmation missing');
   assert(app.includes('cancelPlacementMode();'), 'Escape does not cancel placement');
 });
-
-let passed = 0;
-for (const item of tests) {
-  try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Keyboard placement harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

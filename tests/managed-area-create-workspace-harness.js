@@ -5,7 +5,7 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'Resources', 'index.html'), 'utf8');
 const app = fs.readFileSync(path.join(root, 'Resources', 'js', 'core', 'app.js'), 'utf8');
 const store = fs.readFileSync(path.join(root, 'src', 'Infrastructure', 'Persistence', 'DataStore.cs'), 'utf8');
-const tests = []; const test = (name, fn) => tests.push({ name, fn }); const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test'); const assert = require('node:assert/strict');
 
 test('global Add Workspace continues through the shared flow', () => assert(app.includes("openCreateWorkspaceFlow({ mapId: ui.mapId })"), 'global flow'));
 test('Area Detail exposes two explicit non-ambiguous actions', () => {
@@ -29,8 +29,3 @@ test('creating from an area does not auto-select it for Bulk', () => assert(!/se
 test('dissolve action is explicit and confirms that members remain in place', () => assert(html.includes('>Disolver cluster<') && app.includes('Se eliminará únicamente la agrupación.') && app.includes('permanecerán exactamente en sus ubicaciones actuales'), 'dissolve UX'));
 test('dissolve writes only managed-area state, leaving workspace documents untouched', () => assert(store.includes('MutateManagedAreasUnlocked(source => ManagedAreas.Dissolve') && store.includes('"Cluster disuelto"'), 'dissolve transaction'));
 test('creating inside an area is rejected in scenarios to preserve atomicity', () => assert(store.includes('No se puede crear un puesto dentro de una zona gestionada desde un escenario'), 'scenario guard'));
-
-let passed = 0;
-for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } }
-console.log(`Managed-area create workspace harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;
