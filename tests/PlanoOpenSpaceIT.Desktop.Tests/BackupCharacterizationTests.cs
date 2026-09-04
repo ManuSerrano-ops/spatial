@@ -110,6 +110,14 @@ public sealed class BackupCharacterizationTests
         Assert.Equal(DateTimeOffset.Parse("2026-02-02T10:00:00+00:00"), DateTimeOffset.Parse(Text(backups["20260202000000000-a1b2c3"]["createdAtUtc"])));
         Assert.Equal(expectedLegacyUtc, DateTimeOffset.Parse(Text(backups["20260101000000000-b2c3d4"]["createdAtUtc"])));
         Assert.True(backups["20260101000000000-b2c3d4"]["legacy"]?.GetValue<bool>() == true);
+
+        var reportPath = Text(report["reportPath"]);
+        Assert.True(File.Exists(reportPath), "The retention report is persisted under logs.");
+        var audit = Assert.Single(fixture.AuditEntries(), entry => Text(entry["action"]) == "backup.retention.report");
+        Assert.Equal("information", Text(audit["level"]));
+        Assert.Equal(2, audit["count"]?.GetValue<int>());
+        Assert.Equal("report", Text(audit["backupOutcome"]));
+        Assert.Equal(Path.GetFileName(reportPath), Text(audit["reportFile"]));
     }
 
     private sealed class BackupFixture : IDisposable
@@ -136,12 +144,17 @@ public sealed class BackupCharacterizationTests
 
         internal DataStore Store { get; }
         internal string BackupsRoot => Path.Combine(_root, "backups", "spatial-git");
+        internal string LogsRoot => Path.Combine(_root, "logs");
         internal Func<IReadOnlyDictionary<string, string>> DataHashes => () => Directory.EnumerateFiles(_data, "*.json")
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToDictionary(path => Path.GetFileName(path), path => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))), StringComparer.Ordinal);
         internal Func<int> BackupCountOnDisk => () => Directory.EnumerateFiles(BackupsRoot, "*.zip").Count() + Directory.EnumerateDirectories(BackupsRoot).Count();
 
         internal string SingleZipPath() => Directory.EnumerateFiles(BackupsRoot, "*.zip").Single();
+        internal JsonObject[] AuditEntries() => Directory.EnumerateFiles(LogsRoot, "audit-*.log")
+            .SelectMany(path => File.ReadLines(path))
+            .Select(line => JsonNode.Parse(line)?.AsObject() ?? throw new InvalidOperationException("Audit entry is invalid JSON."))
+            .ToArray();
 
         internal void CreateZipBackup(string id, string? createdAtUtc = null, string assignmentPerson = "archived", string peopleId = "archived-person", JsonObject? manifest = null)
         {

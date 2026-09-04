@@ -1,10 +1,7 @@
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 
 namespace PlanoOpenSpaceIT.Windows;
 
@@ -36,6 +33,7 @@ internal sealed class DataStore
     private readonly string _data;
     private readonly SafeLogger _logger;
     private readonly Func<JsonObject, string, XlsxExportResult> _xlsxWriter;
+    private readonly BackupService _backups;
     private readonly TransactionCoordinator _transactions;
 
     private DataStore(AppConfig config, Func<JsonObject, string, XlsxExportResult>? xlsxWriter = null)
@@ -45,13 +43,20 @@ internal sealed class DataStore
         _data = Path.Combine(_root, config.DataFolder);
         _logger = new SafeLogger(Path.Combine(_root, config.LogsFolder), config.LogMaxFileSizeBytes, config.LogMaxHistoryFiles);
         _xlsxWriter = xlsxWriter ?? XlsxExporter.Write;
+        _backups = CreateBackupService();
         _transactions = CreateTransactionCoordinator();
     }
+
+    private BackupService CreateBackupService() => new(new(
+        OperationalBackupFiles.ToHashSet(StringComparer.OrdinalIgnoreCase), TransactionFiles, BackupsRoot, StatePath, DataPath, CurrentRevisionUnlocked,
+        (exception, result) => _logger.Error("backup.manifest.invalid", exception, result: result), LogsRoot, path => { Directory.CreateDirectory(path); }, File.WriteAllText,
+        audit => _logger.Info(audit.Action, count: audit.Count, backupOutcome: audit.BackupOutcome, reportPath: audit.ReportPath),
+        (audit, exception) => _logger.Error(audit.Action, exception, count: audit.Count, backupOutcome: audit.BackupOutcome, reportPath: audit.ReportPath)));
 
     private TransactionCoordinator CreateTransactionCoordinator() => new(new(
         TransactionFiles, _config.ReadOnly, DataPath, PendingPath, CurrentRevisionUnlocked, WriteStateUnlocked, ReadJson, WriteAtomic,
         File.WriteAllText, (source, destination) => File.Move(source, destination, true), File.Delete, File.Exists, Directory.Exists,
-        CreateBackupUnlocked, BackupPath, BackupExists, BackupContainsFiles, LoadBackupDocuments, IsBackupId,
+        _backups.Create, _backups.ResolvePath, _backups.Exists, _backups.ContainsFiles, _backups.LoadDocuments, BackupService.IsId,
         LogTransactionInfo, LogTransactionError));
 
     private void LogTransactionInfo(TransactionCoordinator.TransactionAudit audit) => _logger.Info(audit.Action, seatId: audit.SeatId, sourceRevision: audit.SourceRevision, destinationRevision: audit.DestinationRevision, backupId: audit.BackupId, transactionId: audit.TransactionId, files: audit.Files, backupOutcome: audit.BackupOutcome, bridgeAction: BridgeAction.Value);
@@ -596,7 +601,7 @@ internal sealed class DataStore
     public JsonObject GetBackups() => WithLock("backup.list", () =>
     {
         var backups = new JsonArray();
-        foreach (var container in BackupContainersUnlocked()) backups.Add(container.Manifest);
+        foreach (var container in _backups.Containers()) backups.Add(container.Manifest);
         return new JsonObject { ["backups"] = backups };
     });
 
@@ -606,11 +611,11 @@ internal sealed class DataStore
         if (mode != BackupRetentionMode.Report) throw new InvalidOperationException("El informe de retención requiere backupRetentionMode=report.");
 
         var report = BackupRetentionReport.Build(
-            BackupContainersUnlocked(),
+            _backups.Containers(),
             ReadOptional("events.json")?["events"]?.AsArray(),
             DateTimeOffset.UtcNow);
-        var document = RetentionReportDocument(report);
-        WriteRetentionReport(document, report.TotalBackups, report.ReclaimableBytes);
+        var document = _backups.RetentionReportDocument(report);
+        _backups.WriteRetentionReport(document, report.TotalBackups, report.ReclaimableBytes);
         return document;
     });
 
@@ -628,11 +633,11 @@ internal sealed class DataStore
     {
         EnsureWritable();
         var id = Required(payload, "backupId", "Backup inválido.");
-        var folder = BackupPath(id);
-        if (!BackupExists(folder)) throw new DirectoryNotFoundException("No existe el backup seleccionado.");
-        var files = BackupFiles(folder);
+        var folder = _backups.ResolvePath(id);
+        if (!_backups.Exists(folder)) throw new DirectoryNotFoundException("No existe el backup seleccionado.");
+        var files = _backups.Files(folder);
         var restoredFiles = files.Where(file => UserRestoreFiles.Contains(file, StringComparer.OrdinalIgnoreCase)).ToArray();
-        var documents = LoadBackupDocuments(folder, restoredFiles);
+        var documents = _backups.LoadDocuments(folder, restoredFiles);
         var restoredMaps = documents.GetValueOrDefault("maps.json") ?? ReadRequired("maps.json");
         var restoredManagedAreas = documents.GetValueOrDefault(ManagedAreas.FileName) ?? ReadOptional(ManagedAreas.FileName) ?? ManagedAreas.EmptyDocument();
         ManagedAreas.Normalize(restoredManagedAreas, restoredMaps);
@@ -684,11 +689,11 @@ internal sealed class DataStore
         var last = currentEntries.LastOrDefault(item => Text(item["backupId"]).Length > 0 && Text(item["undoOf"]).Length == 0 && Text(item["undoneAt"]).Length == 0)
             ?? throw new InvalidOperationException("No hay más cambios reales reversibles.");
         var backupId = Text(last["backupId"]);
-        var folder = BackupPath(backupId);
-        if (!BackupExists(folder)) throw new DirectoryNotFoundException("No está disponible el backup del último cambio.");
-        var files = BackupTransactionFiles(folder);
+        var folder = _backups.ResolvePath(backupId);
+        if (!_backups.Exists(folder)) throw new DirectoryNotFoundException("No está disponible el backup del último cambio.");
+        var files = _backups.TransactionFiles(folder);
         var restoredFiles = files.Where(file => !string.Equals(file, "events.json", StringComparison.OrdinalIgnoreCase)).ToArray();
-        var documents = LoadBackupDocuments(folder, restoredFiles);
+        var documents = _backups.LoadDocuments(folder, restoredFiles);
         last["undoneAt"] = DateTimeOffset.UtcNow.ToString("O");
         documents["events.json"] = currentEvents;
         _transactions.Execute(documents, restoredFiles.Union(["events.json"], StringComparer.OrdinalIgnoreCase), "Antes de deshacer " + Text(last["title"]), "Cambio deshecho", Text(last["title"]), CurrentRevisionUnlocked(), Text(last["id"]));
@@ -830,124 +835,6 @@ internal sealed class DataStore
         };
     }
 
-    private string CreateBackupUnlocked(IEnumerable<string> files, string description)
-    {
-        var selected = OperationalBackupFiles;
-        var transactionFiles = files.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-        if (transactionFiles.Any(file => !TransactionFiles.Contains(file))) throw new InvalidDataException("Conjunto de ficheros de backup inválido.");
-        var id = DateTime.Now.ToString("yyyyMMddHHmmssfff") + "-" + Guid.NewGuid().ToString("N")[..6];
-        Directory.CreateDirectory(BackupsRoot);
-        var archivePath = Path.Combine(BackupsRoot, id + ".zip");
-        var createdAtUtc = DateTimeOffset.UtcNow;
-        var manifest = new JsonObject
-        {
-            ["id"] = id,
-            ["title"] = "Backup",
-            ["description"] = description,
-            ["files"] = new JsonArray(selected.Select(file => JsonValue.Create(file)).ToArray()),
-            ["transactionFiles"] = new JsonArray(transactionFiles.Select(file => JsonValue.Create(file)).ToArray()),
-            ["sourceRevision"] = CurrentRevisionUnlocked(),
-            ["createdAt"] = createdAtUtc.ToString("O"),
-            ["createdAtUtc"] = createdAtUtc.ToString("O"),
-            ["createdBy"] = Environment.UserName
-        };
-        var temporaryPath = archivePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
-        try
-        {
-            using (var archive = ZipFile.Open(temporaryPath, ZipArchiveMode.Create))
-            {
-                foreach (var file in selected)
-                {
-                    var source = DataPath(file);
-                    if (File.Exists(source)) archive.CreateEntryFromFile(source, file, CompressionLevel.Optimal);
-                    else if (string.Equals(file, ManagedAreas.FileName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        var emptyManagedAreas = ManagedAreas.EmptyDocument();
-                        TransactionCoordinator.StampRevision(emptyManagedAreas, CurrentRevisionUnlocked());
-                        WriteZipJson(archive, file, emptyManagedAreas);
-                    }
-                }
-                var state = StatePath;
-                if (File.Exists(state)) archive.CreateEntryFromFile(state, "state.origin.json", CompressionLevel.Optimal);
-                WriteZipJson(archive, "manifest.json", manifest);
-            }
-            using (var validation = ZipFile.OpenRead(temporaryPath))
-                if (validation.GetEntry("manifest.json") is null) throw new InvalidDataException("El backup temporal no contiene manifiesto.");
-            File.Move(temporaryPath, archivePath);
-            return id;
-        }
-        finally
-        {
-            if (File.Exists(temporaryPath)) File.Delete(temporaryPath);
-        }
-    }
-
-    private IEnumerable<(string Id, string Container, JsonObject Manifest, bool Legacy)> BackupContainersUnlocked()
-    {
-        if (!Directory.Exists(BackupsRoot)) return [];
-        var containers = new List<(string Id, string Container, JsonObject Manifest, bool Legacy)>();
-        foreach (var container in Directory.GetDirectories(BackupsRoot).Concat(Directory.GetFiles(BackupsRoot, "*.zip")))
-        {
-            try
-            {
-                var manifest = ReadBackupManifest(container);
-                if (manifest is null) continue;
-                containers.Add((Text(manifest["id"]), container, manifest, Directory.Exists(container) && manifest["files"] is not JsonArray));
-            }
-            catch (Exception exception) when (exception is InvalidDataException or IOException or UnauthorizedAccessException or JsonException)
-            {
-                _logger.Error("backup.manifest.invalid", exception, result: Path.GetFileName(container));
-            }
-        }
-        return containers
-            .OrderByDescending(item => BackupCreatedAtUtc(item.Manifest) ?? DateTimeOffset.MinValue)
-            .ThenByDescending(item => item.Id, StringComparer.Ordinal)
-            .ToArray();
-    }
-
-    private JsonObject RetentionReportDocument(BackupRetentionReportData report)
-    {
-        JsonObject Entry(BackupRetentionReportEntry item) => new()
-        {
-            ["id"] = item.Id,
-            ["createdAtUtc"] = item.CreatedAtUtc.ToString("O"),
-            ["sizeBytes"] = item.SizeBytes,
-            ["legacy"] = item.IsLegacy,
-            ["undoProtected"] = item.IsProtected,
-            ["retain"] = item.Retain,
-            ["reason"] = item.Reason
-        };
-
-        return new JsonObject
-        {
-            ["generatedAtUtc"] = DateTimeOffset.UtcNow.ToString("O"),
-            ["retentionMode"] = "report",
-            ["totalBackups"] = report.TotalBackups,
-            ["totalBytes"] = report.TotalBytes,
-            ["oldestCreatedAtUtc"] = report.OldestCreatedAtUtc?.ToString("O"),
-            ["undoProtectedCount"] = report.UndoProtectedCount,
-            ["reclaimableBytes"] = report.ReclaimableBytes,
-            ["backups"] = new JsonArray(report.Backups.Select(Entry).ToArray()),
-            ["candidates"] = new JsonArray(report.Backups.Where(item => !item.Retain).Select(Entry).ToArray())
-        };
-    }
-
-    private void WriteRetentionReport(JsonObject document, int totalBackups, long reclaimableBytes)
-    {
-        try
-        {
-            Directory.CreateDirectory(LogsRoot);
-            var path = Path.Combine(LogsRoot, $"backup-retention-{DateTimeOffset.UtcNow:yyyyMMddTHHmmssfffffffZ}.json");
-            document["reportPath"] = path;
-            File.WriteAllText(path, document.ToJsonString(JsonOptions));
-            _logger.Info("backup.retention.report", count: totalBackups, backupOutcome: "report", reportPath: path);
-        }
-        catch (Exception exception)
-        {
-            document.Remove("reportPath");
-            _logger.Error("backup.retention.report.failed", exception, count: totalBackups, backupOutcome: "report");
-        }
-    }
 
     private void WriteIntegrityReport(JsonObject document)
     {
@@ -967,50 +854,6 @@ internal sealed class DataStore
         }
     }
 
-    private string[] BackupFiles(string container) => BackupManifestFiles(container, "files", OperationalBackupFiles);
-
-    private string[] BackupTransactionFiles(string container) => BackupManifestFiles(container, "transactionFiles", TransactionFiles);
-
-    private string[] BackupManifestFiles(string container, string property, IEnumerable<string> allowed)
-    {
-        var manifest = ReadBackupManifest(container);
-        var files = manifest?[property]?.AsArray().Select(Text).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-        if (files is null || files.Length == 0) files = ["maps.json", "assignments.json", "positions.json"];
-        if (files.Any(file => !allowed.Contains(file, StringComparer.OrdinalIgnoreCase))) throw new InvalidDataException("El backup contiene ficheros no compatibles.");
-        return files;
-    }
-
-    // B6 usará createdAtUtc para calcular la antigüedad. Los manifiestos heredados
-    // sin ese campo se interpretan como hora local para mantener compatibilidad.
-    internal static DateTimeOffset? BackupCreatedAtUtc(JsonObject manifest)
-    {
-        if (DateTimeOffset.TryParse(Text(manifest["createdAtUtc"]), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var utc)) return utc;
-        if (!DateTime.TryParse(Text(manifest["createdAt"]), CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out var legacy)) return null;
-        return new DateTimeOffset(DateTime.SpecifyKind(legacy, DateTimeKind.Local)).ToUniversalTime();
-    }
-
-    private Dictionary<string, JsonObject> LoadBackupDocuments(string container, IEnumerable<string> files)
-    {
-        var documents = new Dictionary<string, JsonObject>(StringComparer.OrdinalIgnoreCase);
-        if (File.Exists(container))
-        {
-            using var archive = ZipFile.OpenRead(container);
-            foreach (var file in files)
-            {
-                var entry = archive.GetEntry(file) ?? throw new FileNotFoundException($"Falta {file} en el backup.");
-                using var stream = entry.Open();
-                documents[file] = JsonNode.Parse(stream)?.AsObject() ?? throw new InvalidDataException($"{file} no es válido.");
-            }
-            return documents;
-        }
-        foreach (var file in files)
-        {
-            var document = ReadJson(Path.Combine(container, file));
-            if (document is null) throw new FileNotFoundException($"Falta {file} en el backup.");
-            documents[file] = document;
-        }
-        return documents;
-    }
 
     private T WithLock<T>(string action, Func<T> operation)
     {
@@ -1331,47 +1174,6 @@ internal sealed class DataStore
     private JsonObject ScenariosUnlocked() => ReadOptional("scenarios.json") ?? New("scenarios");
     private JsonObject FindScenarioUnlocked(string id) => ScenariosUnlocked()["scenarios"]?.AsArray().OfType<JsonObject>().FirstOrDefault(s => Text(s["id"]) == id) ?? throw new InvalidDataException("Escenario inexistente.");
     private string ScenariosPath => DataPath("scenarios.json");
-    private string BackupPath(string id)
-    {
-        if (!IsBackupId(id)) throw new InvalidDataException("Formato de backup inválido.");
-        var root = Path.GetFullPath(BackupsRoot); var candidate = Path.GetFullPath(Path.Combine(root, id)); var prefix = root.EndsWith(Path.DirectorySeparatorChar) ? root : root + Path.DirectorySeparatorChar;
-        if (!candidate.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Ruta de backup inválida.");
-        var archive = candidate + ".zip";
-        return File.Exists(archive) ? archive : candidate;
-    }
-
-    private static bool BackupExists(string container) => Directory.Exists(container) || File.Exists(container);
-
-    private static bool BackupContainsFiles(string container, IEnumerable<string> files)
-    {
-        if (File.Exists(container))
-        {
-            using var archive = ZipFile.OpenRead(container);
-            return files.All(file => archive.GetEntry(file) is not null);
-        }
-        return files.All(file => File.Exists(Path.Combine(container, file)));
-    }
-
-    private static JsonObject? ReadBackupManifest(string container)
-    {
-        if (File.Exists(container))
-        {
-            using var archive = ZipFile.OpenRead(container);
-            var entry = archive.GetEntry("manifest.json");
-            if (entry is null) return null;
-            using var stream = entry.Open();
-            return JsonNode.Parse(stream)?.AsObject();
-        }
-        return ReadJson(Path.Combine(container, "manifest.json"));
-    }
-
-    private static void WriteZipJson(ZipArchive archive, string name, JsonObject value)
-    {
-        var entry = archive.CreateEntry(name, CompressionLevel.Optimal);
-        using var stream = entry.Open();
-        using var writer = new StreamWriter(stream);
-        writer.Write(value.ToJsonString(JsonOptions));
-    }
 
     private sealed record SaveAssignmentRequest(string? WorkstationId, string? PersonId, string? DeviceId, string? LocationId, string? Roseta, string? Status, string? Notes, string? SeatName, string? ScenarioId, IReadOnlySet<string>? ReceivedFields = null)
     {
@@ -1465,7 +1267,6 @@ internal sealed class DataStore
         return node is JsonValue value && value.TryGetValue<long>(out revision) && revision >= 0;
     }
     private static long? ReadRevision(string path) { var document = ReadJson(path); return document is not null && TryRevision(document["stateRevision"], out var revision) ? revision : null; }
-    private static bool IsBackupId(string id) => Regex.IsMatch(id, "^[0-9]{17}-[0-9a-fA-F]{6}$");
     private static Dictionary<string, JsonObject> Index(JsonArray? values, string key) => values?.OfType<JsonObject>().Where(v => Text(v[key]).Length > 0).ToDictionary(v => Text(v[key]), v => v) ?? [];
     private static JsonObject Map(JsonObject state, string id) => state["maps"]?["maps"]?.AsArray().OfType<JsonObject>().FirstOrDefault(m => Text(m["id"]) == id) ?? throw new InvalidDataException("Plano inexistente.");
     private static JsonObject Seat(JsonObject state, string mapId, string id) => Map(state, mapId)["seats"]?.AsArray().OfType<JsonObject>().FirstOrDefault(s => Text(s["id"]) == id) ?? throw new InvalidDataException("Puesto inexistente.");

@@ -30,7 +30,7 @@ internal static class BackupRetentionReport
         var protectedIds = BackupRetention.ProtectedBackupIds(events);
         var candidates = containers.Select(item => new BackupRetentionCandidate(
             item.Id,
-            DataStore.BackupCreatedAtUtc(item.Manifest) ?? DateTimeOffset.MinValue,
+            BackupService.CreatedAtUtc(item.Manifest) ?? DateTimeOffset.MinValue,
             Size(item.Container),
             item.Legacy,
             protectedIds.Contains(item.Id))).ToArray();
