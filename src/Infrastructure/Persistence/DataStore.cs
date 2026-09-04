@@ -36,6 +36,7 @@ internal sealed class DataStore
     private readonly string _data;
     private readonly SafeLogger _logger;
     private readonly Func<JsonObject, string, XlsxExportResult> _xlsxWriter;
+    private readonly TransactionCoordinator _transactions;
 
     private DataStore(AppConfig config, Func<JsonObject, string, XlsxExportResult>? xlsxWriter = null)
     {
@@ -44,7 +45,18 @@ internal sealed class DataStore
         _data = Path.Combine(_root, config.DataFolder);
         _logger = new SafeLogger(Path.Combine(_root, config.LogsFolder), config.LogMaxFileSizeBytes, config.LogMaxHistoryFiles);
         _xlsxWriter = xlsxWriter ?? XlsxExporter.Write;
+        _transactions = CreateTransactionCoordinator();
     }
+
+    private TransactionCoordinator CreateTransactionCoordinator() => new(new(
+        TransactionFiles, _config.ReadOnly, DataPath, PendingPath, CurrentRevisionUnlocked, WriteStateUnlocked, ReadJson, WriteAtomic,
+        File.WriteAllText, (source, destination) => File.Move(source, destination, true), File.Delete, File.Exists, Directory.Exists,
+        CreateBackupUnlocked, BackupPath, BackupExists, BackupContainsFiles, LoadBackupDocuments, IsBackupId,
+        LogTransactionInfo, LogTransactionError));
+
+    private void LogTransactionInfo(TransactionCoordinator.TransactionAudit audit) => _logger.Info(audit.Action, seatId: audit.SeatId, sourceRevision: audit.SourceRevision, destinationRevision: audit.DestinationRevision, backupId: audit.BackupId, transactionId: audit.TransactionId, files: audit.Files, backupOutcome: audit.BackupOutcome, bridgeAction: BridgeAction.Value);
+
+    private void LogTransactionError(TransactionCoordinator.TransactionAudit audit, Exception exception) => _logger.Error(audit.Action, exception, seatId: audit.SeatId, sourceRevision: audit.SourceRevision, destinationRevision: audit.DestinationRevision, backupId: audit.BackupId, transactionId: audit.TransactionId, files: audit.Files, backupOutcome: audit.BackupOutcome, bridgeAction: BridgeAction.Value);
 
     public static DataStore Create()
     {
@@ -232,7 +244,7 @@ internal sealed class DataStore
         }
         draft["assignments"]!["assignments"] = list;
         var item = new JsonObject { ["id"] = id, ["name"] = name, ["createdAt"] = DateTimeOffset.UtcNow.ToString("O"), ["createdBy"] = Environment.UserName, ["baseRevision"] = CurrentRevisionUnlocked(), ["baseVersion"] = real["version"]?.DeepClone(), ["base"] = real.DeepClone(), ["draft"] = draft, ["operations"] = operations, ["undo"] = new JsonArray() };
-        var scenarioList = scenarios["scenarios"]?.AsArray() ?? new JsonArray(); scenarioList.Add(item); scenarios["scenarios"] = scenarioList; StampRevision(scenarios, CurrentRevisionUnlocked()); WriteAtomic(ScenariosPath, scenarios);
+        var scenarioList = scenarios["scenarios"]?.AsArray() ?? new JsonArray(); scenarioList.Add(item); scenarios["scenarios"] = scenarioList; TransactionCoordinator.StampRevision(scenarios, CurrentRevisionUnlocked()); WriteAtomic(ScenariosPath, scenarios);
         _logger.Info("planner.scenario.created", scenarioId: id, count: plan.Proposals.Count);
         return new JsonObject { ["id"] = id, ["scenarioId"] = id, ["planned"] = plan.Proposals.Count };
     });
@@ -259,7 +271,7 @@ internal sealed class DataStore
         var list = scenarios["scenarios"]?.AsArray() ?? new JsonArray();
         list.Add(item);
         scenarios["scenarios"] = list;
-        StampRevision(scenarios, CurrentRevisionUnlocked());
+        TransactionCoordinator.StampRevision(scenarios, CurrentRevisionUnlocked());
         WriteAtomic(ScenariosPath, scenarios);
         return new JsonObject { ["id"] = id, ["scenarioId"] = id };
     });
@@ -275,7 +287,7 @@ internal sealed class DataStore
         if (scenario["isPrimary"]?.GetValue<bool>() == true) throw new InvalidOperationException("El escenario principal no se puede eliminar.");
         Remove(list, item => Text(item?["id"]) == id);
         document["scenarios"] = list;
-        StampRevision(document, CurrentRevisionUnlocked());
+        TransactionCoordinator.StampRevision(document, CurrentRevisionUnlocked());
         WriteAtomic(ScenariosPath, document);
         return new JsonObject { ["deleted"] = id };
     });
@@ -497,7 +509,7 @@ internal sealed class DataStore
         Bump(membership.Document);
         var documents = RealDocuments(state);
         documents[ManagedAreas.FileName] = membership.Document;
-        ExecuteTransactionUnlocked(
+        _transactions.Execute(
             documents,
             RealFiles.Append(ManagedAreas.FileName),
             "Antes de puesto creado en zona",
@@ -529,7 +541,7 @@ internal sealed class DataStore
             MigrateLegacyScenario(scenario, RealStateUnlocked());
             if (!_config.ReadOnly)
             {
-                StampRevision(scenarios, CurrentRevisionUnlocked());
+                TransactionCoordinator.StampRevision(scenarios, CurrentRevisionUnlocked());
                 WriteAtomic(ScenariosPath, scenarios);
             }
         }
@@ -575,7 +587,7 @@ internal sealed class DataStore
         var documents = RealDocuments(real);
         documents["scenarios.json"] = scenarios;
         var scenarioName = Text(scenario["name"]);
-        ExecuteTransactionUnlocked(documents, documents.Keys.Append("events.json"), "Antes de aplicar escenario " + scenarioName, "Escenario aplicado", scenarioName, sourceRevision);
+        _transactions.Execute(documents, documents.Keys.Append("events.json"), "Antes de aplicar escenario " + scenarioName, "Escenario aplicado", scenarioName, sourceRevision);
         return new JsonObject { ["applied"] = selected.Count, ["remaining"] = Diff(baseState, draft, operations).Count };
     });
 
@@ -624,7 +636,7 @@ internal sealed class DataStore
         var restoredMaps = documents.GetValueOrDefault("maps.json") ?? ReadRequired("maps.json");
         var restoredManagedAreas = documents.GetValueOrDefault(ManagedAreas.FileName) ?? ReadOptional(ManagedAreas.FileName) ?? ManagedAreas.EmptyDocument();
         ManagedAreas.Normalize(restoredManagedAreas, restoredMaps);
-        ExecuteTransactionUnlocked(documents, restoredFiles.Union(["events.json"], StringComparer.OrdinalIgnoreCase), "Antes de restaurar " + id, "Backup restaurado", id, CurrentRevisionUnlocked());
+        _transactions.Execute(documents, restoredFiles.Union(["events.json"], StringComparer.OrdinalIgnoreCase), "Antes de restaurar " + id, "Backup restaurado", id, CurrentRevisionUnlocked());
         return new JsonObject { ["ok"] = true };
     });
 
@@ -661,7 +673,7 @@ internal sealed class DataStore
             scenario["undo"] = undo;
             scenario["updatedAt"] = DateTimeOffset.UtcNow.ToString("O");
             scenario["updatedBy"] = Environment.UserName;
-            StampRevision(document, CurrentRevisionUnlocked());
+            TransactionCoordinator.StampRevision(document, CurrentRevisionUnlocked());
             WriteAtomic(ScenariosPath, document);
             return new JsonObject { ["ok"] = true, ["scope"] = "scenario" };
         }
@@ -679,7 +691,7 @@ internal sealed class DataStore
         var documents = LoadBackupDocuments(folder, restoredFiles);
         last["undoneAt"] = DateTimeOffset.UtcNow.ToString("O");
         documents["events.json"] = currentEvents;
-        ExecuteTransactionUnlocked(documents, restoredFiles.Union(["events.json"], StringComparer.OrdinalIgnoreCase), "Antes de deshacer " + Text(last["title"]), "Cambio deshecho", Text(last["title"]), CurrentRevisionUnlocked(), Text(last["id"]));
+        _transactions.Execute(documents, restoredFiles.Union(["events.json"], StringComparer.OrdinalIgnoreCase), "Antes de deshacer " + Text(last["title"]), "Cambio deshecho", Text(last["title"]), CurrentRevisionUnlocked(), Text(last["id"]));
         return new JsonObject { ["ok"] = true, ["scope"] = "real" };
     });
 
@@ -723,7 +735,7 @@ internal sealed class DataStore
                 MigrateLegacyScenario(active, real);
                 if (!_config.ReadOnly)
                 {
-                    StampRevision(scenarios, CurrentRevisionUnlocked());
+                    TransactionCoordinator.StampRevision(scenarios, CurrentRevisionUnlocked());
                     WriteAtomic(ScenariosPath, scenarios);
                 }
             }
@@ -754,7 +766,7 @@ internal sealed class DataStore
         mutation(draft);
         scenario["updatedAt"] = DateTimeOffset.UtcNow.ToString("O");
         scenario["updatedBy"] = Environment.UserName;
-        StampRevision(document, CurrentRevisionUnlocked());
+        TransactionCoordinator.StampRevision(document, CurrentRevisionUnlocked());
         WriteAtomic(ScenariosPath, document);
         return new JsonObject { ["ok"] = true };
     }
@@ -762,7 +774,7 @@ internal sealed class DataStore
     private void CommitRealUnlocked(JsonObject state, string action, string description)
     {
         Bump(state["assignments"]!.AsObject());
-        ExecuteTransactionUnlocked(RealDocuments(state), RealFiles, "Antes de " + action, action, description, CurrentRevisionUnlocked(), seatId: description);
+        _transactions.Execute(RealDocuments(state), RealFiles, "Antes de " + action, action, description, CurrentRevisionUnlocked(), seatId: description);
     }
 
     private JsonObject MutateManagedAreasUnlocked(Func<(JsonObject Document, JsonObject Maps), ManagedAreaMutation> mutation, string eventTitle, string eventDescription)
@@ -773,7 +785,7 @@ internal sealed class DataStore
         if (!result.Changed) return ManagedAreaResult(result, noOp: true);
 
         Bump(result.Document);
-        ExecuteTransactionUnlocked(
+        _transactions.Execute(
             new Dictionary<string, JsonObject>(StringComparer.OrdinalIgnoreCase) { [ManagedAreas.FileName] = result.Document },
             [ManagedAreas.FileName],
             "Antes de " + eventTitle,
@@ -818,60 +830,6 @@ internal sealed class DataStore
         };
     }
 
-    private string ExecuteTransactionUnlocked(Dictionary<string, JsonObject> documents, IEnumerable<string> files, string backupDescription, string eventTitle, string eventDescription, long sourceRevision, string? undoOf = null, string? seatId = null)
-    {
-        var transactionFiles = files.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-        if (transactionFiles.Length == 0 || transactionFiles.Any(file => !TransactionFiles.Contains(file))) throw new InvalidDataException("Conjunto de ficheros de transacción inválido.");
-        if (sourceRevision != CurrentRevisionUnlocked()) throw new InvalidOperationException("La revisión de datos cambió antes de confirmar la operación.");
-        var destinationRevision = checked(sourceRevision + 1);
-        var transactionId = Guid.NewGuid().ToString("N");
-        string? backupId = null;
-        Dictionary<string, string>? temporaries = null;
-        try
-        {
-            backupId = CreateBackupUnlocked(transactionFiles, backupDescription);
-            _logger.Info("transaction.backup", seatId: seatId, sourceRevision: sourceRevision, destinationRevision: destinationRevision, backupId: backupId, transactionId: transactionId, files: transactionFiles, backupOutcome: "created", bridgeAction: BridgeAction.Value);
-            var events = documents.TryGetValue("events.json", out var eventDocument) ? eventDocument : ReadOptional("events.json") ?? New("events");
-            AddEvent(events, eventTitle, eventDescription, backupId, undoOf);
-            documents["events.json"] = events;
-            transactionFiles = transactionFiles.Union(["events.json"], StringComparer.OrdinalIgnoreCase).ToArray();
-            foreach (var file in transactionFiles)
-            {
-                if (!documents.TryGetValue(file, out var document)) throw new InvalidDataException($"Falta el documento transaccional {file}.");
-                StampRevision(document, destinationRevision);
-            }
-
-            temporaries = transactionFiles.ToDictionary(file => file, file => DataPath(file) + "." + transactionId + ".tmp", StringComparer.OrdinalIgnoreCase);
-            foreach (var file in transactionFiles) File.WriteAllText(temporaries[file], documents[file].ToJsonString(JsonOptions));
-            var pending = new JsonObject
-            {
-                ["schemaVersion"] = "1.0",
-                ["transactionId"] = transactionId,
-                ["backupId"] = backupId,
-                ["sourceRevision"] = sourceRevision,
-                ["destinationRevision"] = destinationRevision,
-                ["files"] = new JsonArray(transactionFiles.Select(file => JsonValue.Create(file)).ToArray()),
-                ["createdAt"] = DateTimeOffset.UtcNow.ToString("O"),
-                ["createdBy"] = Environment.UserName
-            };
-            WriteAtomic(PendingPath, pending);
-            foreach (var file in transactionFiles) File.Move(temporaries[file], DataPath(file), true);
-            WriteStateUnlocked(destinationRevision);
-            File.Delete(PendingPath);
-            _logger.Info("transaction.commit", seatId: seatId, sourceRevision: sourceRevision, destinationRevision: destinationRevision, backupId: backupId, transactionId: transactionId, files: transactionFiles, backupOutcome: "committed", bridgeAction: BridgeAction.Value);
-            return backupId;
-        }
-        catch (Exception exception)
-        {
-            _logger.Error("transaction.failed", exception, seatId: seatId, sourceRevision: sourceRevision, destinationRevision: destinationRevision, backupId: backupId, transactionId: transactionId, files: transactionFiles, backupOutcome: backupId is null ? "not-created" : "created", bridgeAction: BridgeAction.Value);
-            throw;
-        }
-        finally
-        {
-            if (temporaries is not null) foreach (var temporary in temporaries.Values) if (File.Exists(temporary)) File.Delete(temporary);
-        }
-    }
-
     private string CreateBackupUnlocked(IEnumerable<string> files, string description)
     {
         var selected = OperationalBackupFiles;
@@ -905,7 +863,7 @@ internal sealed class DataStore
                     else if (string.Equals(file, ManagedAreas.FileName, StringComparison.OrdinalIgnoreCase))
                     {
                         var emptyManagedAreas = ManagedAreas.EmptyDocument();
-                        StampRevision(emptyManagedAreas, CurrentRevisionUnlocked());
+                        TransactionCoordinator.StampRevision(emptyManagedAreas, CurrentRevisionUnlocked());
                         WriteZipJson(archive, file, emptyManagedAreas);
                     }
                 }
@@ -922,88 +880,6 @@ internal sealed class DataStore
         {
             if (File.Exists(temporaryPath)) File.Delete(temporaryPath);
         }
-    }
-
-    private void RecoverPendingUnlocked()
-    {
-        if (!File.Exists(PendingPath)) return;
-        JsonObject? pending = null;
-        try { pending = JsonNode.Parse(File.ReadAllText(PendingPath))?.AsObject(); }
-        catch (JsonException) { }
-        var backupId = pending is null ? "desconocido" : Text(pending["backupId"]);
-        var transactionId = pending is null ? null : Text(pending["transactionId"]);
-        if (_config.ReadOnly)
-        {
-            _logger.Info("recovery.pending", backupId: backupId, transactionId: transactionId, backupOutcome: "read-only-blocked");
-            throw new InvalidOperationException($"Hay una recuperación pendiente del backup {backupId}. Un usuario con permisos de escritura debe abrir la aplicación para completarla o restaurarla antes de continuar.");
-        }
-        if (pending is null || !TryPending(pending, out var files, out var source, out var destination, out backupId))
-        {
-            _logger.Info("recovery.invalid", backupId: backupId, transactionId: transactionId, backupOutcome: "manual-intervention-required");
-            throw new InvalidOperationException($"No se pudo recuperar la transacción pendiente. Backup requerido: {backupId}. Un operador debe comprobar la copia de seguridad y restaurar una copia válida antes de abrir los datos.");
-        }
-        var folder = BackupPath(backupId);
-        if (!BackupExists(folder) || !BackupContainsFiles(folder, files))
-        {
-            _logger.Info("recovery.backup-missing", sourceRevision: source, destinationRevision: destination, backupId: backupId, transactionId: transactionId, files: files, backupOutcome: "manual-intervention-required");
-            throw new InvalidOperationException($"No se pudo recuperar la transacción pendiente. Backup requerido: {backupId}. Un operador debe comprobar la copia de seguridad y restaurar una copia válida antes de abrir los datos.");
-        }
-
-        var revisions = files.Select(file => ReadRevision(DataPath(file))).ToArray();
-        var stateRevision = CurrentRevisionUnlocked();
-        if (revisions.All(revision => revision == destination))
-        {
-            WriteStateUnlocked(destination);
-            CleanupPending(files, Text(pending["transactionId"]));
-            _logger.Info("recovery.confirmed", sourceRevision: source, destinationRevision: destination, backupId: backupId, transactionId: transactionId, files: files, backupOutcome: "confirmed");
-            return;
-        }
-        if (revisions.All(revision => revision != destination) && stateRevision == source)
-        {
-            CleanupPending(files, Text(pending["transactionId"]));
-            _logger.Info("recovery.discarded", sourceRevision: source, destinationRevision: destination, backupId: backupId, transactionId: transactionId, files: files, backupOutcome: "discarded");
-            return;
-        }
-
-        var documents = LoadBackupDocuments(folder, files);
-        foreach (var document in documents.Values) StampRevision(document, destination);
-        var eventDocument = documents.TryGetValue("events.json", out var backedEvents) ? backedEvents : ReadOptional("events.json") ?? New("events");
-        AddEvent(eventDocument, "Recuperación revertida", backupId, backupId, null, "reverted", source, destination);
-        StampRevision(eventDocument, destination);
-        documents["events.json"] = eventDocument;
-        foreach (var (file, document) in documents) WriteAtomic(DataPath(file), document);
-        if (Directory.Exists(folder))
-        {
-            var manifestPath = Path.Combine(folder, "manifest.json");
-            var manifest = ReadJson(manifestPath) ?? new JsonObject { ["id"] = backupId };
-            manifest["recovery"] = "reverted";
-            manifest["sourceRevision"] = source;
-            manifest["destinationRevision"] = destination;
-            WriteAtomic(manifestPath, manifest);
-        }
-        WriteStateUnlocked(destination);
-        CleanupPending(files, Text(pending["transactionId"]));
-        _logger.Info("recovery.reverted", sourceRevision: source, destinationRevision: destination, backupId: backupId, transactionId: transactionId, files: files, backupOutcome: "reverted");
-    }
-
-    private void CleanupPending(IEnumerable<string> files, string transactionId)
-    {
-        foreach (var file in files)
-        {
-            var temporary = DataPath(file) + "." + transactionId + ".tmp";
-            if (File.Exists(temporary)) File.Delete(temporary);
-        }
-        if (File.Exists(PendingPath)) File.Delete(PendingPath);
-    }
-
-    private static bool TryPending(JsonObject pending, out string[] files, out long source, out long destination, out string backupId)
-    {
-        files = pending["files"]?.AsArray().Select(Text).Distinct(StringComparer.OrdinalIgnoreCase).ToArray() ?? [];
-        source = 0;
-        destination = 0;
-        backupId = Text(pending["backupId"]);
-        var valid = Guid.TryParseExact(Text(pending["transactionId"]), "N", out _) && IsBackupId(backupId) && TryRevision(pending["sourceRevision"], out source) && TryRevision(pending["destinationRevision"], out destination) && destination == source + 1 && files.Length > 0 && files.All(TransactionFiles.Contains);
-        return valid;
     }
 
     private IEnumerable<(string Id, string Container, JsonObject Manifest, bool Legacy)> BackupContainersUnlocked()
@@ -1142,7 +1018,7 @@ internal sealed class DataStore
         {
             using var heldLock = AcquireLock();
             EnsureStateUnlocked();
-            RecoverPendingUnlocked();
+            _transactions.RecoverPending();
             return operation();
         }
         catch (Exception exception)
@@ -1560,13 +1436,6 @@ internal sealed class DataStore
         return JsonSerializer.Deserialize<T>(payload.ToJsonString(), JsonOptions) ?? throw new InvalidDataException($"Payload inválido en {action}.");
     }
 
-    private static void AddEvent(JsonObject document, string action, string description, string? backupId = null, string? undoOf = null, string? recovery = null, long? sourceRevision = null, long? destinationRevision = null)
-    {
-        var list = document["events"]?.AsArray() ?? new JsonArray();
-        var item = new JsonObject { ["id"] = Guid.NewGuid().ToString("N"), ["title"] = action, ["description"] = description, ["backupId"] = backupId, ["undoOf"] = undoOf, ["createdAt"] = DateTimeOffset.UtcNow.ToString("O"), ["createdBy"] = Environment.UserName };
-        if (recovery is not null) { item["recovery"] = recovery; item["sourceRevision"] = sourceRevision; item["destinationRevision"] = destinationRevision; }
-        list.Add(item); document["events"] = list;
-    }
     private JsonObject ReadRequired(string name) => ReadOptional(name) ?? throw new FileNotFoundException($"Falta {name}.");
     private JsonObject? ReadOptional(string name) => ReadJson(DataPath(name));
     private static JsonObject? ReadJson(string path) => File.Exists(path) ? JsonNode.Parse(File.ReadAllText(path))?.AsObject() : null;
@@ -1590,7 +1459,6 @@ internal sealed class DataStore
         File.Move(temporary, path, true);
     }
     private static void Bump(JsonObject value) { value["version"] = (value["version"]?.GetValue<int>() ?? 0) + 1; value["updatedAt"] = DateTimeOffset.UtcNow.ToString("O"); value["updatedBy"] = Environment.UserName; }
-    private static void StampRevision(JsonObject document, long revision) => document["stateRevision"] = revision;
     private static bool TryRevision(JsonNode? node, out long revision)
     {
         revision = 0;
