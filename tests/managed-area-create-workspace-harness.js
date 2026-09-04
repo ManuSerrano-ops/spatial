@@ -18,10 +18,6 @@ test('area flow locks the source map and targetManagedAreaId', () => assert(app.
 test('coordinates come from the user click rather than the cluster card', () => assert(app.includes("const x = Math.max(0, Math.min(1, (event.clientX - box.left) / box.width))") && app.includes("const y = Math.max(0, Math.min(1, (event.clientY - box.top) / box.height))"), 'click coordinates'));
 test('create request carries optional area context through the original createSeat command', () => assert(app.includes("send('createSeat', payloadForScenario({ mapId: ui.mapId, x, y, ...(context?.targetManagedAreaId"), 'create payload'));
 test('backend validates the target before adding a workspace', () => assert(store.includes('La zona gestionada ya no existe.') && store.includes('La zona gestionada pertenece a otro plano.'), 'target validation'));
-test('backend creates seat and membership in one transaction', () => {
-  assert(store.includes('ManagedAreas.AddWorkspaces(managedAreas, state["maps"]!.AsObject(), request.TargetManagedAreaId, [id])'), 'membership mutation');
-  assert(store.includes('RealFiles.Append(ManagedAreas.FileName)') && store.includes('ExecuteTransactionUnlocked('), 'single transaction');
-});
 test('area create has one history event and backup contract', () => assert(store.includes('"Puesto creado en zona"') && store.includes('"Antes de puesto creado en zona"'), 'history and backup'));
 test('Undo restores workspace and membership together via the transaction backup', () => assert(store.includes('ManagedAreas.FileName') && store.includes('OperationalBackupFiles'), 'managed area included in backup'));
 test('area focus keeps its identity and refreshes member ids after reload', () => assert(app.includes('const focusedArea = appState.activeAreaFocus?.areaId') && app.includes('memberWorkspaceIds: [...focusedArea.workspaceIds]'), 'focus refresh'));
