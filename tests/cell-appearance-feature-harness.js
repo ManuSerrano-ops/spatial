@@ -1,6 +1,7 @@
 'use strict';
 
-const assert = require('assert');
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const { createCellAppearanceFeature } = require('../Resources/js/features/map/cell-appearance-feature.js');
 
 function createStorage(values = {}, options = {}) {
@@ -25,8 +26,6 @@ function createFeature({ state = { gridCellAppearances: {}, cellDetail: null }, 
   };
 }
 
-const tests = [];
-const test = (name, run) => tests.push({ name, run });
 
 test('uses the historical compact appearance defaults', () => {
   const { feature } = createFeature();
@@ -78,10 +77,3 @@ test('treats local storage writes as best effort', () => {
   const { feature } = createFeature({ storage: createStorage({}, { failWrite: true }) });
   assert.doesNotThrow(() => feature.updateFor('M1', 'C1', { offsetX: 1 }));
 });
-
-let passed = 0;
-for (const item of tests) {
-  try { item.run(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Cell appearance feature harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

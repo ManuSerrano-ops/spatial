@@ -12,10 +12,9 @@ try {
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }
 
-    Get-ChildItem -Path 'tests' -Filter '*harness.js' | Sort-Object Name | ForEach-Object {
-        & node $_.FullName
-        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    }
+    $harnesses = @(Get-ChildItem -Path 'tests' -Filter '*harness.js' | Sort-Object Name)
+    & node --test $harnesses.FullName
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
     & python 'tests/test_light_maps.py'
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

@@ -3,9 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 const helpers = require('../Resources/js/features/selection/bulk-selection-helpers.js');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 const workspace = (workspaceId, effectiveState, type = 'legacy-drawing-value') => ({ workspaceId, effectiveState, type });
 const mixed = [workspace('F-1', 'free'), workspace('F-2', 'free'), workspace('R-1', 'reserved'), workspace('O-1', 'occupied'), workspace('F-3', 'free')];
@@ -40,7 +39,3 @@ test('deterministic result', () => equal(reserveEligibility(), reserveEligibilit
 test('input and outputs are immutable', () => { const input = structuredClone(mixed); const before = snapshot(input); const result = reserveEligibility(input); assert(Object.isFrozen(result) && Object.isFrozen(result.eligible) && Object.isFrozen(result.reasons), 'output is frozen'); equal(snapshot(input), before, 'input is untouched'); });
 
 function buildCount(values) { return reserveEligibility(values).eligibleCount; }
-let passed = 0;
-for (const { name, fn } of tests) { try { fn(); passed++; } catch (error) { console.error(`FAIL: ${name}: ${error.message}`); } }
-console.log(`Bulk selection harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

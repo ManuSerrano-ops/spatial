@@ -4,9 +4,8 @@ const path = require('path');
 const vm = require('vm');
 const helpers = require('../Resources/js/features/managed-areas/cluster-card-shape-helpers.js');
 
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 
 test('normalizes every supported shape and falls back to automatic', () => {
@@ -62,9 +61,3 @@ test('exports the same API to browser window', () => {
 
 test('manual edit mode exposes a resize handle only while active', () => { const app = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'js', 'core', 'app.js'), 'utf8'); const css = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'app.css'), 'utf8'); assert(app.includes("ui.cardEdit?.active && ui.cardEdit.areaId === area.id"), 'active edit guard'); assert(app.includes("handle.className = 'cluster-resize-handle'"), 'resize handle'); assert(app.includes('handle.setPointerCapture(event.pointerId)'), 'pointer capture'); assert(css.includes('.cluster-resize-handle'), 'handle style'); });
 test('save, cancel and reset retain presentation-only layout', () => { const app = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'js', 'core', 'app.js'), 'utf8'); assert(app.includes('function cancelClusterCardEdit()'), 'cancel'); assert(app.includes('function resetClusterCardEditToAutomatic()'), 'reset'); assert(app.includes('function commitClusterCardEdit()'), 'save'); assert(app.includes('saveClusterCardShapes()'), 'persistence'); });
-let passed = 0;
-for (const item of tests) {
-  try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Cluster card shape harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

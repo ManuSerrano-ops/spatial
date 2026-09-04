@@ -6,9 +6,8 @@ const edit = require('../Resources/js/features/managed-areas/cluster-card-edit-h
 const presentation = require('../Resources/js/shared/workspace/workspace-presentation-helpers.js');
 const app = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'js', 'core', 'app.js'), 'utf8');
 const css = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'app.css'), 'utf8');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 const normalizeShape = value => ['automatic', 'compact', 'square', 'vertical'].includes(value) ? value : 'automatic';
 const people = count => Array.from({ length: count }, (_, index) => ({ workspaceId: `W-${index + 1}`, displayLocation: `G-${String(index + 1).padStart(2, '0')}`, currentPersonId: `p-${index + 1}`, currentPerson: `Persona ${index + 1}` }));
@@ -82,8 +81,3 @@ test('cluster title reserves the agreed visible-name minimum without direct acti
   assert(!css.includes('.cluster-card-actions') && !css.includes('.cluster-card-action'), 'direct-action CSS remains');
   assert(css.includes('min-width: calc(var(--cluster-card-name-min-width) + var(--cluster-card-header-chrome))'), 'CSS does not enforce title minimum');
 });
-
-let passed = 0;
-for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } }
-console.log(`Cluster card content harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

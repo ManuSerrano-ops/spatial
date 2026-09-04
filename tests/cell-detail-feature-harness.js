@@ -1,6 +1,7 @@
 'use strict';
 
-const assert = require('assert');
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const { createCellDetailFeature } = require('../Resources/js/features/map/cell-detail-feature.js');
 
 function createElement() {
@@ -37,8 +38,6 @@ function createHarness({ cellDetail = { mapId: 'M1', cellId: 'C1' }, selected = 
   return { cell, elements, feature, shown, state, ui };
 }
 
-const tests = [];
-const test = (name, run) => tests.push({ name, run });
 
 test('hides the cell section and clears stale state when the cell no longer exists', () => {
   const { feature, elements, state } = createHarness({ cellDetail: { mapId: 'missing', cellId: 'C1' } });
@@ -88,10 +87,3 @@ test('renders a generic cell title when no custom name exists', () => {
 test('exposes only cell detail rendering', () => {
   assert.deepStrictEqual(Object.keys(createHarness().feature), ['render']);
 });
-
-let passed = 0;
-for (const item of tests) {
-  try { item.run(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Cell detail feature harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

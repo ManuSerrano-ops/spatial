@@ -4,7 +4,8 @@ const path = require('path');
 const app = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'js', 'core', 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'index.html'), 'utf8');
 const engine = fs.readFileSync(path.join(__dirname, '..', 'src', 'Domain', 'Analytics', 'SpatialAnalyticsEngine.cs'), 'utf8');
-const tests = []; const test = (name, fn) => tests.push({ name, fn }); const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 
 test('analytics uses configured maps rather than workspace groups', () => {
   assert(engine.includes('maps["maps"]'), 'configured map registry is not used');
@@ -36,5 +37,3 @@ test('analytics problems reuse semantic problem rows and table formatting travel
   assert(css.includes('.analytics-table th, .analytics-table td'), 'cell formatting remains tied to scroll container');
   assert(!css.includes('.analytics-table-scroll th, .analytics-table-scroll td'), 'scroll container still owns table formatting');
 });
-let passed = 0; for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } }
-console.log(`Analytics final harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`); process.exitCode = passed === tests.length ? 0 : 1;
