@@ -138,6 +138,49 @@ public sealed class ManagedAreasTests
 }
 
 [Fact]
+    public void CreateWorkspaceRejectsTargetAreaOnAnotherMapWithoutWrites()
+{
+    using var fixture = new Fixture();
+    fixture.Create("north-a", "north", "Finance", "N-1");
+    var hashes = fixture.DataHashes();
+    var backups = fixture.DirectBackupCount;
+    var events = fixture.ReadData("events.json");
+
+    var error = Record.Exception(() => fixture.Bridge.Dispatch("createSeat", new JsonObject
+    {
+        ["mapId"] = "south", ["x"] = .4, ["y"] = .4, ["targetManagedAreaId"] = "north-a"
+    }))?.Message ?? "Operation did not fail.";
+
+    Assert.Contains("pertenece a otro plano", error, StringComparison.OrdinalIgnoreCase);
+    TestAssertions.EqualHashes(hashes, fixture.DataHashes(), "A cross-map area target creates neither workspace nor membership.");
+    Assert.Equal(backups, fixture.DirectBackupCount);
+    TestAssertions.EqualJson(events, fixture.ReadData("events.json"), "A rejected cross-map target creates no history event.");
+    Assert.Equal(["N-1"], WorkspaceIds(Area(fixture.ReadManagedAreas(), "north-a")));
+}
+
+[Fact]
+    public void CreateWorkspaceInAreaRejectsScenarioWithoutWrites()
+{
+    using var fixture = new Fixture();
+    fixture.Create("north-a", "north", "Finance", "N-1");
+    var scenarioId = Text(fixture.Store.CreateScenario(new JsonObject { ["name"] = "Área en escenario" })["scenarioId"]);
+    var hashes = fixture.DataHashes();
+    var backups = fixture.DirectBackupCount;
+    var events = fixture.ReadData("events.json");
+
+    var error = Record.Exception(() => fixture.Bridge.Dispatch("createSeat", new JsonObject
+    {
+        ["mapId"] = "north", ["x"] = .4, ["y"] = .4, ["scenarioId"] = scenarioId, ["targetManagedAreaId"] = "north-a"
+    }))?.Message ?? "Operation did not fail.";
+
+    Assert.Contains("no se puede crear un puesto dentro de una zona gestionada desde un escenario", error, StringComparison.OrdinalIgnoreCase);
+    TestAssertions.EqualHashes(hashes, fixture.DataHashes(), "A scenario area target creates neither workspace nor membership.");
+    Assert.Equal(backups, fixture.DirectBackupCount);
+    TestAssertions.EqualJson(events, fixture.ReadData("events.json"), "A rejected scenario area target creates no history event.");
+    Assert.Equal(["N-1"], WorkspaceIds(Area(fixture.ReadManagedAreas(), "north-a")));
+}
+
+[Fact]
     public void ManualClusterCreationMovesConflictingMembershipsAtomically()
 {
     using var fixture = new Fixture();
@@ -251,8 +294,10 @@ sealed class Fixture : IDisposable
 
     internal string ManagedAreasPath => Path.Combine(_data, "managed-areas.json");
     internal int BackupCount => Store.GetBackups()["backups"]?.AsArray().Count ?? 0;
+    internal int DirectBackupCount => Directory.Exists(Path.Combine(_root, "backups", "spatial-git")) ? Directory.EnumerateFileSystemEntries(Path.Combine(_root, "backups", "spatial-git")).Count() : 0;
     internal DataStore NewStore() => DataStore.FromConfig(new AppConfig { NetworkRoot = _root, DataFolder = "data", BackupFolder = "backups", LogsFolder = "logs", BackupRetentionMode = "disabled" });
     internal JsonObject ReadManagedAreas() => JsonNode.Parse(File.ReadAllText(ManagedAreasPath))?.AsObject() ?? throw new InvalidOperationException("managed-areas.json is invalid.");
+    internal JsonObject ReadData(string name) => JsonNode.Parse(File.ReadAllText(Path.Combine(_data, name)))?.AsObject() ?? throw new InvalidOperationException($"{name} is invalid.");
     internal IReadOnlyDictionary<string, string> DataHashes() => Directory.EnumerateFiles(_data).Where(path => Path.GetExtension(path) == ".json").OrderBy(path => path, StringComparer.Ordinal).ToDictionary(path => Path.GetFileName(path), path => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))), StringComparer.Ordinal);
         internal IReadOnlyDictionary<string, string> FileHashes(params string[] names) => names.OrderBy(name => name, StringComparer.Ordinal).ToDictionary(name => name, name => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(_data, name)))), StringComparer.Ordinal);
     internal JsonObject Create(string id, string mapId, string name, params string[] workspaceIds) => Store.CreateManagedArea(new JsonObject { ["id"] = id, ["mapId"] = mapId, ["name"] = name, ["workspaceIds"] = new JsonArray(workspaceIds.Select(workspaceId => (JsonNode?)workspaceId).ToArray()) });
