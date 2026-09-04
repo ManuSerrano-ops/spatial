@@ -1,9 +1,8 @@
 'use strict';
 
 const helpers = require('../Resources/js/features/scenarios/scenario-compare-helpers.js');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const equal = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) {
     throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`);
@@ -60,11 +59,3 @@ test('ordering follows first operation occurrence', () => equal(units([independe
 test('same input produces same output', () => equal(units([modernSource, modernDestination, independent]), units([modernSource, modernDestination, independent]), 'deterministic result'));
 test('input is not mutated', () => { const input = [modernSource, modernDestination]; const snapshot = JSON.stringify(input); const result = units(input); assert(Object.isFrozen(result) && Object.isFrozen(result[0]) && Object.isFrozen(result[0].memberChangeIds), 'output contract is frozen'); equal(JSON.stringify(input), snapshot, 'input snapshot stays unchanged'); });
 test('duplicate workspace technical IDs across maps do not misgroup', () => { const north = change('seat|norte|shared-id', { operationId: 'move-norte', atomic: true, type: 'movement', entityType: 'workspace', entityId: 'shared-id', mapId: 'norte', before: { personId: 'north-person' } }); const south = change('seat|sur|shared-id', { operationId: 'move-sur', atomic: true, type: 'movement', entityType: 'workspace', entityId: 'shared-id', mapId: 'sur', before: { personId: 'south-person' } }); const result = units([north, south]); equal(result.map(unit => unit.unitId), ['movement|move-norte', 'movement|move-sur'], 'only operationId controls grouping'); equal(helpers.flattenSelectedCompareUnits(result, result.map(unit => unit.unitId)), ['seat|norte|shared-id', 'seat|sur|shared-id'], 'map-qualified member IDs remain distinct'); });
-
-let passed = 0;
-for (const { name, fn } of tests) {
-  try { fn(); passed++; }
-  catch (error) { console.error(`FAIL: ${name}: ${error.message}`); }
-}
-console.log(`Scenario compare units harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

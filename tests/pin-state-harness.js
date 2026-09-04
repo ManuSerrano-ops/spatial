@@ -4,9 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { derivePinPresentation } = require('../Resources/js/features/map/pin-state-helpers.js');
 
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const present = input => derivePinPresentation({ displayLocation: 'F-08', ...input });
 
 test('free business state', () => assert(present({ businessState: 'free' }).businessState === 'free', 'free state missing'));
@@ -31,11 +30,3 @@ test('aria label includes maximum problem severity', () => assert(present({ prob
 test('output is deterministic', () => { const input = { businessState: 'occupied', selected: true, problemSeverity: 'warning', displayLocation: 'D-04' }; assert(JSON.stringify(derivePinPresentation(input)) === JSON.stringify(derivePinPresentation(input)), 'presentation is not deterministic'); });
 test('input is not mutated', () => { const input = { businessState: 'reserved', qualityState: 'partial', nested: { keep: true } }; const before = JSON.stringify(input); derivePinPresentation(input); assert(JSON.stringify(input) === before, 'input was mutated'); });
 test('CSS keeps fills, overlays and focus separate', () => { const css = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'app.css'), 'utf8'); assert(css.includes('.pin[data-state="occupied"]'), 'business state CSS missing'); assert(css.includes('.pin[data-problem="critical"]'), 'problem overlay CSS missing'); assert(css.includes('.pin[data-planner="blocked"]'), 'planner CSS missing'); assert(css.includes('.pin:focus-visible'), 'focus-visible CSS missing'); assert(css.includes('.problem-symbol') && css.includes('.planner-symbol'), 'contextual states need symbols in addition to color'); assert(!/data-selected="true"\]\s*\{[^}]*background/i.test(css), 'selected must not overwrite business fill'); assert(!/data-problem="critical"[^}]*\{[^}]*background/i.test(css), 'problem must not overwrite business fill'); assert(!css.includes('.pin.occupied.complete'), 'legacy combined pin selector remains'); });
-
-let passed = 0;
-for (const { name, fn } of tests) {
-  try { fn(); passed++; }
-  catch (error) { console.error(`FAIL: ${name}: ${error.message}`); }
-}
-console.log(`pin-state-harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

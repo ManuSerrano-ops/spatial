@@ -1,7 +1,6 @@
 'use strict';
 const helpers = require('../Resources/js/shared/interaction/rectangle-selection-helpers.js');
-let passed = 0;
-const test = (name, fn) => { try { fn(); passed++; } catch (error) { console.error(`FAIL: ${name}: ${error.message}`); } };
+const test = require('node:test');
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}; expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`); };
 const seats = [{ id: 'inside', x: .5, y: .5 }, { id: 'edge', x: .2, y: .2 }, { id: 'outside', x: .8, y: .8 }, { id: 'hidden', x: .4, y: .4 }];
 const ids = (start, end, visible = () => true) => helpers.selectByCenter(seats, start, end, visible).map(seat => seat.id);
@@ -19,5 +18,3 @@ test('current map only is caller scoped', () => equal(helpers.selectByCenter([{ 
 test('hidden filtered pins excluded', () => equal(ids({ x: .1, y: .1 }, { x: .6, y: .6 }, seat => seat.id !== 'hidden'), ['inside', 'edge'], 'visibility predicate'));
 test('deterministic', () => equal(ids({ x: .1, y: .1 }, { x: .6, y: .6 }), ids({ x: .1, y: .1 }, { x: .6, y: .6 }), 'same result'));
 test('no mutation', () => { const before = JSON.stringify(seats); ids({ x: .1, y: .1 }, { x: .6, y: .6 }); equal(JSON.stringify(seats), before, 'input changed'); });
-console.log(`rectangle-selection-harness: ${passed}/14 passed, ${14 - passed} failed`);
-process.exitCode = passed === 14 ? 0 : 1;

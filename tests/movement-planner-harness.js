@@ -1,7 +1,6 @@
 'use strict';
 const helpers = require('../Resources/js/features/movement-planner/movement-planner-helpers.js');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
+const test = require('node:test');
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 const locations = { 'N-01': { displayLocation: 'B-12' }, 'N-02': { displayLocation: 'F-08' }, 'N-03': { displayLocation: 'B-13' }, 'N-04': { displayLocation: 'D-08' } };
 
@@ -28,8 +27,3 @@ test('review summary', () => equal(helpers.reviewSummary({ proposals: [{ related
 test('creation request serialization', () => equal(helpers.serializeCreationRequest(' Plan de movimiento ', [{ sourceWorkspaceId: 'N-01', destinationWorkspaceId: 'N-02' }]), { name: 'Plan de movimiento', requests: [{ sourceWorkspaceId: 'N-01', destinationWorkspaceId: 'N-02' }] }, 'Creation request keeps technical IDs'));
 test('display location is presentation order only', () => { const pair = helpers.buildPairs(['N-01'], ['N-02'], [], locations).pairs[0]; equal(pair, { sourceWorkspaceId: 'N-01', destinationWorkspaceId: 'N-02' }, 'Technical identity is never replaced by display location'); });
 test('state vocabulary is bounded', () => { ['idle', 'selectingSources', 'selectingDestinations', 'planning', 'review', 'creatingScenario', 'error'].forEach(state => { if (!helpers.states.has(state)) throw new Error(`Missing ${state}`); }); });
-
-let passed = 0;
-for (const { name, fn } of tests) { try { fn(); passed++; } catch (error) { console.error(`FAIL: ${name}: ${error.message}`); } }
-console.log(`MovementPlanner frontend harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

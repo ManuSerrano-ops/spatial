@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const helpers = require('../Resources/js/features/map/map-density-helpers.js');
-const tests = []; const test = (name, fn) => tests.push({ name, fn }); const assert = (value, message) => { if (!value) throw new Error(message); }; const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
+const test = require('node:test'); const assert = require('node:assert/strict'); const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 const grid = { columns: 24, rows: 18 };
 const nearby = [{ id: 'A', x: .4, y: .4 }, { id: 'B', x: .401, y: .401 }, { id: 'C', x: .402, y: .402 }];
 const build = options => helpers.buildMapDensityPresentation({ mapId: 'sur', workspaces: nearby, grid, viewport: { width: 800, height: 500 }, pinDiameter: 20, pinMargin: 7, ...options });
@@ -17,5 +17,3 @@ test('presentation remains deterministic and immutable', () => { const before = 
 test('grid cells remain available as non-cluster metadata', () => equal(helpers.buildGridCells({ mapId: 'sur', workspaces: nearby, grid })[0].composition.total, 3, 'cell composition'));
 test('focus presentation remains available for manual cluster focus', () => equal([helpers.deriveMapFocusPresentation({ workspace: {}, hasAreaFocus: true, areaFocused: true }), helpers.deriveMapFocusPresentation({ workspace: {}, hasAreaFocus: true })], ['highlighted', 'dimmed'], 'focus'));
 test('frontend does not invoke automatic density presentation', () => { const app = fs.readFileSync(path.join(__dirname, '..', 'Resources', 'js', 'core', 'app.js'), 'utf8'); assert(!app.includes('buildMapDensityPresentation({'), 'automatic density renderer'); assert(app.includes('renderManagedAreaCards'), 'manual card renderer'); });
-let passed = 0; for (const item of tests) { try { item.fn(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); } }
-console.log(`Map density harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`); process.exitCode = passed === tests.length ? 0 : 1;

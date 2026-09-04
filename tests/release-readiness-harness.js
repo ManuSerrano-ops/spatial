@@ -6,9 +6,8 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const resources = path.join(root, 'Resources');
 const data = path.join(root, 'runtime-data', 'data');
-const tests = [];
-const test = (name, fn) => tests.push({ name, fn });
-const assert = (value, message) => { if (!value) throw new Error(message); };
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const read = file => fs.readFileSync(file, 'utf8');
 const cell = (x, y) => {
   const column = Math.max(0, Math.min(23, Math.floor(Number(x) * 24)));
@@ -94,11 +93,3 @@ test('display location collisions are reported from the current working data', (
   console.log(`Display location collisions: ${collisions.length}`);
   assert(Array.isArray(collisions), 'collision report was not generated');
 });
-
-let passed = 0;
-for (const { name, fn } of tests) {
-  try { fn(); passed++; }
-  catch (error) { console.error(`FAIL: ${name}: ${error.message}`); }
-}
-console.log(`Release readiness static harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;

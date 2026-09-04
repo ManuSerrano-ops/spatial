@@ -1,6 +1,7 @@
 'use strict';
 
-const assert = require('assert');
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const { createSelectionControllerFeature } = require('../Resources/js/features/selection/selection-controller-feature.js');
 
 function createHarness({ canActivate = true, selected = [] } = {}) {
@@ -34,8 +35,6 @@ function createHarness({ canActivate = true, selected = [] } = {}) {
   return { attributes, classState, dialogClosed: () => dialogClosed, events, feature, selectionButton, state, ui };
 }
 
-const tests = [];
-const test = (name, run) => tests.push({ name, run });
 
 test('activates selection mode and exposes its accessible visual state', () => {
   const { feature, ui, classState, attributes, selectionButton } = createHarness();
@@ -108,10 +107,3 @@ test('deselects one workspace and retains the other selected workspaces', () => 
 test('exposes only selection controller responsibilities', () => {
   assert.deepStrictEqual(Object.keys(createHarness().feature).sort(), ['clearBulkSelection', 'clearWorkspaceSelection', 'deselectSelectedWorkspace', 'markBulkSelectionChanged', 'setMode', 'updateMultiSelection']);
 });
-
-let passed = 0;
-for (const item of tests) {
-  try { item.run(); passed++; } catch (error) { console.error(`FAIL: ${item.name}: ${error.message}`); }
-}
-console.log(`Selection controller feature harness: ${passed}/${tests.length} passed, ${tests.length - passed} failed`);
-process.exitCode = passed === tests.length ? 0 : 1;
