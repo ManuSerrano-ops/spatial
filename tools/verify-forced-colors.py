@@ -32,7 +32,10 @@ def pin_style_script() -> str:
         document.documentElement.dataset.mapAppearance = appearance;
         const properties = ['backgroundColor', 'borderColor', 'borderStyle', 'borderRadius', 'borderWidth', 'color'];
         const styleFor = element => Object.fromEntries(properties.map(property => [property, getComputedStyle(element)[property]]));
+        const qualityPinStyleFor = element => ({ color: getComputedStyle(element, '::before').borderColor, style: getComputedStyle(element, '::before').borderStyle, width: getComputedStyle(element, '::before').borderWidth });
+        const qualityLegendStyleFor = element => ({ color: getComputedStyle(element).outlineColor, style: getComputedStyle(element).outlineStyle, width: getComputedStyle(element).outlineWidth });
         const legendFor = state => document.querySelector(`.legend-marker.state-${state}`);
+        const qualityLegendFor = quality => document.querySelector(`.legend-marker.quality-${quality}`);
         const states = ['free', 'occupied', 'reserved'];
         const candidates = [...document.querySelectorAll('.pin')];
         const used = new Set();
@@ -40,12 +43,21 @@ def pin_style_script() -> str:
           const pin = candidates.find(candidate => candidate.dataset.state === state && !used.has(candidate))
             || candidates.find(candidate => !used.has(candidate));
           used.add(pin);
+          pin.style.transition = 'none';
           pin.dataset.forcedColorsSample = state;
           pin.dataset.state = state;
         });
         const pinFor = state => document.querySelector(`.pin[data-forced-colors-sample="${state}"]`);
+        const qualityPins = { complete: pinFor('free'), partial: pinFor('occupied') };
+        qualityPins.complete.classList.add('complete');
+        qualityPins.complete.dataset.quality = 'complete';
+        qualityPins.partial.classList.add('partial');
+        qualityPins.partial.dataset.quality = 'incomplete';
         const pins = Object.fromEntries(states.map(state => [state, styleFor(pinFor(state))]));
         const legend = Object.fromEntries(states.map(state => [state, styleFor(legendFor(state))]));
+        const qualities = Object.fromEntries(Object.entries(qualityPins).map(([quality, pin]) => [quality, {
+          pin: qualityPinStyleFor(pin), legend: qualityLegendStyleFor(qualityLegendFor(quality)), symbolDisplay: getComputedStyle(pin.querySelector('.quality-symbol')).display
+        }]));
         const occupied = pinFor('occupied');
         document.activeElement?.blur();
         const beforeFocus = {
@@ -84,7 +96,7 @@ def pin_style_script() -> str:
           SelectedItemText: resolveSystemColor('color', 'SelectedItemText'),
           Highlight: resolveSystemColor('backgroundColor', 'Highlight')
         };
-        return { pins, legend, beforeFocus, focused, systemColors };
+        return { pins, legend, qualities, beforeFocus, focused, systemColors };
       }
     """
 
@@ -102,6 +114,17 @@ def assert_legend_matches(result: dict[str, Any], context: str) -> None:
                 f"La leyenda {state} no coincide con el pin en {context}: "
                 f"{result['legend'][state]} != {result['pins'][state]}"
             )
+
+
+def assert_quality_halos(result: dict[str, Any], context: str) -> None:
+    canvas_text = result["systemColors"]["CanvasText"]
+    for quality, sample in result["qualities"].items():
+        if sample["pin"]["color"] != canvas_text or sample["pin"]["style"] == "none" or sample["pin"]["width"] == "0px":
+            raise AssertionError(f"El halo {quality} desaparece en forced-colors en {context}: {sample}")
+        if sample["legend"]["color"] != canvas_text or sample["legend"]["style"] == "none" or sample["legend"]["width"] == "0px":
+            raise AssertionError(f"La leyenda de calidad {quality} no coincide con el halo del pin en {context}: {sample}")
+    if result["qualities"]["partial"]["symbolDisplay"] == "none":
+        raise AssertionError(f"El pin incompleto perdió el símbolo '!' en forced-colors en {context}.")
 
 
 def assert_focus_visible(result: dict[str, Any], context: str) -> None:
@@ -166,6 +189,9 @@ def assert_combination_equivalence(results: list[tuple[str, str, dict[str, Any]]
                             f"{family} {state}.{property_name} difiere del baseline fuera de la variación "
                             f"SelectedItem conocida en {context}."
                         )
+        for quality in ("complete", "partial"):
+            if result["qualities"][quality] != baseline["qualities"][quality]:
+                raise AssertionError(f"El halo de calidad {quality} difiere del baseline en {context}.")
         for property_name, expected in baseline["focused"].items():
             if result["focused"][property_name] != expected:
                 raise AssertionError(f"El foco difiere del baseline en {context}: {property_name}")
@@ -193,6 +219,7 @@ def main() -> None:
                     label = f"{theme} / mapa {appearance}"
                     assert_distinct_states(result["pins"], label)
                     assert_legend_matches(result, label)
+                    assert_quality_halos(result, label)
                     assert_focus_visible(result, label)
                     results.append((theme, appearance, result))
             assert_combination_equivalence(results)

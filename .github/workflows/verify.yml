@@ -81,6 +81,8 @@ jobs:
       - run: dotnet build tests/PlanoOpenSpaceIT.Desktop.Tests/PlanoOpenSpaceIT.Desktop.Tests.csproj --no-restore
       - run: python tools/check-visual-fixtures.py
       - run: python tools/visual-regression.py
+      - run: python tools/verify-pin-quality.py
+      - run: python tools/verify-forced-colors.py
       - run: python tools/verify-accessibility-tree.py
 
       - if: failure()
