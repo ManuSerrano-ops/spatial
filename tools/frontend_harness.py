@@ -15,7 +15,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Iterator
 
-from playwright.sync_api import Browser, BrowserContext, Page, Playwright
+from playwright.sync_api import Browser, BrowserContext, Page, Playwright, TimeoutError as PlaywrightTimeoutError
 
 ROOT = Path(__file__).resolve().parents[1]
 RESOURCES = ROOT / "Resources"
@@ -130,6 +130,39 @@ def new_frontend_context(
     return browser.new_context(viewport=viewport, device_scale_factor=1, forced_colors=forced_colors)
 
 
+def _frontend_diagnostics(page: Page, console_errors: list[str], page_errors: list[str]) -> str:
+    """Describe a failed frontend readiness check without exposing runtime data."""
+    try:
+        state = page.evaluate(
+            """() => {
+              const pin = document.querySelector('#pins .pin');
+              const plan = document.querySelector('#plan');
+              const rect = pin?.getBoundingClientRect();
+              return {
+                status: document.querySelector('#status')?.textContent || null,
+                pinCount: document.querySelectorAll('#pins .pin').length,
+                firstPin: pin ? {
+                  connected: pin.isConnected,
+                  display: getComputedStyle(pin).display,
+                  visibility: getComputedStyle(pin).visibility,
+                  bounds: [rect.x, rect.y, rect.width, rect.height]
+                } : null,
+                plan: plan ? {
+                  source: plan.getAttribute('src'),
+                  complete: plan.complete,
+                  naturalWidth: plan.naturalWidth
+                } : null
+              };
+            }"""
+        )
+    except Exception as error:  # The page can be unavailable after a navigation failure.
+        state = {"diagnosticError": str(error)}
+    return json.dumps(
+        {"url": page.url, "state": state, "consoleErrors": console_errors, "pageErrors": page_errors},
+        ensure_ascii=False,
+    )
+
+
 def open_frontend_page(
     context: BrowserContext,
     port: int,
@@ -138,13 +171,25 @@ def open_frontend_page(
     scenario_changes: list[dict[str, Any]] | None = None,
     bridge_results: dict[str, Any] | None = None,
     theme: str | None = None,
-    ready_selector: str = ".pin",
+    ready_selector: str = "#pins .pin",
 ) -> Page:
-    """Inject the bridge before the frontend loads and wait for its real UI."""
+    """Inject the bridge and wait until its data has rendered a real workspace."""
     page = context.new_page()
+    console_errors: list[str] = []
+    page_errors: list[str] = []
+    page.on("console", lambda message: console_errors.append(message.text) if message.type == "error" else None)
+    page.on("pageerror", lambda error: page_errors.append(str(error)))
     page.add_init_script(readonly_bridge_script(initial_data, scenario_changes, bridge_results))
-    page.goto(f"http://127.0.0.1:{port}/index.html", wait_until="networkidle")
-    page.locator(ready_selector).first.wait_for()
+    try:
+        page.goto(f"http://127.0.0.1:{port}/index.html", wait_until="networkidle")
+        # Attachment proves the bridge data was rendered. Screenshot callers separately
+        # wait for #plan to finish loading, so an SVG timing variation cannot mask this.
+        page.locator(ready_selector).first.wait_for(state="attached")
+    except PlaywrightTimeoutError as error:
+        raise AssertionError(
+            f"El frontend no alcanzó el estado listo ({ready_selector}). "
+            f"Diagnóstico: {_frontend_diagnostics(page, console_errors, page_errors)}"
+        ) from error
     if theme is not None:
         page.evaluate("theme => document.documentElement.dataset.theme = theme", theme)
         page.wait_for_timeout(50)

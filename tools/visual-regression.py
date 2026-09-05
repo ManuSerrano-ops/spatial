@@ -129,6 +129,8 @@ def capture(browser: Browser, port: int, case: VisualCase, destination: Path) ->
         page.wait_for_function("() => { const plan = document.querySelector('#plan'); return plan.complete && plan.naturalWidth > 0; }")
         page.wait_for_timeout(150)
         page.screenshot(path=str(destination), animations="disabled")
+    except Exception as error:
+        raise AssertionError(f"{case.name}: no se pudo preparar la captura visual: {error}") from error
     finally:
         context.close()
 
