@@ -70,13 +70,23 @@ def show_dense_south(page: Page) -> None:
     page.locator(".pin").nth(5).wait_for()
 
 
+def show_compact_bulk_selection(page: Page) -> None:
+    page.locator("#list-view").click()
+    rows = page.locator("#list-table tbody tr")
+    rows.nth(2).wait_for()
+    rows.first.click()
+    rows.nth(2).dispatch_event("click", {"shiftKey": True})
+    page.locator("#bulk-apply").wait_for()
+    page.locator("#detail-panel.selection-review-mode:not(.hidden)").wait_for()
+
+
 CASES = (
     VisualCase("general-light-map", "general", {"width": 1400, "height": 900}, "professional-light", no_op),
     VisualCase("general-high-contrast", "general", {"width": 1400, "height": 900}, "high-contrast", no_op, "active"),
     VisualCase("general-detail", "general", {"width": 1400, "height": 900}, "professional-light", open_detail),
     VisualCase("general-keyboard-cursor", "general", {"width": 1400, "height": 900}, "professional-light", show_keyboard_cursor),
     VisualCase("general-long-diff", "general", {"width": 1400, "height": 900}, "professional-light", show_long_diff),
-    VisualCase("general-compact-high-contrast", "general", {"width": 900, "height": 460}, "high-contrast", no_op, "active"),
+    VisualCase("general-compact-high-contrast", "general", {"width": 900, "height": 460}, "high-contrast", show_compact_bulk_selection, "active"),
     VisualCase("sur-denso", "sur-denso", {"width": 1400, "height": 900}, "professional-light", show_dense_south),
 )
 

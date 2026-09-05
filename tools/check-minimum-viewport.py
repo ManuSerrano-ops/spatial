@@ -23,7 +23,7 @@ from frontend_harness import (
 VIEWPORT = {"width": 900, "height": 460}
 
 
-def bulk_data(excluded_count: int) -> dict[str, Any]:
+def bulk_data(excluded_count: int, include_area: bool = False) -> dict[str, Any]:
     """Create one eligible free seat followed by occupied exclusions.
 
     The real selection flow groups the exclusions by their reason, so both
@@ -65,7 +65,16 @@ def bulk_data(excluded_count: int) -> dict[str, Any]:
         "people": {"people": []},
         "devices": {"devices": []},
         "locations": {"locations": []},
-        "managedAreas": {"areas": []},
+        "managedAreas": {
+            "areas": [
+                {
+                    "id": "bulk-area",
+                    "mapId": "bulk-measurement",
+                    "name": "Área de medición",
+                    "workspaceIds": ["bulk-free", "bulk-occupied-001"],
+                }
+            ] if include_area else []
+        },
         "grid": {"columns": 24, "rows": 18},
         "scenarios": [],
         "activeScenario": None,
@@ -242,11 +251,19 @@ def measure_bulk(browser: Browser, port: int, excluded_count: int) -> dict[str, 
 
 
 def measure_bulk_apply_overlap(
-    browser: Browser, port: int, viewport: dict[str, int], theme: str
+    browser: Browser, port: int, viewport: dict[str, int], theme: str, detail_mode: str = "selection"
 ) -> dict[str, Any]:
-    page = open_page(browser, port, bulk_data(5), viewport=viewport, theme=theme)
+    page = open_page(browser, port, bulk_data(5, include_area=detail_mode == "inspector"), viewport=viewport, theme=theme)
     try:
         select_bulk_range(page, 5)
+        if detail_mode == "inspector":
+            page.locator("#map-view").click()
+            card = page.locator(".managed-area-card")
+            card.focus()
+            card.press("Enter")
+            page.locator("#area-detail-list [data-area-action='inspect']").first.click()
+            page.locator("#inspector-detail:not(.hidden)").wait_for()
+        page.locator("#bulk-bar:not(.hidden)").wait_for()
         return page.evaluate(
             """() => {
               const rect = selector => {
@@ -256,11 +273,34 @@ def measure_bulk_apply_overlap(
               const bulkApply = rect('#bulk-apply');
               const detailHeader = rect('.detail-panel-header');
               const overlaps = bulkApply.left < detailHeader.right && bulkApply.right > detailHeader.left && bulkApply.top < detailHeader.bottom && bulkApply.bottom > detailHeader.top;
-              return { viewport: { width: innerWidth, height: innerHeight }, bulkApply, detailHeader, overlaps };
+              return {
+                viewport: { width: innerWidth, height: innerHeight },
+                bulkApply,
+                detailHeader,
+                detailMode: document.querySelector('#detail-panel').dataset.mode,
+                bulkVisible: !document.querySelector('#bulk-bar').classList.contains('hidden'),
+                overlaps
+              };
             }"""
         )
     finally:
         page.close()
+
+
+def validate_bulk_apply_overlap(overlap: dict[tuple[str, str, str], dict[str, Any]]) -> list[str]:
+    failures: list[str] = []
+    for (label, theme, expected_mode), measurement in overlap.items():
+        if measurement["detailMode"] != expected_mode:
+            failures.append(f"{label}, {theme}: modo de panel esperado {expected_mode}, obtenido {measurement['detailMode']}.")
+        if not measurement["bulkVisible"]:
+            failures.append(f"{label}, {theme}: la barra masiva no está visible en modo {expected_mode}.")
+        if measurement["overlaps"]:
+            failures.append(f"{label}, {theme}: Aplicar se solapa con la cabecera en modo {expected_mode}.")
+        if not inside_viewport(measurement["bulkApply"], measurement["viewport"]):
+            failures.append(f"{label}, {theme}: Aplicar queda fuera del viewport en modo {expected_mode}.")
+        if not inside_viewport(measurement["detailHeader"], measurement["viewport"]):
+            failures.append(f"{label}, {theme}: la cabecera queda fuera del viewport en modo {expected_mode}.")
+    return failures
 
 
 def validate_dynamic_measurements(diff: dict[int, dict[str, Any]], bulk: dict[int, dict[str, Any]]) -> list[str]:
@@ -319,23 +359,29 @@ def main() -> None:
                 ("1400×900", {"width": 1400, "height": 900}),
             ]
             overlap = {
-                (label, theme): measure_bulk_apply_overlap(browser, server.server_port, viewport, theme)
+                (label, theme, "selection-review"): measure_bulk_apply_overlap(browser, server.server_port, viewport, theme)
                 for label, viewport in overlap_cases
                 for theme in ("professional-light", "high-contrast")
             }
+            overlap.update({
+                ("900×460", theme, "inspector"): measure_bulk_apply_overlap(
+                    browser, server.server_port, {"width": 900, "height": 460}, theme, detail_mode="inspector"
+                )
+                for theme in ("professional-light", "high-contrast")
+            })
             browser.close()
 
-    failures = validate_dynamic_measurements(diff, bulk)
+    failures = validate_dynamic_measurements(diff, bulk) + validate_bulk_apply_overlap(overlap)
     print(f"Viewport comprobado: {VIEWPORT['width']}×{VIEWPORT['height']} CSS px; tema high-contrast.")
     print(f"Base: barra={len(initial['topbarControls'])} controles; toolbar={initial['toolbar']['width']:.0f}×{initial['toolbar']['height']:.0f}px; mapa={initial['map']['clientWidth']}×{initial['map']['clientHeight']}px; panel={detail['width']:.0f}×{detail['height']:.0f}px; historial={history['dialog']['width']:.0f}×{history['dialog']['height']:.0f}px.")
     for count, measurement in diff.items():
         print(f"Diff {count}: diálogo={measurement['dialog']['width']:.0f}×{measurement['dialog']['height']:.0f}px, bottom={measurement['dialog']['bottom']:.0f}/{measurement['viewport']['height']}; acciones bottom={measurement['actions']['bottom']:.0f}; lista={measurement['list']['clientHeight']}/{measurement['list']['scrollHeight']}px, overflow-y={measurement['list']['overflowY']}, Aplicar por teclado={measurement['keyboardApplyReachable']}.")
     for count, measurement in bulk.items():
         print(f"Bulk {count} exclusiones: diálogo={measurement['dialog']['width']:.0f}×{measurement['dialog']['height']:.0f}px, bottom={measurement['dialog']['bottom']:.0f}/{measurement['viewport']['height']}; acciones bottom={measurement['actions']['bottom']:.0f}; filas de exclusión={measurement['list']['itemCount']}; lista={measurement['list']['clientHeight']}/{measurement['list']['scrollHeight']}px, overflow-y={measurement['list']['overflowY']}, Aplicar por teclado={measurement['keyboardConfirmReachable']}.")
-    for (label, theme), measurement in overlap.items():
+    for (label, theme, mode), measurement in overlap.items():
         apply = measurement["bulkApply"]
         header = measurement["detailHeader"]
-        print(f"Solapamiento {label}, {theme}: Aplicar=({apply['left']:.0f},{apply['top']:.0f})–({apply['right']:.0f},{apply['bottom']:.0f}); cabecera=({header['left']:.0f},{header['top']:.0f})–({header['right']:.0f},{header['bottom']:.0f}); solapan={measurement['overlaps']}.")
+        print(f"Solapamiento {label}, {theme}, {mode}: Aplicar=({apply['left']:.0f},{apply['top']:.0f})–({apply['right']:.0f},{apply['bottom']:.0f}); cabecera=({header['left']:.0f},{header['top']:.0f})–({header['right']:.0f},{header['bottom']:.0f}); solapan={measurement['overlaps']}.")
     if failures:
         raise AssertionError("\n".join(failures))
 

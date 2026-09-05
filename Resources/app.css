@@ -476,6 +476,7 @@ main.app-shell > .workspace-region { overflow: hidden; }
 @media (max-height: 620px) { .detail-panel-header .detail-summary { display: none; } .statusbar { min-height: 0; } }
 @media (max-width: 900px) { .detail-panel { position: fixed; top: var(--topbar-height); right: 0; bottom: var(--statusbar-height); width: min(390px, 92vw); height: auto; min-height: 0; } }
 @media (max-width: 700px) { .area-detail-actions, .area-detail-danger { grid-template-columns: minmax(0, 1fr); } .area-detail-member > button:first-child { grid-template-columns: minmax(0, 1fr); } .bulk-bar #bulk-create-area { flex: 1 1 100%; } }
+@media (min-width: 900px) and (max-width: 1099px) { main.app-shell > .detail-panel:not(.hidden) { position: relative; top: auto; right: auto; bottom: auto; grid-column: 3; grid-row: 1; } }
 
 /* Los pines transmiten estado solo por color y forma; conservan esos dos canales
    con los colores de alto contraste elegidos por el sistema operativo. */
