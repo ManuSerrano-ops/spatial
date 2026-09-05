@@ -18,7 +18,20 @@ npx --yes prettier@3.5.3 --print-width 120 Resources/js/core/app.js
 | Documento | SHA-256 | Líneas | Bytes |
 |---|---|---:|---:|
 | `Resources/js/core/app.js` original | `d4c858a1730213043169020f6da8782d532d4556100ca3c0f0a5d049c29371ac` | 1.080 | 202.373 |
-| `app.js.prettier-120.snapshot.js` | `9499cf2db4a64a2be1945cec69964eb247160652cf35097356677639dcd0ee89` | 5.286 | 231.769 |
+| Snapshot generado / archivo de trabajo CRLF | `9499cf2db4a64a2be1945cec69964eb247160652cf35097356677639dcd0ee89` | 5.286 | 231.769 |
+| Snapshot versionado / blob Git LF | `3919ab3e5245ca744c90d1ec20a359587d02316c3d021acfd53bcd849427525f` | 5.286 | 226.483 |
+
+Git normaliza los finales de línea al almacenar el blob y la configuración de
+Windows los restaura como CRLF en el árbol de trabajo. Por ello ambos hashes
+son correctos y no indican corrupción. Para comprobarlos de forma reproducible:
+
+```text
+sha256sum docs/reference/frontend-app-js-refactor-audit/app.js.prettier-120.snapshot.js
+# 9499cf2d...  archivo de trabajo CRLF
+
+git show HEAD:docs/reference/frontend-app-js-refactor-audit/app.js.prettier-120.snapshot.js | sha256sum
+# 3919ab3e...  blob Git LF
+```
 
 La diferencia de líneas no representa más lógica: Prettier expandió objetos,
 callbacks, cadenas de llamadas y bloques antes compactados. Los contadores
