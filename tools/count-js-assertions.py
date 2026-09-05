@@ -22,7 +22,7 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-HARNESS_GLOB = "tests/*-harness.js"
+HARNESS_GLOBS = ("tests/*-harness.js", "tests/*-harness.mjs")
 BARE_HELPERS = ("assert", "equal")
 
 
@@ -102,10 +102,15 @@ def count_source(source: str) -> Counter[str]:
 def report() -> dict[str, object]:
     files: dict[str, dict[str, object]] = {}
     total: Counter[str] = Counter()
-    for path in sorted(ROOT.glob(HARNESS_GLOB)):
+    harnesses = sorted(path for pattern in HARNESS_GLOBS for path in ROOT.glob(pattern))
+    for path in harnesses:
+        logical_path = path.with_suffix(".js") if path.suffix == ".mjs" else path
+        logical_name = logical_path.relative_to(ROOT).as_posix()
+        if logical_name in files:
+            raise ValueError(f"Dos harnesses comparten la identidad lógica {logical_name}.")
         counts = count_source(path.read_text(encoding="utf-8"))
         semantic_total = sum(counts.values())
-        files[path.relative_to(ROOT).as_posix()] = {
+        files[logical_name] = {
             "total": semantic_total,
             "kinds": dict(sorted((name, count) for name, count in counts.items() if count)),
         }

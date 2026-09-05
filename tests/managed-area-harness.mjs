@@ -1,8 +1,6 @@
-'use strict';
-
-const helpers = require('../Resources/js/features/managed-areas/managed-area-helpers.js');
-const test = require('node:test');
-const assert = require('node:assert/strict');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import helpers from '../Resources/js/features/managed-areas/managed-area-helpers.js';
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 const fails = (fn, text) => { try { fn(); } catch (error) { if (!text || error.message.includes(text)) return; throw error; } throw new Error(`Expected error containing: ${text}`); };
 const area = (id, mapId, name, workspaceIds = [], presentation = { offsetX: 0, offsetY: 0 }) => ({ id, mapId, name, workspaceIds, presentation });

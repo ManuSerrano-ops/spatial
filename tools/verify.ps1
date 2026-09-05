@@ -12,7 +12,7 @@ try {
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }
 
-    $harnesses = @(Get-ChildItem -Path 'tests' -Filter '*harness.js' | Sort-Object Name)
+    $harnesses = @(Get-ChildItem -Path 'tests' -File | Where-Object { $_.Name -like '*-harness.js' -or $_.Name -like '*-harness.mjs' } | Sort-Object Name)
     & node --test $harnesses.FullName
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 

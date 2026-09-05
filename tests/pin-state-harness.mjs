@@ -1,11 +1,12 @@
-'use strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import pinStateHelpers from '../Resources/js/features/map/pin-state-helpers.js';
 
-const fs = require('fs');
-const path = require('path');
-const { derivePinPresentation } = require('../Resources/js/features/map/pin-state-helpers.js');
-
-const test = require('node:test');
-const assert = require('node:assert/strict');
+const { derivePinPresentation } = pinStateHelpers;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const present = input => derivePinPresentation({ displayLocation: 'F-08', ...input });
 
 test('free business state', () => assert(present({ businessState: 'free' }).businessState === 'free', 'free state missing'));

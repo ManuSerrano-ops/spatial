@@ -1,9 +1,6 @@
-'use strict';
-
-const path = require('path');
-const cursor = require(path.join(__dirname, '..', 'Resources', 'js', 'features', 'map', 'grid-cursor-helpers.js'));
-const test = require('node:test');
-const assert = require('node:assert/strict');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import cursor from '../Resources/js/features/map/grid-cursor-helpers.js';
 const equal = (actual, expected, message) => { if (actual !== expected) throw new Error(`${message}: ${actual} !== ${expected}`); };
 
 const grid = { columns: 24, rows: 18 };

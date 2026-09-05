@@ -1,6 +1,5 @@
-'use strict';
-const helpers = require('../Resources/js/features/movement-planner/movement-planner-helpers.js');
-const test = require('node:test');
+import test from 'node:test';
+import helpers from '../Resources/js/features/movement-planner/movement-planner-helpers.js';
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`); };
 const locations = { 'N-01': { displayLocation: 'B-12' }, 'N-02': { displayLocation: 'F-08' }, 'N-03': { displayLocation: 'B-13' }, 'N-04': { displayLocation: 'D-08' } };
 

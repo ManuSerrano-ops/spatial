@@ -1,8 +1,8 @@
-'use strict';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import dashboardHelpers from '../Resources/js/features/dashboard/dashboard-helpers.js';
 
-const { buildDashboardModel, formatNumber, formatPercent } = require('../Resources/js/features/dashboard/dashboard-helpers.js');
-const test = require('node:test');
-const assert = require('node:assert/strict');
+const { buildDashboardModel, formatNumber, formatPercent } = dashboardHelpers;
 const equal = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}; expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`);
 };

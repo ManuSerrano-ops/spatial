@@ -1,8 +1,8 @@
-'use strict';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import cellAppearanceFeatureModule from '../Resources/js/features/map/cell-appearance-feature.js';
 
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const { createCellAppearanceFeature } = require('../Resources/js/features/map/cell-appearance-feature.js');
+const { createCellAppearanceFeature } = cellAppearanceFeatureModule;
 
 function createStorage(values = {}, options = {}) {
   const saved = new Map(Object.entries(values));

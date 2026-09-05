@@ -1,11 +1,8 @@
-'use strict';
-
-const state = require('../Resources/js/shared/workspace/workspace-state-helpers.js');
-const presentation = require('../Resources/js/shared/workspace/workspace-presentation-helpers.js');
-const pins = require('../Resources/js/features/map/pin-state-helpers.js');
-
-const test = require('node:test');
-const assert = require('node:assert/strict');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import state from '../Resources/js/shared/workspace/workspace-state-helpers.js';
+import presentation from '../Resources/js/shared/workspace/workspace-presentation-helpers.js';
+import pins from '../Resources/js/features/map/pin-state-helpers.js';
 const equal = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}; expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
 };

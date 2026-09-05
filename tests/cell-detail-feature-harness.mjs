@@ -1,8 +1,8 @@
-'use strict';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import cellDetailFeatureModule from '../Resources/js/features/map/cell-detail-feature.js';
 
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const { createCellDetailFeature } = require('../Resources/js/features/map/cell-detail-feature.js');
+const { createCellDetailFeature } = cellDetailFeatureModule;
 
 function createElement() {
   const classes = new Set();

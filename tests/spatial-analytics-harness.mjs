@@ -1,8 +1,6 @@
-'use strict';
-
-const helpers = require('../Resources/js/features/analytics/spatial-analytics-helpers.js');
-const test = require('node:test');
-const assert = require('node:assert/strict');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import helpers from '../Resources/js/features/analytics/spatial-analytics-helpers.js';
 const equal = (actual, expected, message) => {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}; expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}`);
 };

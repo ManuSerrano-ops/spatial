@@ -1,6 +1,5 @@
-'use strict';
-const helpers = require('../Resources/js/shared/interaction/rectangle-selection-helpers.js');
-const test = require('node:test');
+import test from 'node:test';
+import helpers from '../Resources/js/shared/interaction/rectangle-selection-helpers.js';
 const equal = (actual, expected, message) => { if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`${message}; expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`); };
 const seats = [{ id: 'inside', x: .5, y: .5 }, { id: 'edge', x: .2, y: .2 }, { id: 'outside', x: .8, y: .8 }, { id: 'hidden', x: .4, y: .4 }];
 const ids = (start, end, visible = () => true) => helpers.selectByCenter(seats, start, end, visible).map(seat => seat.id);
