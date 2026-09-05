@@ -56,6 +56,21 @@ tres elementos revisables en `tests/visual-artifacts/`:
 El artefacto de CI conserva la misma estructura junto con el nombre del caso;
 ese nombre codifica fixture, viewport, tema y estado.
 
+## Triage de un fallo
+
+No se interpreta del mismo modo una diferencia visual y un fallo de
+preparación. `tools/visual-regression.py` nombra el caso afectado y distingue
+ambos resultados:
+
+- **Diferencia de píxeles:** el render cambió. Se detiene el refactor y se
+  revisan el PNG esperado, el actual y el diff antes de continuar. No se
+  regenera ningún baseline para hacer pasar la comprobación.
+- **Timeout de preparación:** es un fallo del arnés hasta que se demuestre lo
+  contrario. Se ejecuta una única vez más y se anota el caso y el diagnóstico
+  emitido (`#status`, pines, SVG y errores del navegador). Si falla de nuevo el
+  mismo caso, se detiene el trabajo para investigar el arnés; no se reintenta
+  repetidamente ni se atribuye al refactor.
+
 ## Árbol de accesibilidad
 
 El mismo job visual ejecuta `tools/verify-accessibility-tree.py`. Usa CDP para
