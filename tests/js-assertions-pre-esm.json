@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 1,
+  "description": "Semantic assertion calls; helper declarations are excluded.",
+  "files": {
+    "tests/analytics-final-harness.js": {
+      "total": 19,
+      "kinds": {
+        "assert": 19
+      }
+    },
+    "tests/area-focus-harness.js": {
+      "total": 10,
+      "kinds": {
+        "assert": 8,
+        "equal": 2
+      }
+    },
+    "tests/bulk-selection-harness.js": {
+      "total": 30,
+      "kinds": {
+        "assert": 10,
+        "equal": 20
+      }
+    },
+    "tests/cell-appearance-feature-harness.js": {
+      "total": 12,
+      "kinds": {
+        "node-assert": 12
+      }
+    },
+    "tests/cell-detail-feature-harness.js": {
+      "total": 18,
+      "kinds": {
+        "assert": 4,
+        "node-assert": 14
+      }
+    },
+    "tests/cluster-background-close-harness.js": {
+      "total": 6,
+      "kinds": {
+        "assert": 6
+      }
+    },
+    "tests/cluster-card-content-harness.js": {
+      "total": 27,
+      "kinds": {
+        "assert": 17,
+        "equal": 10
+      }
+    },
+    "tests/cluster-card-real-drag-harness.js": {
+      "total": 0,
+      "kinds": {}
+    },
+    "tests/cluster-card-shape-harness.js": {
+      "total": 25,
+      "kinds": {
+        "assert": 10,
+        "equal": 15
+      }
+    },
+    "tests/cluster-context-menu-harness.js": {
+      "total": 13,
+      "kinds": {
+        "assert": 13
+      }
+    },
+    "tests/cluster-functional-harness.js": {
+      "total": 12,
+      "kinds": {
+        "assert": 4,
+        "equal": 8
+      }
+    },
+    "tests/cluster-map-controls-harness.js": {
+      "total": 12,
+      "kinds": {
+        "assert": 12
+      }
+    },
+    "tests/core-ux-harness.js": {
+      "total": 14,
+      "kinds": {
+        "assert": 14
+      }
+    },
+    "tests/custom-cluster-card-position-harness.js": {
+      "total": 37,
+      "kinds": {
+        "assert": 23,
+        "equal": 14
+      }
+    },
+    "tests/custom-cluster-card-size-harness.js": {
+      "total": 34,
+      "kinds": {
+        "assert": 21,
+        "equal": 13
+      }
+    },
+    "tests/dashboard-harness.js": {
+      "total": 38,
+      "kinds": {
+        "assert": 5,
+        "equal": 33
+      }
+    },
+    "tests/detail-panel-controller-feature-harness.js": {
+      "total": 25,
+      "kinds": {
+        "node-assert": 25
+      }
+    },
+    "tests/detail-panel-harness.js": {
+      "total": 9,
+      "kinds": {
+        "assert": 9
+      }
+    },
+    "tests/detail-panel-viewport-invariance-harness.js": {
+      "total": 5,
+      "kinds": {
+        "assert": 5
+      }
+    },
+    "tests/dialog-focus-harness.js": {
+      "total": 17,
+      "kinds": {
+        "assert": 14,
+        "equal": 3
+      }
+    },
+    "tests/embedded-frontend-paths-harness.js": {
+      "total": 5,
+      "kinds": {
+        "assert": 5
+      }
+    },
+    "tests/grid-cursor-harness.js": {
+      "total": 22,
+      "kinds": {
+        "assert": 4,
+        "equal": 18
+      }
+    },
+    "tests/keyboard-placement-harness.js": {
+      "total": 46,
+      "kinds": {
+        "assert": 16,
+        "equal": 30
+      }
+    },
+    "tests/keyboard-shortcuts-harness.js": {
+      "total": 34,
+      "kinds": {
+        "assert": 25,
+        "equal": 9
+      }
+    },
+    "tests/light-map-ui-harness.js": {
+      "total": 24,
+      "kinds": {
+        "assert": 18,
+        "equal": 6
+      }
+    },
+    "tests/managed-area-create-workspace-harness.js": {
+      "total": 12,
+      "kinds": {
+        "assert": 12
+      }
+    },
+    "tests/managed-area-harness.js": {
+      "total": 22,
+      "kinds": {
+        "assert": 3,
+        "equal": 19
+      }
+    },
+    "tests/manual-cluster-harness.js": {
+      "total": 23,
+      "kinds": {
+        "assert": 23
+      }
+    },
+    "tests/map-appearance-feature-harness.js": {
+      "total": 13,
+      "kinds": {
+        "node-assert": 13
+      }
+    },
+    "tests/map-context-menu-harness.js": {
+      "total": 25,
+      "kinds": {
+        "assert": 25
+      }
+    },
+    "tests/map-density-harness.js": {
+      "total": 13,
+      "kinds": {
+        "assert": 3,
+        "equal": 10
+      }
+    },
+    "tests/map-fit-harness.js": {
+      "total": 5,
+      "kinds": {
+        "assert": 5
+      }
+    },
+    "tests/member-inspector-harness.js": {
+      "total": 8,
+      "kinds": {
+        "assert": 8
+      }
+    },
+    "tests/movement-planner-harness.js": {
+      "total": 11,
+      "kinds": {
+        "equal": 11
+      }
+    },
+    "tests/no-auto-cluster-harness.js": {
+      "total": 3,
+      "kinds": {
+        "assert": 3
+      }
+    },
+    "tests/pin-state-harness.js": {
+      "total": 30,
+      "kinds": {
+        "assert": 30
+      }
+    },
+    "tests/rectangle-selection-harness.js": {
+      "total": 14,
+      "kinds": {
+        "equal": 14
+      }
+    },
+    "tests/release-readiness-harness.js": {
+      "total": 1,
+      "kinds": {
+        "assert": 1
+      }
+    },
+    "tests/scenario-compare-units-harness.js": {
+      "total": 29,
+      "kinds": {
+        "assert": 1,
+        "equal": 28
+      }
+    },
+    "tests/selection-controller-feature-harness.js": {
+      "total": 33,
+      "kinds": {
+        "node-assert": 33
+      }
+    },
+    "tests/selection-interaction-harness.js": {
+      "total": 12,
+      "kinds": {
+        "assert": 12
+      }
+    },
+    "tests/selection-mode-visibility-harness.js": {
+      "total": 21,
+      "kinds": {
+        "assert": 21
+      }
+    },
+    "tests/selection-panel-cluster-harness.js": {
+      "total": 6,
+      "kinds": {
+        "assert": 6
+      }
+    },
+    "tests/selection-review-harness.js": {
+      "total": 29,
+      "kinds": {
+        "assert": 6,
+        "equal": 23
+      }
+    },
+    "tests/selection-viewport-invariance-harness.js": {
+      "total": 5,
+      "kinds": {
+        "assert": 5
+      }
+    },
+    "tests/spatial-analytics-harness.js": {
+      "total": 30,
+      "kinds": {
+        "assert": 7,
+        "equal": 23
+      }
+    },
+    "tests/toolbar-harness.js": {
+      "total": 13,
+      "kinds": {
+        "assert": 13
+      }
+    },
+    "tests/top-toolbar-layout-harness.js": {
+      "total": 26,
+      "kinds": {
+        "assert": 26
+      }
+    },
+    "tests/ui-theme-feature-harness.js": {
+      "total": 8,
+      "kinds": {
+        "node-assert": 8
+      }
+    },
+    "tests/validation-harness.js": {
+      "total": 28,
+      "kinds": {
+        "assert": 19,
+        "equal": 9
+      }
+    },
+    "tests/viewport-harness.js": {
+      "total": 7,
+      "kinds": {
+        "assert": 6,
+        "equal": 1
+      }
+    },
+    "tests/workspace-filter-feature-harness.js": {
+      "total": 15,
+      "kinds": {
+        "node-assert": 15
+      }
+    },
+    "tests/workspace-filter-ui-feature-harness.js": {
+      "total": 13,
+      "kinds": {
+        "node-assert": 13
+      }
+    },
+    "tests/workspace-presentation-harness.js": {
+      "total": 17,
+      "kinds": {
+        "assert": 17
+      }
+    },
+    "tests/workspace-quality-harness.js": {
+      "total": 11,
+      "kinds": {
+        "equal": 11
+      }
+    },
+    "tests/workspace-state-harness.js": {
+      "total": 18,
+      "kinds": {
+        "equal": 18
+      }
+    },
+    "tests/wpf-startup-resource-harness.js": {
+      "total": 2,
+      "kinds": {
+        "assert": 2
+      }
+    }
+  },
+  "total": 997,
+  "kinds": {
+    "assert": 516,
+    "equal": 348,
+    "node-assert": 133
+  }
+}
