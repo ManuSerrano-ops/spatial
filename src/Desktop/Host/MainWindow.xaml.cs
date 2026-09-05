@@ -20,7 +20,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         _initialization = new WindowInitialization<DataStore, WebViewBridge>(
-            DataStore.Create,
+            () => DataStore.Create(OnAuditLogAvailabilityChanged),
             store => new WebViewBridge(store),
             store => store.LogLifecycleStart(),
             SubscribeWebMessages);
@@ -37,6 +37,17 @@ public partial class MainWindow : Window
     private async void OnLoaded(object sender, RoutedEventArgs e) => await InitializeAsync();
 
     private async void OnRetry(object sender, RoutedEventArgs e) => await InitializeAsync();
+
+    private void OnAuditLogAvailabilityChanged(AuditLogAvailability availability)
+    {
+        if (!Dispatcher.CheckAccess())
+        {
+            if (!Dispatcher.HasShutdownStarted) _ = Dispatcher.BeginInvoke(() => OnAuditLogAvailabilityChanged(availability));
+            return;
+        }
+
+        AuditLogWarning.Visibility = availability == AuditLogAvailability.Unavailable ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     private async Task InitializeAsync()
     {

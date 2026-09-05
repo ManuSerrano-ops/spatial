@@ -32,6 +32,22 @@ public sealed class DataStoreTransactionTests
     }
 
     [Fact]
+    public void CommitCompletesWhenAuditLogIsUnavailable()
+    {
+        using var fixture = new TransactionFixture(blockLogs: true);
+
+        var backupId = fixture.SaveAssignment("person-2");
+
+        Assert.Equal([AuditLogAvailability.Unavailable], fixture.AuditLogAvailability);
+        Assert.Equal(1, fixture.StateRevision());
+        Assert.Equal("person-2", fixture.AssignmentPerson("S-0002"));
+        Assert.All(TransactionFiles, file => Assert.Equal(1, fixture.DocumentRevision(file)));
+        Assert.Single(fixture.Events());
+        Assert.Equal(backupId, fixture.LatestBackupId());
+        fixture.AssertNoProtocolResidue();
+    }
+
+    [Fact]
     public void RejectedMutationLeavesNoPublishedTransactionEffects()
     {
         using var fixture = new TransactionFixture();
@@ -223,7 +239,7 @@ public sealed class DataStoreTransactionTests
         private readonly string _root = Path.Combine(Path.GetTempPath(), "datastore-transaction-" + Guid.NewGuid().ToString("N"));
         private readonly string _data;
 
-        internal TransactionFixture(int seatCount = 2)
+        internal TransactionFixture(int seatCount = 2, bool blockLogs = false)
         {
             _data = Path.Combine(_root, "data");
             Directory.CreateDirectory(_data);
@@ -235,10 +251,14 @@ public sealed class DataStoreTransactionTests
             Write("devices.json", new JsonObject { ["devices"] = new JsonArray() });
             Write("locations.json", new JsonObject { ["locations"] = new JsonArray() });
             Write("state.json", new JsonObject { ["revision"] = 0 });
-            Store = DataStore.FromConfig(new AppConfig { NetworkRoot = _root, DataFolder = "data", BackupFolder = "backups", LogsFolder = "logs", BackupRetentionMode = "disabled" });
+            if (blockLogs) File.WriteAllText(Path.Combine(_root, "logs"), "blocked");
+            Store = DataStore.FromConfig(
+                new AppConfig { NetworkRoot = _root, DataFolder = "data", BackupFolder = "backups", LogsFolder = "logs", BackupRetentionMode = "disabled" },
+                auditLogAvailabilityChanged: AuditLogAvailability.Add);
         }
 
         internal DataStore Store { get; }
+        internal List<AuditLogAvailability> AuditLogAvailability { get; } = [];
         internal string Root => _root;
         internal bool PendingExists => File.Exists(Path.Combine(_data, "commit.pending"));
         internal bool ObserverAliveExists => File.Exists(Path.Combine(_root, "observer.alive"));

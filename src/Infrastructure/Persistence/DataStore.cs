@@ -39,12 +39,12 @@ internal sealed class DataStore
     private readonly ManagedAreaService _managedAreas;
     private readonly ReportService _reports;
 
-    private DataStore(AppConfig config, Func<JsonObject, string, XlsxExportResult>? xlsxWriter = null)
+    private DataStore(AppConfig config, Func<JsonObject, string, XlsxExportResult>? xlsxWriter = null, Action<AuditLogAvailability>? auditLogAvailabilityChanged = null)
     {
         _config = config;
         _root = config.NetworkRoot;
         _data = Path.Combine(_root, config.DataFolder);
-        _logger = new SafeLogger(Path.Combine(_root, config.LogsFolder), config.LogMaxFileSizeBytes, config.LogMaxHistoryFiles);
+        _logger = new SafeLogger(Path.Combine(_root, config.LogsFolder), config.LogMaxFileSizeBytes, config.LogMaxHistoryFiles, auditLogAvailabilityChanged);
         _xlsxWriter = xlsxWriter ?? XlsxExporter.Write;
         _backups = CreateBackupService();
         _transactions = CreateTransactionCoordinator();
@@ -80,19 +80,19 @@ internal sealed class DataStore
 
     private void LogTransactionError(TransactionCoordinator.TransactionAudit audit, Exception exception) => _logger.Error(audit.Action, exception, seatId: audit.SeatId, sourceRevision: audit.SourceRevision, destinationRevision: audit.DestinationRevision, backupId: audit.BackupId, transactionId: audit.TransactionId, files: audit.Files, backupOutcome: audit.BackupOutcome, bridgeAction: BridgeAction.Value);
 
-    public static DataStore Create()
+    public static DataStore Create(Action<AuditLogAvailability>? auditLogAvailabilityChanged = null)
     {
         var path = Path.Combine(AppContext.BaseDirectory, "config.json");
         if (!File.Exists(path)) throw new FileNotFoundException("Falta config.json junto al ejecutable.");
         var config = JsonSerializer.Deserialize<AppConfig>(File.ReadAllText(path), JsonOptions) ?? throw new InvalidDataException("config.json no es válido.");
-        return FromConfig(config);
+        return FromConfig(config, auditLogAvailabilityChanged: auditLogAvailabilityChanged);
     }
 
-    internal static DataStore FromConfig(AppConfig config, Func<JsonObject, string, XlsxExportResult>? xlsxWriter = null)
+    internal static DataStore FromConfig(AppConfig config, Func<JsonObject, string, XlsxExportResult>? xlsxWriter = null, Action<AuditLogAvailability>? auditLogAvailabilityChanged = null)
     {
         ArgumentNullException.ThrowIfNull(config);
         if (!Directory.Exists(config.NetworkRoot) || !Directory.Exists(Path.Combine(config.NetworkRoot, config.DataFolder))) throw new DirectoryNotFoundException("No se puede acceder a la carpeta de datos configurada.");
-        return new DataStore(config, xlsxWriter);
+        return new DataStore(config, xlsxWriter, auditLogAvailabilityChanged);
     }
 
     internal IDisposable BeginBridgeAction(string action)

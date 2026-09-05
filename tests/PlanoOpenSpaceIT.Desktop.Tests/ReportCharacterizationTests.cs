@@ -68,10 +68,11 @@ public sealed class ReportCharacterizationTests
         Assert.Equal(4, audit["count"]?.GetValue<int>());
         Assert.Equal(0, audit["currentRevision"]?.GetValue<long>());
         Assert.Equal(Path.GetFileName(reportPath), Text(audit["reportFile"]));
+        Assert.Empty(fixture.AuditLogAvailability);
     }
 
     [Fact]
-    public void IntegrityReportWriteFailureRemovesPathButCannotPersistFailureAuditWhenLogsAreUnavailable()
+    public void IntegrityReportWriteFailureRemovesPathCannotPersistFailureAuditAndSignalsUnavailableLogs()
     {
         using var fixture = new ReportFixture(blockLogs: true);
 
@@ -79,6 +80,19 @@ public sealed class ReportCharacterizationTests
 
         Assert.False(report.ContainsKey("reportPath"));
         Assert.Empty(fixture.AuditEntries());
+        Assert.Equal([AuditLogAvailability.Unavailable], fixture.AuditLogAvailability);
+    }
+
+    [Fact]
+    public void LifecycleStartFailureAfterSuccessfulAvailabilityProbeSignalsUnavailableLogs()
+    {
+        using var fixture = new ReportFixture();
+        fixture.BlockLogs();
+
+        fixture.Store.LogLifecycleStart();
+
+        Assert.Empty(fixture.AuditEntries());
+        Assert.Equal([AuditLogAvailability.Unavailable], fixture.AuditLogAvailability);
     }
 
     private sealed class ReportFixture : IDisposable
@@ -121,11 +135,20 @@ public sealed class ReportCharacterizationTests
             Write("locations.json", new JsonObject { ["locations"] = new JsonArray() });
             Write("state.json", new JsonObject { ["schemaVersion"] = "1.0", ["revision"] = 0 });
             if (blockLogs) File.WriteAllText(LogsRoot, "blocked");
-            Store = DataStore.FromConfig(new AppConfig { NetworkRoot = _root, DataFolder = "data", BackupFolder = "backups", LogsFolder = "logs", BackupRetentionMode = "disabled" });
+            Store = DataStore.FromConfig(
+                new AppConfig { NetworkRoot = _root, DataFolder = "data", BackupFolder = "backups", LogsFolder = "logs", BackupRetentionMode = "disabled" },
+                auditLogAvailabilityChanged: AuditLogAvailability.Add);
         }
 
         internal DataStore Store { get; }
+        internal List<AuditLogAvailability> AuditLogAvailability { get; } = [];
         private string LogsRoot => Path.Combine(_root, "logs");
+
+        internal void BlockLogs()
+        {
+            if (Directory.Exists(LogsRoot)) Directory.Delete(LogsRoot, recursive: true);
+            File.WriteAllText(LogsRoot, "blocked");
+        }
 
         internal JsonObject[] AuditEntries() => !Directory.Exists(LogsRoot)
             ? []

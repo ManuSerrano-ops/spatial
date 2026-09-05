@@ -4,6 +4,12 @@ using System.Text.Json;
 
 namespace PlanoOpenSpaceIT.Windows;
 
+internal enum AuditLogAvailability
+{
+    Unavailable,
+    Available
+}
+
 internal sealed class SafeLogger
 {
     internal const long DefaultMaxFileSizeBytes = 1_048_576;
@@ -13,15 +19,16 @@ internal sealed class SafeLogger
     private readonly string _folder;
     private readonly long _maxFileSizeBytes;
     private readonly int _maxHistoryFiles;
-    private readonly Action<string> _failureIndicator;
-    private int _failureReported;
+    private readonly Action<AuditLogAvailability> _availabilityChanged;
+    private int _unavailable;
 
-    internal SafeLogger(string folder, long maxFileSizeBytes = DefaultMaxFileSizeBytes, int maxHistoryFiles = DefaultMaxHistoryFiles, Action<string>? failureIndicator = null)
+    internal SafeLogger(string folder, long maxFileSizeBytes = DefaultMaxFileSizeBytes, int maxHistoryFiles = DefaultMaxHistoryFiles, Action<AuditLogAvailability>? availabilityChanged = null)
     {
         _folder = folder;
         _maxFileSizeBytes = Math.Max(maxFileSizeBytes, MinimumMaxFileSizeBytes);
         _maxHistoryFiles = Math.Max(maxHistoryFiles, 1);
-        _failureIndicator = failureIndicator ?? (message => Console.Error.WriteLine(message));
+        _availabilityChanged = availabilityChanged ?? WriteAvailabilityToConsole;
+        VerifyAvailability();
     }
 
     internal void Info(string action, string? seatId = null, long? sourceRevision = null, long? destinationRevision = null, string? backupId = null, string? transactionId = null, IEnumerable<string>? files = null, string? backupOutcome = null, int? count = null, string? bridgeAction = null, string? scenarioId = null, string? result = null, long? currentRevision = null, long? durationMs = null, string? applicationBuild = null, string? exportPath = null, string? reportPath = null, IReadOnlyDictionary<string, object?>? details = null)
@@ -64,6 +71,22 @@ internal sealed class SafeLogger
         return entry;
     }
 
+    private void VerifyAvailability()
+    {
+        try
+        {
+            Directory.CreateDirectory(_folder);
+            var probe = Path.Combine(_folder, $".audit-probe-{Guid.NewGuid():N}");
+            File.WriteAllText(probe, string.Empty, Encoding.UTF8);
+            File.Delete(probe);
+            MarkAvailable();
+        }
+        catch
+        {
+            MarkUnavailable();
+        }
+    }
+
     private void Write(Dictionary<string, object?> entry)
     {
         try
@@ -83,17 +106,36 @@ internal sealed class SafeLogger
                 File.Move(path, path + ".1");
             }
             File.AppendAllText(path, line, Encoding.UTF8);
+            MarkAvailable();
         }
-        catch (Exception exception)
+        catch
         {
-            if (Interlocked.Exchange(ref _failureReported, 1) == 0)
-            {
-                try { _failureIndicator($"PlanoOpenSpaceIT: no se pudo escribir el registro de auditoría ({exception.GetType().Name})."); }
-                catch { }
-            }
+            MarkUnavailable();
         }
     }
 
+    private void MarkUnavailable()
+    {
+        if (Interlocked.Exchange(ref _unavailable, 1) != 0) return;
+        NotifyAvailability(AuditLogAvailability.Unavailable);
+    }
+
+    private void MarkAvailable()
+    {
+        if (Interlocked.Exchange(ref _unavailable, 0) == 0) return;
+        NotifyAvailability(AuditLogAvailability.Available);
+    }
+
+    private void NotifyAvailability(AuditLogAvailability availability)
+    {
+        try { _availabilityChanged(availability); }
+        catch { }
+    }
+
+    private static void WriteAvailabilityToConsole(AuditLogAvailability availability)
+    {
+        if (availability == AuditLogAvailability.Unavailable) Console.Error.WriteLine("PlanoOpenSpaceIT: no se pudo escribir el registro de auditoría.");
+    }
 
     private static void Add(Dictionary<string, object?> entry, string name, object? value)
     {

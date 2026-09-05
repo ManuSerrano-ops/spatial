@@ -8,6 +8,12 @@
                       xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
                       AutomationProperties.AutomationId="PlanoOpenSpaceIT.WebView"
                       AutomationProperties.Name="Contenido de la aplicación Plano Open Space IT" />
+        <Border x:Name="AuditLogWarning" Panel.ZIndex="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="16" Padding="12,8" Visibility="Collapsed" IsHitTestVisible="False"
+                Background="{DynamicResource {x:Static SystemColors.InfoBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" BorderThickness="1"
+                AutomationProperties.AutomationId="PlanoOpenSpaceIT.AuditLogWarning" AutomationProperties.LiveSetting="Assertive">
+            <TextBlock Text="La auditoría no está disponible. Los cambios se guardarán, pero no se podrán registrar hasta que se recupere el acceso."
+                       TextWrapping="Wrap" MaxWidth="640" Foreground="{DynamicResource {x:Static SystemColors.InfoTextBrushKey}}" />
+        </Border>
         <Border x:Name="ErrorPanel" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Padding="32" Visibility="Collapsed" Focusable="True"
                 AutomationProperties.AutomationId="PlanoOpenSpaceIT.ErrorPanel">
             <StackPanel MaxWidth="680">
