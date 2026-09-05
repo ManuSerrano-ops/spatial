@@ -26,6 +26,7 @@ function Assert-ValidJsonFile([string]$Path) {
 
 $requiredPayloadFiles = @(
     (Join-Path $payload 'PlanoOpenSpaceIT.Windows.exe'),
+    (Join-Path $payload 'VERSION.txt'),
     (Join-Path $payload 'THIRD_PARTY_NOTICES.md'),
     (Join-Path $payload 'LICENSES\LUCIDE-ISC.txt')
 )
@@ -64,6 +65,7 @@ if (-not (Test-Path $dataPath)) {
 
 New-Item -ItemType Directory -Force -Path $backupsPath, $logsPath, $InstallPath | Out-Null
 Copy-Item -LiteralPath (Join-Path $payload 'PlanoOpenSpaceIT.Windows.exe') -Destination (Join-Path $InstallPath 'PlanoOpenSpaceIT.Windows.exe') -Force
+Copy-Item -LiteralPath (Join-Path $payload 'VERSION.txt') -Destination (Join-Path $InstallPath 'VERSION.txt') -Force
 Copy-Item -LiteralPath (Join-Path $payload 'THIRD_PARTY_NOTICES.md') -Destination (Join-Path $InstallPath 'THIRD_PARTY_NOTICES.md') -Force
 Copy-Item -LiteralPath (Join-Path $payload 'LICENSES') -Destination (Join-Path $InstallPath 'LICENSES') -Recurse -Force
 

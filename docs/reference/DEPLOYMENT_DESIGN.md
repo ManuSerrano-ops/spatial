@@ -22,6 +22,7 @@ directorio nuevo con únicamente:
 Install-PlanoOpenSpaceIT.ps1
 payload/
   PlanoOpenSpaceIT.Windows.exe
+  VERSION.txt
   THIRD_PARTY_NOTICES.md
   LICENSES/LUCIDE-ISC.txt
 seed-data/
@@ -36,21 +37,18 @@ seed-data/
   state.json
 ```
 
-No contiene código fuente, pruebas, `bin`, `obj`, `publish`, backups, logs ni
-archivos transitorios de la ejecución real.
+`payload/VERSION.txt` registra la revisión Git corta, versión informativa, fecha UTC y SHA-256 del EXE. No contiene código fuente, pruebas, `bin`, `obj`, `publish`, backups, logs ni archivos transitorios de la ejecución real.
 
 ## Instalación
 
-`Install-PlanoOpenSpaceIT.ps1` recibe `InstallPath` y `NetworkRoot`. Antes de
-modificar la raíz compartida valida el EXE, los avisos, la licencia y los nueve
-JSON de semilla. Después:
+`Install-PlanoOpenSpaceIT.ps1` recibe `InstallPath` y `NetworkRoot`. Antes de modificar la raíz compartida valida el EXE, `VERSION.txt`, los avisos, la licencia y los nueve JSON de semilla. Después:
 
 1. Comprueba que la raíz compartida permite crear y borrar un fichero temporal.
 2. Crea `data`, `backups` y `logs` bajo esa raíz.
 3. Si `data` no existe, copia la semilla en un directorio temporal hermano,
    valida los JSON y lo mueve a `data`.
 4. Si `data` ya existe, valida los nueve JSON y no modifica ninguno.
-5. Copia el EXE y los avisos legales a `InstallPath`.
+5. Copia el EXE, `VERSION.txt` y los avisos legales a `InstallPath`.
 6. Escribe junto al EXE un `config.json` que apunta a la raíz indicada.
 
 El instalador no borra datos compartidos existentes. Si encuentra una carpeta
